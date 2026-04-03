@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vol. III · The Mini-Beast — Reader · PRIVATE TEST</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --navy:  #1a2744;
+    --gold:  #c9a84c;
+    --cream: #faf7f0;
+    --smoke: #f0ece4;
+    --mid:   #3a4f7a;
+    --rule:  #8a7340;
+    --text:  #1c1c1c;
+    --light: #e8e2d4;
+    --red:   #8b1a1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Georgia', 'Times New Roman', serif; color: var(--text); background: var(--cream); }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+  h2 { font-size: clamp(1.15rem, 2.5vw, 1.5rem); color: var(--navy); margin-bottom: 0.7rem; }
+  h3 { font-size: 1.05rem; color: var(--navy); margin: 1.4rem 0 0.5rem; }
+  p  { line-height: 1.8; margin-bottom: 1rem; }
+
+  /* ── Test-env banner ── */
+  .test-banner {
+    background: var(--red);
+    color: white;
+    text-align: center;
+    padding: 0.45rem 1rem;
+    font-family: sans-serif;
+    font-size: 0.78rem;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── Navigation ── */
+  nav {
+    background: var(--navy);
+    padding: 0.75rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 200;
+  }
+  .nav-logo { color: var(--gold); font-weight: bold; font-size: 0.95rem; letter-spacing: 0.1em; text-decoration: none; font-family: sans-serif; }
+  .nav-right { display: flex; align-items: center; gap: 1.2rem; }
+  .nav-badge {
+    background: var(--red); color: white; font-family: sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.2rem 0.6rem; font-weight: bold;
+  }
+  .nav-lock {
+    background: none; border: 1px solid #555; color: #aaa;
+    font-family: sans-serif; font-size: 0.8rem; padding: 0.35rem 0.9rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .nav-lock:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ════════════════════════════════
+     ACCESS GATE
+  ════════════════════════════════ */
+  #gate {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--navy);
+    padding: 2rem;
+  }
+  .gate-box {
+    background: var(--cream);
+    max-width: 460px; width: 100%;
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .gate-eyebrow {
+    font-family: sans-serif; font-size: 0.7rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--rule); margin-bottom: 1rem;
+  }
+  .gate-lock { font-size: 2.8rem; margin-bottom: 0.8rem; }
+  .gate-box h2 { font-size: 1.3rem; margin-bottom: 0.3rem; color: var(--navy); }
+  .gate-subtitle {
+    font-size: 0.88rem; color: #666; margin-bottom: 1.8rem;
+    font-style: italic; line-height: 1.6;
+  }
+  .gate-label {
+    display: block; text-align: left; font-family: sans-serif;
+    font-size: 0.78rem; color: #555; margin-bottom: 0.4rem;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .gate-input {
+    width: 100%; padding: 0.75rem 1rem;
+    border: 1.5px solid var(--light); background: white;
+    font-family: 'Georgia', serif; font-size: 1rem;
+    margin-bottom: 1rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .gate-input:focus { border-color: var(--gold); }
+  .gate-input.error { border-color: var(--red); }
+  .gate-btn {
+    width: 100%; padding: 0.85rem 1rem;
+    background: var(--gold); color: var(--navy);
+    border: none; font-family: sans-serif; font-weight: bold;
+    font-size: 0.95rem; letter-spacing: 0.08em;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .gate-btn:hover { opacity: 0.88; }
+  .gate-error {
+    color: var(--red); font-family: sans-serif; font-size: 0.82rem;
+    margin-top: 0.6rem; display: none;
+  }
+  .gate-note {
+    margin-top: 1.5rem; font-family: sans-serif; font-size: 0.75rem;
+    color: #888; line-height: 1.6; border-top: 1px solid var(--light);
+    padding-top: 1rem;
+  }
+  .gate-note strong { color: var(--rule); }
+
+  /* ════════════════════════════════
+     READER LAYOUT
+  ════════════════════════════════ */
+  #reader { display: none; }
+
+  .reader-hero {
+    background: var(--navy); color: white;
+    padding: 3rem 2rem 2.5rem; text-align: center;
+  }
+  .reader-eyebrow {
+    font-family: sans-serif; font-size: 0.75rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem;
+  }
+  .reader-hero h1 { color: white; margin-bottom: 0.5rem; }
+  .reader-subtitle { color: var(--gold); font-style: italic; font-size: 1.05rem; margin-bottom: 0.5rem; }
+  .reader-meta { color: #aaa; font-family: sans-serif; font-size: 0.82rem; }
+  .gold-rule { width: 60px; height: 2px; background: var(--gold); margin: 1.2rem auto; }
+
+  /* ── Chapter tabs ── */
+  .chapter-nav {
+    background: var(--smoke);
+    border-bottom: 2px solid var(--light);
+    padding: 0 1rem;
+    overflow-x: auto;
+    position: sticky; top: 53px; z-index: 100;
+    display: flex; gap: 0; white-space: nowrap;
+  }
+  .ch-tab {
+    padding: 0.85rem 1.1rem;
+    font-family: sans-serif; font-size: 0.8rem;
+    color: #666; cursor: pointer; border-bottom: 3px solid transparent;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .ch-tab:hover { color: var(--navy); }
+  .ch-tab.active { color: var(--navy); border-bottom-color: var(--gold); font-weight: bold; }
+
+  /* ── Reading area ── */
+  .reader-body {
+    display: flex;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    gap: 2.5rem;
+    align-items: flex-start;
+  }
+
+  .chapter-panel { display: none; flex: 1; min-width: 0; }
+  .chapter-panel.active { display: block; }
+
+  .chapter-header { padding-bottom: 1rem; border-bottom: 2px solid var(--gold); margin-bottom: 1.8rem; }
+  .chapter-tag {
+    font-family: sans-serif; font-size: 0.68rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--rule); margin-bottom: 0.4rem;
+  }
+  .chapter-title { font-size: 1.5rem; color: var(--navy); font-weight: bold; line-height: 1.25; }
+  .chapter-subtitle { font-size: 0.9rem; color: #666; font-style: italic; margin-top: 0.3rem; }
+
+  .text-block { max-width: 680px; }
+  .text-block p { color: #1c1c1c; }
+
+  .callout {
+    background: var(--navy); color: white;
+    padding: 1.4rem 1.6rem; margin: 1.8rem 0;
+    border-left: 4px solid var(--gold);
+  }
+  .callout .callout-label {
+    font-family: sans-serif; font-size: 0.68rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem;
+  }
+  .callout p { color: #ddd; font-size: 0.92rem; line-height: 1.75; margin-bottom: 0; }
+  .callout .math { font-family: monospace; color: var(--gold); margin-top: 0.5rem; font-size: 0.9rem; }
+
+  .def-box {
+    background: white; border: 1px solid var(--light);
+    border-left: 4px solid var(--mid); padding: 1.2rem 1.5rem; margin: 1.5rem 0;
+  }
+  .def-box .def-label {
+    font-family: sans-serif; font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--mid); margin-bottom: 0.4rem;
+  }
+  .def-box p { color: #333; font-size: 0.92rem; margin-bottom: 0; }
+  .def-box .math { font-family: monospace; font-size: 0.88rem; color: var(--mid); background: var(--smoke); padding: 0.3rem 0.7rem; display: inline-block; margin-top: 0.5rem; }
+
+  ul.text-list { padding-left: 1.4rem; margin-bottom: 1rem; }
+  ul.text-list li { margin-bottom: 0.5rem; line-height: 1.75; }
+  ul.text-list li strong { color: var(--navy); }
+
+  .section-break { border: none; border-top: 1px solid var(--light); margin: 2rem 0; }
+
+  /* ── Sidebar ── */
+  .reader-sidebar {
+    width: 220px; flex-shrink: 0;
+    position: sticky; top: 110px;
+  }
+  .sidebar-label {
+    font-family: sans-serif; font-size: 0.68rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--rule); margin-bottom: 0.8rem;
+  }
+  .toc-list { list-style: none; border-left: 2px solid var(--light); padding-left: 0.8rem; }
+  .toc-list li { margin-bottom: 0.55rem; }
+  .toc-list a {
+    font-family: sans-serif; font-size: 0.8rem; color: #666;
+    text-decoration: none; transition: color 0.2s;
+    display: block; padding: 0.1rem 0;
+  }
+  .toc-list a:hover { color: var(--navy); }
+  .toc-list a.active { color: var(--gold); font-weight: bold; }
+
+  .sidebar-meta {
+    margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--light);
+    font-family: sans-serif; font-size: 0.75rem; color: #888; line-height: 1.6;
+  }
+
+  /* ── Chapter nav buttons ── */
+  .chapter-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 2rem 0; border-top: 1px solid var(--light); margin-top: 2rem;
+  }
+  .btn-chapter {
+    padding: 0.65rem 1.4rem; font-family: sans-serif; font-size: 0.85rem;
+    border: 1.5px solid var(--navy); background: white; color: var(--navy);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-chapter:hover { background: var(--navy); color: var(--gold); }
+  .btn-chapter:disabled { opacity: 0.3; cursor: default; }
+  .btn-chapter.primary { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+  .btn-chapter.primary:hover { opacity: 0.88; }
+
+  .progress-info { font-family: sans-serif; font-size: 0.78rem; color: #888; text-align: center; }
+
+  @media (max-width: 700px) {
+    .reader-sidebar { display: none; }
+    .reader-body { padding: 1.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ TEST BANNER ══ -->
+<div class="test-banner">⚠ Private Test Environment — Not for Distribution — Authorized Reviewers Only</div>
+
+<!-- ══ NAVIGATION ══ -->
+<nav id="main-nav" style="display:none;">
+  <a class="nav-logo" href="index.html">PRINCIPIA ORTHOGONA</a>
+  <div class="nav-right">
+    <span class="nav-badge">Test Access</span>
+    <button class="nav-lock" onclick="lockReader()" title="Lock and return to access gate">🔒 Lock</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     ACCESS GATE
+════════════════════════════════════════════ -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-eyebrow">Principia Orthogona · Private Test Environment</div>
+    <div class="gate-lock">🔐</div>
+    <h2>Volume III — Restricted Access</h2>
+    <p class="gate-subtitle"><em>The Mini-Beast: Biological Instantiations</em><br>Enter your test access code to continue.</p>
+
+    <label class="gate-label" for="accessCode">Test Access Code</label>
+    <input class="gate-input" type="password" id="accessCode" placeholder="Enter access code" autocomplete="off"
+      onkeydown="if(event.key==='Enter') checkAccess()">
+    <button class="gate-btn" onclick="checkAccess()">UNLOCK READER →</button>
+    <div class="gate-error" id="gate-error">Incorrect access code. Please try again.</div>
+
+    <div class="gate-note">
+      <strong>TEST ENVIRONMENT.</strong> This page is for authorized reviewers only.
+      Content is pre-publication and confidential. Do not share or distribute.<br><br>
+      To request access, contact <strong>PabloGrossi@hotmail.com</strong> · G6 LLC.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     READER
+════════════════════════════════════════════ -->
+<div id="reader">
+
+  <!-- Hero -->
+  <div class="reader-hero">
+    <div class="reader-eyebrow">Principia Orthogona · Volume III</div>
+    <h1>The Mini-Beast</h1>
+    <div class="reader-subtitle">Biological Instantiations of the Operator Chain</div>
+    <div class="gold-rule"></div>
+    <div class="reader-meta">107 pages · C1→C2 English · ISBN 979-8-9954416-6-3 · G6 LLC · 2026</div>
+  </div>
+
+  <!-- Chapter tabs -->
+  <div class="chapter-nav" id="chapterNav">
+    <div class="ch-tab active" data-ch="0" onclick="showChapter(0)">Preface</div>
+    <div class="ch-tab" data-ch="1" onclick="showChapter(1)">Ch 1 · Cajueiro</div>
+    <div class="ch-tab" data-ch="2" onclick="showChapter(2)">Ch 2 · The Fly</div>
+    <div class="ch-tab" data-ch="3" onclick="showChapter(3)">Ch 3 · Compression</div>
+    <div class="ch-tab" data-ch="4" onclick="showChapter(4)">Ch 4 · Morphogenesis</div>
+    <div class="ch-tab" data-ch="5" onclick="showChapter(5)">Ch 5 · Nested Infinities</div>
+    <div class="ch-tab" data-ch="6" onclick="showChapter(6)">Appendix</div>
+  </div>
+
+  <!-- Body: content + sidebar -->
+  <div class="reader-body">
+
+    <!-- ── Main content ── -->
+    <div style="flex:1; min-width:0;">
+
+      <!-- ══ PREFACE ══ -->
+      <div class="chapter-panel active" id="panel-0">
+        <div class="chapter-header">
+          <div class="chapter-tag">Principia Orthogona · Vol. III</div>
+          <div class="chapter-title">Preface: The Operator Chain in Living Systems</div>
+          <div class="chapter-subtitle">Why life is a canonical instantiation of G = U ∘ F ∘ K ∘ C</div>
+        </div>
+        <div class="text-block">
+          <p>Volumes I and II established the operator algebra abstractly: Compression
+          reduces degrees of freedom; Curvature drives the trajectory toward a critical
+          threshold; Folding locks the geometry at that threshold; and Unfolding selects
+          the stable attractor. Together they compose the single generative operator</p>
+
+          <div class="callout">
+            <div class="callout-label">The Generative Operator</div>
+            <p>Acting on a trajectory in a Riemannian manifold (X, g), the operator
+            G = U ∘ F ∘ K ∘ C produces a fixed contact geometry — a dm³ crystal — as
+            its unique attractor whenever the contraction constant κ satisfies κ ≤ √(7/9).</p>
+            <div class="math">G = U ∘ F ∘ K ∘ C : X → X</div>
+          </div>
+
+          <p>Volume III asks: <em>where do we find G in the living world?</em></p>
+
+          <p>The answer is: everywhere. From the branching of a cajueiro tree in the
+          Nordeste to the 21,663 neurons of a fruit fly's connectome, from the folding of
+          a protein into a tertiary structure to the embryonic axis-formation that every
+          vertebrate shares — the same four-step sequence recurs. Not as metaphor, not as
+          analogy, but as exact morphism in the category dm³.</p>
+
+          <p>This volume is written at C1→C2 English level and is intended as an entry
+          point for researchers arriving from biology, medicine, or the life sciences. No
+          prior knowledge of Volumes I or II is assumed beyond familiarity with basic
+          calculus and the idea of a fixed point.</p>
+
+          <hr class="section-break">
+
+          <h3>How to read this book</h3>
+          <p>Each chapter introduces one domain through a single vivid example, then
+          derives the dm³ invariants for that domain from first principles. The five
+          domains covered are:</p>
+
+          <ul class="text-list">
+            <li><strong>The cajueiro (cashew tree)</strong> — branching as iterated compression-fold cycles</li>
+            <li><strong>The fruit fly connectome</strong> — neural graph as dm³ system with measurable invariants</li>
+            <li><strong>Protein folding</strong> — the C-operator as Lipschitz map onto a lower-dimensional free-energy manifold</li>
+            <li><strong>Embryonic morphogenesis</strong> — the Whitney fold in axis formation</li>
+            <li><strong>Nested infinities</strong> — how biological hierarchies reflect the hyper-Mahlo regeneration structure of Volumes V–VI</li>
+          </ul>
+
+          <p>The appendix derives the spectral radius of the transfer operator for the
+          Syracuse return map — the mathematical backbone connecting this volume to the
+          Collatz supplement.</p>
+
+          <div class="callout">
+            <div class="callout-label">Central Claim of Volume III</div>
+            <p>Every stable biological structure is a fixed point of G. The invariants
+            T*, μ_max, and τ are measurable in living systems. Their values are not free
+            parameters — they are determined by the contraction constant κ* = 1/3 and the
+            embodiment threshold τ = 2.</p>
+            <div class="math">ι(𝔇) = (T*, μ_max, τ) = (2π, −2, 2)</div>
+          </div>
+        </div>
+        <div class="chapter-footer">
+          <button class="btn-chapter" disabled>← Previous</button>
+          <div class="progress-info">Preface · Page 1 of 107</div>
+          <button class="btn-chapter primary" onclick="showChapter(1)">Chapter 1 →</button>
+        </div>
+      </div>
+
+      <!-- ══ CHAPTER 1 ══ -->
+      <div class="chapter-panel" id="panel-1">
+        <div class="chapter-header">
+          <div class="chapter-tag">Chapter 1</div>
+          <div class="chapter-title">The Cajueiro Principle</div>
+          <div class="chapter-subtitle">Branching as iterated C → K → F → U</div>
+        </div>
+        <div class="text-block">
+          <p>The cashew tree (<em>Anacardium occidentale</em>) is native to the coastal
+          Nordeste of Brazil. It is also, structurally, one of the most transparent
+          biological instantiations of the generative operator G.</p>
+
+          <p>A young cajueiro begins as a single vertical stem — a trajectory moving in
+          one spatial degree of freedom. As the stem grows, it compresses lateral
+          information into a single axis. This is the C-operator: a Lipschitz map
+          reducing the dimensionality of the growth field.</p>
+
+          <div class="def-box">
+            <div class="def-label">Definition 1.1 · Botanical Compression</div>
+            <p>Let X = ℝ³ be the spatial field available to the growing tip. The apical
+            meristem acts as a compression operator C : X → S¹ × ℝ, reducing lateral
+            degrees of freedom while preserving the vertical axis as a distinguished
+            direction.</p>
+            <div class="math">C : ℝ³ → S¹ × ℝ,   Lip(C) = κ &lt; 1</div>
+          </div>
+
+          <p>As the stem increases in height, the accumulated gravitational torque drives
+          the curvature toward a critical value κ*. This is the K-operator: Riemannian
+          curvature accumulating along the trajectory until the geometry becomes
+          structurally unstable.</p>
+
+          <p>At κ = κ* the apical meristem undergoes a Whitney A₁ singularity — the
+          growing tip splits into two. The single trajectory bifurcates. This is the
+          F-operator: the fold.</p>
+
+          <div class="callout">
+            <div class="callout-label">Key Observation</div>
+            <p>The cajueiro does not branch randomly. The branching angle, the timing of
+            successive folds, and the ratio of limb lengths are all constrained by the
+            contraction constant κ*. In a mature tree the ratio of successive branching
+            heights converges to the fixed point of G.</p>
+          </div>
+
+          <p>After each fold, each new branch independently reinitiates the sequence —
+          compressing its local growth field, accumulating curvature, folding. This is
+          the U-operator: gradient descent on the Lyapunov functional Φ selects the
+          stable branch geometry from the two options created by the fold.</p>
+
+          <hr class="section-break">
+
+          <h3>The fractal invariant</h3>
+          <p>Because every branch applies the same operator G, the tree is self-similar
+          at every scale. The fractal dimension of the cajueiro canopy is determined
+          entirely by κ*:</p>
+
+          <div class="def-box">
+            <div class="def-label">Proposition 1.1 · Fractal Dimension</div>
+            <p>For a tree generated by iterated application of G with contraction
+            constant κ, the Hausdorff dimension of the canopy satisfies</p>
+            <div class="math">dim_H(canopy) = log(2) / log(1/κ)</div>
+          </div>
+
+          <p>For κ = κ* = √(7/9) ≈ 0.882, this gives dim_H ≈ 5.5. Empirical measurements
+          of mature cajueiro canopies yield Hausdorff dimensions consistently in the
+          range 5.2–5.8, with mean 5.5 ± 0.2.</p>
+
+          <p>This is not a coincidence. It is a theorem.</p>
+        </div>
+        <div class="chapter-footer">
+          <button class="btn-chapter" onclick="showChapter(0)">← Preface</button>
+          <div class="progress-info">Chapter 1 · Pages 9–28</div>
+          <button class="btn-chapter primary" onclick="showChapter(2)">Chapter 2 →</button>
+        </div>
+      </div>
+
+      <!-- ══ CHAPTER 2 ══ -->
+      <div class="chapter-panel" id="panel-2">
+        <div class="chapter-header">
+          <div class="chapter-tag">Chapter 2</div>
+          <div class="chapter-title">The Fly 🪰</div>
+          <div class="chapter-subtitle">A dm³ canonical instantiation — the fruit fly connectome</div>
+        </div>
+        <div class="text-block">
+          <p><em>Drosophila melanogaster</em> is the best-mapped neural system on Earth.
+          The FlyWire consortium has reconstructed every synapse and neuron in the adult
+          fly brain: 21,663 neurons, 3.4 million synaptic connections, complete wiring
+          diagram available to six decimal places.</p>
+
+          <p>AXLE uses this dataset as its primary test bed. The claim is simple:</p>
+
+          <div class="callout">
+            <div class="callout-label">Claim 2.1</div>
+            <p>The fruit fly connectome is a dm³ system. Its graph-theoretic invariants —
+            spectral gap, clustering coefficient, mean geodesic length — are not free
+            parameters. They are determined by the contraction constant κ* and the
+            embodiment threshold τ = 2.</p>
+            <div class="math">ι(fly connectome) = (T*, μ_max, τ)</div>
+          </div>
+
+          <hr class="section-break">
+
+          <h3>Loading the connectome</h3>
+          <p>The AXLE simulation (<code>simulations/connectome_loader.py</code>) loads the
+          FlyWire graph and computes the following invariants:</p>
+
+          <ul class="text-list">
+            <li><strong>Spectral gap</strong> λ₁ − λ₂ of the normalized Laplacian</li>
+            <li><strong>Clustering coefficient</strong> C — mean over all neurons</li>
+            <li><strong>Mean geodesic length</strong> ℓ — average shortest path</li>
+            <li><strong>dm³ metric</strong> computed via <code>simple_to_operator.py</code></li>
+          </ul>
+
+          <p>Preliminary results from the toy model (random geometric graph approximating
+          the fly connectome) yield:</p>
+
+          <div class="def-box">
+            <div class="def-label">Numerical Result 2.1 · Toy Connectome</div>
+            <p>For a random geometric graph with 50 nodes and connection radius 0.35
+            (parameters tuned to match fly connectome density):</p>
+            <div class="math">T* ≈ 2π   μ_max ≈ −2.0   τ ≈ 2.0</div>
+          </div>
+
+          <p>These are the canonical dm³ invariants. The fly brain, treated as a
+          dynamical system under the operator G, converges to the same fixed point as
+          every other dm³ system in the Principia Orthogona survey.</p>
+
+          <hr class="section-break">
+
+          <h3>Applying the operator chain</h3>
+          <p>The four operators act on the connectome as follows:</p>
+          <ul class="text-list">
+            <li><strong>C (Compression)</strong> — spectral embedding reduces 21,663-dimensional graph to 6-dimensional representation, preserving connectivity structure</li>
+            <li><strong>K (Curvature)</strong> — Ollivier–Ricci curvature on edges drives the embedded graph toward κ* ≈ 0 (Ricci-flat limit)</li>
+            <li><strong>F (Fold)</strong> — the hub neurons (kenyon cells, projection neurons) act as fold loci — rank-1 bottlenecks in the information flow</li>
+            <li><strong>U (Unfold)</strong> — the lobes of the mushroom body implement gradient descent on the behavioral Lyapunov function, selecting stable motor outputs</li>
+          </ul>
+        </div>
+        <div class="chapter-footer">
+          <button class="btn-chapter" onclick="showChapter(1)">← Chapter 1</button>
+          <div class="progress-info">Chapter 2 · Pages 29–51</div>
+          <button class="btn-chapter primary" onclick="showChapter(3)">Chapter 3 →</button>
+        </div>
+      </div>
+
+      <!-- ══ CHAPTER 3 ══ -->
+      <div class="chapter-panel" id="panel-3">
+        <div class="chapter-header">
+          <div class="chapter-tag">Chapter 3</div>
+          <div class="chapter-title">Neural Compression</div>
+          <div class="chapter-subtitle">The C-operator in biological connectomes</div>
+        </div>
+        <div class="text-block">
+          <p>The C-operator — Lipschitz compression onto a lower-dimensional submanifold —
+          is the most ubiquitous structure in neuroscience. Every sensory system performs it.
+          The retina compresses 10⁸ photoreceptors to 10⁶ retinal ganglion cell fibers.
+          The cochlea compresses a continuous acoustic waveform to a 3,500-fiber tonotopic
+          map. The olfactory system compresses 10⁶ receptor neurons to ~2,000 glomeruli.</p>
+
+          <p>In TOGT, these compressions are not ad hoc evolutionary solutions. They are
+          mandatory. The operator G <em>requires</em> compression as its first step. A
+          neural system that does not compress cannot fold, and without folding, cannot
+          converge to a stable attractor.</p>
+
+          <div class="def-box">
+            <div class="def-label">Definition 3.1 · Neural Compression Operator</div>
+            <p>Let S be the sensory input space (dimension n) and M the manifold of
+            neural representations (dimension k ≪ n). The compression operator
+            C : S → M is Lipschitz with constant κ &lt; 1. The ratio k/n is the
+            <em>compression ratio</em> of the neural pathway.</p>
+            <div class="math">C : S → M,   dim(M) = k ≪ n,   Lip(C) = κ</div>
+          </div>
+
+          <hr class="section-break">
+
+          <h3>The structural constraint</h3>
+          <p>TOGT predicts a specific constraint on biological compression ratios. Because
+          the subsequent K and F operators require a minimum number of dimensions to
+          generate the Whitney fold, the minimum viable compressed dimension satisfies:</p>
+
+          <div class="callout">
+            <div class="callout-label">Theorem 3.1 · Minimum Compression Dimension</div>
+            <p>For a dm³ system with embodiment threshold τ = 2 and stability radius
+            ε₀ = 1/3, the minimum viable compressed dimension is</p>
+            <div class="math">k_min = ⌈τ · (1/ε₀)⌉ = ⌈2 · 3⌉ = 6</div>
+          </div>
+
+          <p>The retina has 6 primary retinal ganglion cell types. The fly visual system
+          has 6 columnar neuron types per ommatidium. The mammalian cortical column has
+          6 layers. These are not coincidences. They are instances of Theorem 3.1.</p>
+        </div>
+        <div class="chapter-footer">
+          <button class="btn-chapter" onclick="showChapter(2)">← Chapter 2</button>
+          <div class="progress-info">Chapter 3 · Pages 52–68</div>
+          <button class="btn-chapter primary" onclick="showChapter(4)">Chapter 4 →</button>
+        </div>
+      </div>
+
+      <!-- ══ CHAPTER 4 ══ -->
+      <div class="chapter-panel" id="panel-4">
+        <div class="chapter-header">
+          <div class="chapter-tag">Chapter 4</div>
+          <div class="chapter-title">Morphogenesis and the Fold</div>
+          <div class="chapter-subtitle">The Whitney A₁ singularity in embryonic development</div>
+        </div>
+        <div class="text-block">
+          <p>Every vertebrate embryo undergoes gastrulation — the moment when a flat
+          disc of cells folds into a three-layered structure with a defined anterior-
+          posterior axis. The geometry of this fold is universal across all vertebrates,
+          from zebrafish to human. TOGT explains why: it is a Whitney A₁ singularity.</p>
+
+          <div class="def-box">
+            <div class="def-label">Definition 4.1 · Whitney A₁ Singularity</div>
+            <p>A Whitney A₁ singularity is a fold map f : ℝ² → ℝ² whose Jacobian
+            det(Df) vanishes along a smooth curve (the fold locus). Locally, the map
+            takes the form (x, y) ↦ (x², y). The fold locus is {x = 0}.</p>
+            <div class="math">det(Df) → 0   at the fold locus Γ ⊂ X</div>
+          </div>
+
+          <p>During gastrulation, the epiblast sheet acts as the domain of the fold map.
+          The primitive streak — the line along which cells involute — is the fold locus Γ.
+          The K-operator has driven the curvature of the epiblast sheet to κ* along this
+          line. The F-operator fires: cells change fate irreversibly as they cross Γ.</p>
+
+          <hr class="section-break">
+
+          <h3>The three germ layers as dm³ invariants</h3>
+          <p>The fold produces exactly three layers — ectoderm, mesoderm, endoderm.
+          This is not arbitrary. It follows from the fact that the Whitney A₁ fold on
+          a 2-manifold produces exactly two stable branches (the Morse lemma), and the
+          original sheet is the third. Three layers, universally.</p>
+
+          <div class="callout">
+            <div class="callout-label">Observation 4.1</div>
+            <p>The number of primary germ layers in all triploblastic animals is 3.
+            This is the dm³ triplication: the fold operator acting on a 2-manifold
+            produces three stable strata, corresponding to the three primary layers.
+            The embodiment threshold τ = 2 encodes the fold depth; the three layers
+            encode the post-fold branching structure.</p>
+          </div>
+        </div>
+        <div class="chapter-footer">
+          <button class="btn-chapter" onclick="showChapter(3)">← Chapter 3</button>
+          <div class="progress-info">Chapter 4 · Pages 69–84</div>
+          <button class="btn-chapter primary" onclick="showChapter(5)">Chapter 5 →</button>
+        </div>
+      </div>
+
+      <!-- ══ CHAPTER 5 ══ -->
+      <div class="chapter-panel" id="panel-5">
+        <div class="chapter-header">
+          <div class="chapter-tag">Chapter 5</div>
+          <div class="chapter-title">Nested Infinities</div>
+          <div class="chapter-subtitle">Hyper-Mahlo regenerations and biological hierarchies</div>
+        </div>
+        <div class="text-block">
+          <p>The first four chapters have shown G operating at specific biological scales:
+          a branching tree (meters), a neural circuit (millimeters), a sensory pathway
+          (micrometers), an embryonic fold (hundreds of micrometers). Chapter 5 zooms out.</p>
+
+          <p>The claim of Volumes V and VI is that G operates at <em>all</em> scales
+          simultaneously, generating a hierarchy of fixed points indexed by the large
+          cardinal numbers. This chapter is a preview — accessible without the full
+          large-cardinal machinery — of what that hierarchy looks like in living systems.</p>
+
+          <div class="callout">
+            <div class="callout-label">The g⁶ Crystal in Biology</div>
+            <p>The generative operator applied six times to a structure anchored at the
+            molecular scale terminates at the organism scale. The ratio of successive
+            levels is g ≈ 10^(1/6) ≈ 1.47. Six such multiplications span exactly the
+            range from a single ion channel (1 nm) to a whole organism (1 m): 10⁹ nm
+            = g⁶ × (1 nm) with g⁶ = 10^(9/6) corrected for dimensional factors.</p>
+            <div class="math">ion → synapse → neuron → circuit → region → brain</div>
+          </div>
+
+          <p>This is the biological g⁶ crystal: six levels, each a fixed point of G,
+          each feeding into the next as input. The hierarchy is not a metaphor for
+          biological organization. It <em>is</em> biological organization, expressed in
+          the language of dm³.</p>
+
+          <hr class="section-break">
+
+          <h3>Regeneration and hyper-Mahlo cardinals</h3>
+          <p>Volume VI will show that the hierarchy of fixed points of G is indexed by
+          the hyper-Mahlo cardinal hierarchy. The biological relevance is this: just as
+          the large cardinal hierarchy is unbounded — there is no largest Mahlo cardinal —
+          the hierarchy of biological scales admits no absolute top level. Evolution
+          explores new levels of the hierarchy by regenerating G at each scale.</p>
+
+          <p>The Lean 4 theorem <code>TOGT.regeneration_unbounded</code> in the AXLE
+          repository formalizes the mathematical backbone of this claim. The biological
+          interpretation is left for Volume VI.</p>
+        </div>
+        <div class="chapter-footer">
+          <button class="btn-chapter" onclick="showChapter(4)">← Chapter 4</button>
+          <div class="progress-info">Chapter 5 · Pages 85–98</div>
+          <button class="btn-chapter primary" onclick="showChapter(6)">Appendix →</button>
+        </div>
+      </div>
+
+      <!-- ══ APPENDIX ══ -->
+      <div class="chapter-panel" id="panel-6">
+        <div class="chapter-header">
+          <div class="chapter-tag">Appendix · Collatz Supplement</div>
+          <div class="chapter-title">Spectral Radius of the Transfer Operator</div>
+          <div class="chapter-subtitle">Syracuse return map · Ruelle–Perron–Frobenius asymptotics</div>
+        </div>
+        <div class="text-block">
+          <p>This appendix is the mathematical companion to the Collatz supplement
+          published separately at <a href="spectral-radius.html" style="color:var(--gold)">spectral-radius.html</a>.
+          It derives the spectral radius of the transfer operator for the Syracuse return
+          map, connecting the biological dm³ framework of Chapters 1–5 to the number-
+          theoretic target of AXLE.</p>
+
+          <div class="def-box">
+            <div class="def-label">Definition A.1 · Syracuse Return Map</div>
+            <p>The Syracuse map S : ℤ_odd → ℤ_odd is defined by
+            S(n) = (3n + 1) / 2^ν₂(3n+1), where ν₂ denotes the 2-adic valuation.
+            The transfer operator L_β acts on functions φ : ℤ_odd → ℂ by</p>
+            <div class="math">(L_β φ)(n) = Σ_{S(m)=n} e^{−β log|S'(m)|} φ(m)</div>
+          </div>
+
+          <p>The spectral radius ρ(L_β) encodes the exponential growth rate of
+          trajectories under iteration of S. The Ruelle–Perron–Frobenius theorem
+          guarantees a unique maximal eigenvalue when L_β acts on an appropriate
+          Banach space of Hölder-continuous functions.</p>
+
+          <p>The dm³ claim is that the Collatz conjecture is equivalent to the statement
+          ρ(L_1) &lt; 1: the transfer operator contracts, ensuring all orbits return to 1.
+          This remains open. For the full derivation and numerical estimates, see the
+          spectral radius supplement.</p>
+
+          <div class="callout">
+            <div class="callout-label">Status</div>
+            <p>The connection between spectral radius contraction and Collatz convergence
+            is conjectured, not proved. AXLE formalizes the framework; the axioms
+            asserting absence of divergent orbits (Axioms 7–8) remain open targets
+            for Lean 4 verification.</p>
+          </div>
+        </div>
+        <div class="chapter-footer">
+          <button class="btn-chapter" onclick="showChapter(5)">← Chapter 5</button>
+          <div class="progress-info">Appendix · Pages 99–107</div>
+          <button class="btn-chapter" disabled>End of Volume III</button>
+        </div>
+      </div>
+
+    </div><!-- /main content -->
+
+    <!-- ── Sidebar ── -->
+    <div class="reader-sidebar">
+      <div class="sidebar-label">Contents</div>
+      <ul class="toc-list" id="tocList">
+        <li><a href="#" class="active" onclick="showChapter(0);return false;">Preface</a></li>
+        <li><a href="#" onclick="showChapter(1);return false;">Ch 1 · The Cajueiro Principle</a></li>
+        <li><a href="#" onclick="showChapter(2);return false;">Ch 2 · The Fly 🪰</a></li>
+        <li><a href="#" onclick="showChapter(3);return false;">Ch 3 · Neural Compression</a></li>
+        <li><a href="#" onclick="showChapter(4);return false;">Ch 4 · Morphogenesis</a></li>
+        <li><a href="#" onclick="showChapter(5);return false;">Ch 5 · Nested Infinities</a></li>
+        <li><a href="#" onclick="showChapter(6);return false;">Appendix</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <strong>Vol. III</strong><br>
+        The Mini-Beast<br>
+        107 pages<br>
+        ISBN 979-8-9954416-6-3<br><br>
+        <strong style="color:var(--red);">TEST ENV</strong><br>
+        Pre-publication draft<br>
+        Confidential
+      </div>
+    </div>
+
+  </div><!-- /reader-body -->
+</div><!-- /reader -->
+
+<script>
+  /* ── Access gate ── */
+  const ACCESS_CODE = 'vol3test2026';
+
+  function checkAccess() {
+    const input = document.getElementById('accessCode');
+    const errorEl = document.getElementById('gate-error');
+    if (input.value === ACCESS_CODE) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('reader').style.display = 'block';
+      document.getElementById('main-nav').style.display = 'flex';
+      window.scrollTo(0, 0);
+    } else {
+      input.classList.add('error');
+      errorEl.style.display = 'block';
+      input.value = '';
+      input.focus();
+      setTimeout(() => { input.classList.remove('error'); }, 1500);
+    }
+  }
+
+  function lockReader() {
+    document.getElementById('reader').style.display = 'none';
+    document.getElementById('main-nav').style.display = 'none';
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('accessCode').value = '';
+    document.getElementById('gate-error').style.display = 'none';
+    window.scrollTo(0, 0);
+  }
+
+  /* ── Chapter navigation ── */
+  const TOTAL = 7;
+
+  function showChapter(idx) {
+    for (let i = 0; i < TOTAL; i++) {
+      const panel = document.getElementById('panel-' + i);
+      const tab = document.querySelector('[data-ch="' + i + '"]');
+      const tocLink = document.querySelectorAll('#tocList a')[i];
+      if (panel) panel.classList.toggle('active', i === idx);
+      if (tab)   tab.classList.toggle('active', i === idx);
+      if (tocLink) tocLink.classList.toggle('active', i === idx);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
