@@ -134,14 +134,14 @@ def log_drift(M: int, iterate: int = 2) -> dict:
     Returns the mean log-ratio and standard deviation.
     """
     states = odd_residues(M)
+    # syracuse_T always returns an odd integer; odd % 2^M is always odd (≥ 1),
+    # so current stays in the valid odd-residue domain at every step.
     log_ratios = []
     for n in states:
         current = n
         for _ in range(iterate):
             current = syracuse_T(current) % (1 << M)
-            if current == 0:          # wrap: treat 0 as the modulus itself
-                current = 1 << M
-        ratio = math.log(current / n) if n > 0 else 0.0
+        ratio = math.log(current / n)
         log_ratios.append(ratio)
 
     arr = np.array(log_ratios)
