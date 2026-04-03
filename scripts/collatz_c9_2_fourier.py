@@ -38,7 +38,7 @@ _DEFAULT_INDIR = os.path.join(_SCRIPT_DIR, "out")
 
 def _bit_reverse_copy(a: list) -> list:
     n = len(a)
-    bits = int(round(math.log2(n)))
+    bits = n.bit_length() - 1  # exact for power-of-2 lengths
     result = [0.0] * n
     for i in range(n):
         rev = 0
@@ -127,7 +127,10 @@ def main() -> None:
     n_valid    = len(valid_vals)
     fill_val   = sum(valid_vals) / n_valid if valid_vals else 0.0
 
-    # Replace NaN (empty even classes) with the mean before DFT
+    # Only odd-residue classes receive samples, so all even-residue classes
+    # are NaN. Mean-filling before the FFT is a neutral choice: it minimises
+    # spectral leakage by keeping the mean level correct while introducing no
+    # spurious oscillations for the unobserved even classes.
     hat_p_filled = [v if not math.isnan(v) else fill_val for v in hat_p]
 
     print(f"[C9.2 Fourier] M={M}  N={N}  modulus={modulus}", flush=True)

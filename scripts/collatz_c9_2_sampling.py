@@ -84,7 +84,9 @@ def sample(M: int, N: int, seed: int) -> dict:
         for r in range(modulus)
     }
 
-    # Sample from [1, 2^(M+20)] so residue classes are well covered.
+    # Sample from [1, 2^(M+20)]. The +20 extra bits ensure each of the 2^M
+    # residue classes has many representatives in the range while keeping
+    # individual sample values well within Python int range.
     upper = 1 << (M + 20)
 
     for _ in range(N):
