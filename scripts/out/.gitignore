@@ -1,0 +1,3 @@
+# Keep PNG plots in repo; ignore raw data files
+*.csv
+*.json
