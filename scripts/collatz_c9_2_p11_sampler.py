@@ -561,9 +561,5 @@ def main():
     print(f"JSON -> {json_path}")
 
 
-def _first_odd_ge(n: int) -> int:
-    return n if n & 1 else n + 1
-
-
 if __name__ == "__main__":
     main()
