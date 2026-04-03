@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Phase, Geometric Holonomy, and an Interpretive dm³ Lens · AXLE</title>
+<meta name="description" content="Berry phase as holonomy, quantum phase transitions, hydrogen 1s↔2p transitions, and an interpretive dm³ (G = U∘F∘K∘C) mapping. G6 LLC · Newark NJ · 2026.">
+<style>
+  :root {
+    --navy:  #1a2744;
+    --gold:  #c9a84c;
+    --cream: #faf7f0;
+    --smoke: #f0ece4;
+    --mid:   #3a4f7a;
+    --rule:  #8a7340;
+    --text:  #1c1c1c;
+    --green: #2d5a27;
+    --light: #e8e2d4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Georgia', 'Times New Roman', serif; color: var(--text); background: var(--cream); }
+
+  /* ── Typography ── */
+  h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.15; }
+  h2 { font-size: clamp(1.2rem, 2.5vw, 1.7rem); color: var(--navy); margin-bottom: 0.8rem; }
+  h3 { font-size: 1.1rem; color: var(--navy); margin: 1.2rem 0 0.5rem; }
+  h4 { font-size: 1rem; color: var(--navy); margin: 1.2rem 0 0.5rem; }
+  p  { line-height: 1.75; margin-bottom: 0.9rem; }
+
+  /* ── Navigation ── */
+  nav {
+    background: var(--navy);
+    padding: 0.75rem 2rem;
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { color: var(--gold); font-weight: bold; font-size: 1rem; letter-spacing: 0.1em; text-decoration: none; font-family: sans-serif; }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-family: sans-serif; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--navy);
+    color: white;
+    padding: 4.5rem 2rem 3.5rem;
+    text-align: center;
+  }
+  .hero-eyebrow { font-family: sans-serif; font-size: 0.8rem; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 1rem; }
+  .hero h1 { color: white; margin-bottom: 0.7rem; }
+  .hero-subtitle { color: var(--gold); font-size: 1.05rem; margin-bottom: 1.2rem; font-style: italic; }
+  .gold-rule { width: 60px; height: 2px; background: var(--gold); margin: 1.2rem auto; }
+  .hero-desc { color: #bbb; max-width: 680px; margin: 0 auto; line-height: 1.7; font-size: 0.95rem; }
+
+  /* ── Main layout ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+  /* ── Section blocks ── */
+  .section-block {
+    background: white;
+    border: 1px solid var(--light);
+    border-radius: 6px;
+    padding: 2rem 2.2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  /* ── Math display ── */
+  .math-display {
+    overflow-x: auto;
+    margin: 1rem 0;
+    padding: 0.5rem 0;
+  }
+
+  /* ── dm³ aside ── */
+  .dm3-interpretation {
+    border-left: 4px solid #666;
+    padding: 1rem 1.2rem;
+    margin-top: 1.2rem;
+    background: #fbfbfb;
+    border-radius: 0 4px 4px 0;
+  }
+  .dm3-interpretation h3 {
+    font-size: 1rem;
+    color: #444;
+    margin-top: 0;
+    margin-bottom: 0.7rem;
+  }
+  .dm3-interpretation ol {
+    margin: 0.6rem 0 0.6rem 1.4rem;
+  }
+  .dm3-interpretation li {
+    margin-bottom: 0.4rem;
+    line-height: 1.6;
+  }
+  .dm3-cite {
+    font-size: 0.88rem;
+    color: #444;
+    margin-top: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  /* ── References ── */
+  .references ul {
+    list-style: none;
+    padding: 0;
+  }
+  .references li {
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--light);
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+  .references li:last-child { border-bottom: none; }
+  .references a { color: var(--mid); text-decoration: none; }
+  .references a:hover { text-decoration: underline; }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--navy);
+    color: #aaa;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    font-size: 0.82rem;
+    font-family: sans-serif;
+    line-height: 1.8;
+  }
+  footer a { color: var(--gold); text-decoration: none; }
+</style>
+<!-- MathJax for LaTeX rendering -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="./index.html">AXLE · dm³</a>
+  <ul class="nav-links">
+    <li><a href="./index.html">Home</a></li>
+    <li><a href="./index2.html">Papers</a></li>
+    <li><a href="./spectral-radius.html">Spectral Radius</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">G6 LLC · Newark, New Jersey · 2026</div>
+  <h1>Quantum Phase, Geometric Holonomy,<br>and an Interpretive dm³ Lens</h1>
+  <div class="hero-subtitle">Berry phase · quantum phase transitions · hydrogen 1s↔2p</div>
+  <div class="gold-rule"></div>
+  <p class="hero-desc">
+    A publication-safe treatment of geometric phase and quantum reorganization,
+    with an explicitly labeled dm³ interpretive mapping using the operator grammar
+    \(G = U \circ F \circ K \circ C\).
+  </p>
+</div>
+
+<div class="container">
+
+  <section id="quantum-phase-dm3" class="section-block">
+    <h2>Quantum Phase, Geometric Holonomy, and an Interpretive dm³ Lens</h2>
+
+    <p>
+      <strong>Berry phase as holonomy.</strong>
+      For a Hamiltonian \(H(\mathbf{R})\) depending smoothly on parameters \(\mathbf{R}\),
+      an instantaneous nondegenerate eigenstate \(|n(\mathbf{R})\rangle\) transported
+      adiabatically around a closed loop \(C\) in parameter space acquires a geometric
+      phase
+      <span class="math-display">
+      \[
+        \gamma_n(C)= i\oint_C \langle n(\mathbf{R}) \mid \nabla_{\mathbf{R}} n(\mathbf{R}) \rangle \cdot d\mathbf{R},
+      \]
+      </span>
+      in addition to the dynamical phase (Berry, 1984; Simon, 1983). This phase can be
+      understood as the holonomy of a \(U(1)\) connection on the eigenstate line bundle
+      over parameter space; its curvature (Berry curvature) controls geometric phase
+      accumulation and underpins a wide range of observable effects (Xiao et al., 2010).
+    </p>
+
+    <p>
+      <strong>Quantum phase transitions (gap closing and reorganization).</strong>
+      A quantum phase transition is typically associated with a qualitative change in
+      ground-state structure driven by a control parameter, often accompanied by a
+      closing of the excitation gap and divergent correlation lengths at criticality.
+      Renormalization-group analyses classify universality classes and scaling behavior
+      (Sachdev, 2011; Vojta, 2003).
+    </p>
+
+    <p>
+      <strong>Hydrogen 1s↔2p as spectral coupling plus phase control.</strong>
+      Electric-dipole transitions are governed by dipole matrix elements
+      \(\langle f \mid \mathbf{r} \mid i\rangle\); for hydrogen, the 1s→2p transition is
+      allowed because electric-dipole selection rules require \(\Delta \ell=\pm 1\),
+      \(\Delta m = 0,\pm 1\), and a parity change (Bethe &amp; Salpeter, 1957). Under a
+      time-dependent drive the state may be prepared in a coherent superposition
+      <span class="math-display">
+      \[
+        |\psi(t)\rangle = c_{1s}(t)\,|1s\rangle + \sum_{m=-1}^{1} c_{2p,m}(t)\,|2p,m\rangle,
+      \]
+      </span>
+      so the probability density \(|\psi(t)|^2\) can evolve smoothly as amplitudes and
+      relative phases change. The field polarization selects which \(\Delta m\) channels
+      are coupled, providing a compact example of symmetry-constrained coupling between
+      spectral components.
+    </p>
+
+    <aside class="dm3-interpretation">
+      <h3>dm³ interpretation (nonstandard; proposed correspondence)</h3>
+      <p>
+        The following mapping is presented as an <em>interpretive lens</em> (not an
+        established result of the cited quantum literature). It is intended to compare
+        "local-to-global" reorganizations across domains using an operator grammar
+        \(G = U \circ F \circ K \circ C\):
+      </p>
+      <ol>
+        <li><strong>C (Compression):</strong> effective reduction of degrees of freedom (e.g., near critical manifolds or constrained subspaces).</li>
+        <li><strong>K (Curvature):</strong> connection/curvature effects governing phase response (e.g., Berry curvature in parameter space).</li>
+        <li><strong>F (Folding):</strong> nontrivial topology/singularity structure in the space of states or parameters (e.g., degeneracies, defects).</li>
+        <li><strong>U (Unfolding):</strong> emergence of a new stable sector after reorganization (e.g., distinct phases/topological classes).</li>
+      </ol>
+      <p class="dm3-cite">
+        <strong>dm³ citation:</strong>
+        Grossi, P. N. (2026). <em>The Collatz Conjecture as a Canonical dm³-System</em>.
+        Zenodo.
+        <a href="https://doi.org/10.5281/zenodo.19117400" target="_blank">doi:10.5281/zenodo.19117400</a>
+        · ORCID: 0009-0000-6496-2186
+      </p>
+    </aside>
+  </section>
+
+  <section class="section-block references">
+    <h4>References</h4>
+    <ul>
+      <li>
+        Berry, M. V. (1984). Quantal phase factors accompanying adiabatic changes.
+        <em>Proc. R. Soc. A</em>, 392(1802), 45–57.
+        <a href="https://doi.org/10.1098/rspa.1984.0023" target="_blank">doi:10.1098/rspa.1984.0023</a>
+      </li>
+      <li>
+        Simon, B. (1983). Holonomy, the quantum adiabatic theorem, and Berry's phase.
+        <em>Phys. Rev. Lett.</em>, 51(24), 2167–2170.
+        <a href="https://doi.org/10.1103/PhysRevLett.51.2167" target="_blank">doi:10.1103/PhysRevLett.51.2167</a>
+      </li>
+      <li>
+        Xiao, D., Chang, M.-C., &amp; Niu, Q. (2010). Berry phase effects on electronic properties.
+        <em>Rev. Mod. Phys.</em>, 82(3), 1959–2007.
+        <a href="https://doi.org/10.1103/RevModPhys.82.1959" target="_blank">doi:10.1103/RevModPhys.82.1959</a>
+      </li>
+      <li>
+        Vojta, M. (2003). Quantum phase transitions.
+        <em>Rep. Prog. Phys.</em>, 66(12), 2069–2110.
+        <a href="https://doi.org/10.1088/0034-4885/66/12/R01" target="_blank">doi:10.1088/0034-4885/66/12/R01</a>
+      </li>
+      <li>
+        Sachdev, S. (2011). <em>Quantum Phase Transitions</em> (2nd ed.). Cambridge University Press.
+      </li>
+      <li>
+        Bethe, H. A., &amp; Salpeter, E. E. (1957).
+        <em>Quantum Mechanics of One- and Two-Electron Atoms</em>. Springer.
+      </li>
+    </ul>
+  </section>
+
+</div><!-- /container -->
+
+<footer>
+  © 2026 Pablo Nogueira Grossi / G6 LLC · Newark, New Jersey, USA<br>
+  ORCID: 0009-0000-6496-2186 · Zenodo:
+  <a href="https://doi.org/10.5281/zenodo.19117400" target="_blank">10.5281/zenodo.19117400</a><br>
+  Reference style: <strong>A</strong> (academically reputable — peer-reviewed literature + authoritative institutional sources)
+</footer>
+
+</body>
+</html>
