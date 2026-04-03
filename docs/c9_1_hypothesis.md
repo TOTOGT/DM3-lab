@@ -60,7 +60,8 @@ in the window and is the genuinely hard part.
 
 The **Reduction Lemma** (Theorem in `docs/d9_v0.2.tex`) states:
 
-> If **(H_mix)(M, η)** holds for some `η < log₂(4/3) / c_step ≈ 1.0`,
+> If **(H_mix)(M, η)** holds for some `η < log₂(4/3) / c_step`,
+> where `log₂(4/3) ≈ 0.415` and `c_step ≈ 0.415`, giving threshold `≈ 1.0`,
 > then mean contraction holds:
 > ```
 > limsup_{N→∞} Λ̄_N ≤ −log₂(4/3) + c_step · η < 0.

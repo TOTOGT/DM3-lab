@@ -27,6 +27,10 @@ import os
 import random
 import sys
 
+# Informal threshold for H_mix pass/fail check: |D_N(M)| < HMIX_INFORMAL_THRESHOLD
+# This is a practical guide, not the analytic bound (which is η < log₂(4/3)/c_step ≈ 1.0).
+HMIX_INFORMAL_THRESHOLD = 0.05
+
 
 # ── 2-adic helpers ──────────────────────────────────────────────────────────
 
@@ -299,8 +303,8 @@ def main():
           f"  Q75={qs['75']:.4f}  Q90={qs['90']:.4f}  Q95={qs['95']:.4f}")
     print()
     # H_mix check uses the aggregate deviation, not the per-residue max
-    mixing_ok = not math.isnan(aggregate_deviation) and abs(aggregate_deviation) < 0.05
-    print(f"  H_mix informal check (|D_N(M)| < 0.05): {'PASS' if mixing_ok else 'FAIL/unclear'}")
+    mixing_ok = not math.isnan(aggregate_deviation) and abs(aggregate_deviation) < HMIX_INFORMAL_THRESHOLD
+    print(f"  H_mix informal check (|D_N(M)| < {HMIX_INFORMAL_THRESHOLD}): {'PASS' if mixing_ok else 'FAIL/unclear'}")
     print(f"  (Note: per-residue max ≈ 0.5 is expected; the H_mix quantity is the aggregate |D_N(M)|)")
     print()
 
