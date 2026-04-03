@@ -1,0 +1,14 @@
+{
+  "M": 8,
+  "mod": 256,
+  "N": 100000,
+  "window_size": 10000,
+  "mode": "random",
+  "max_samples": 200,
+  "seed": 123,
+  "residues_processed": 128,
+  "total_A": 5000,
+  "total_AB": 2500,
+  "global_hat_p": 0.5,
+  "csv": "scripts/out/c9_2_M8_N100000.csv"
+}
