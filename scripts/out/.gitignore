@@ -1,0 +1,4 @@
+# Ignore large raw-data CSVs (attach to GitHub issue instead)
+*.csv
+# Keep summary JSON and generated plots
+!*.json
