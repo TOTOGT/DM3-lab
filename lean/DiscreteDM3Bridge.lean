@@ -141,8 +141,8 @@ theorem bridge4_trivial_cycle_period :
     collatz (collatz (collatz 1)) = 1 ∧ trivial_period = 3 := by
   simp [collatz, trivial_period]
 
-/-- The trivial cycle period equals 3, confirming the g² = 3/4
-    per T-step encoding: 3 odd-integer steps exhaust the seed. -/
+/-- The trivial cycle period equals 3, confirming that the Collatz
+    parameter c = 3 and the cycle period coincide. -/
 theorem trivial_period_eq : trivial_period = collatz_c := by
   simp [trivial_period, collatz_c]
 
