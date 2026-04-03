@@ -128,7 +128,7 @@ def load_hat_p(csv_path: str) -> dict:
             )
         for row in reader:
             a = int(row['a'])
-            if hat_p.get(a) is None:   # first-occurrence guard
+            if a not in hat_p:   # first-occurrence guard
                 hat_p[a] = float(row[value_col])
     return hat_p
 
@@ -160,7 +160,7 @@ def run_fourier(hat_p: dict, M: int):
     # --- Mean computation (residue-weighted) ---
     # Only use the first occurrence of each residue (hat_p[a] is None guard
     # is already applied by load_hat_p; here we trust the dict is clean).
-    seen = [a for a, v in hat_p.items() if v is not None]
+    seen = list(hat_p.keys())
     n_seen = len(seen)
     mean_hat_p = (
         sum(hat_p[a] for a in seen) / n_seen if n_seen > 0 else 0.0

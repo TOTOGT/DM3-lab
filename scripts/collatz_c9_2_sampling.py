@@ -83,7 +83,7 @@ def run_sampler(M: int, N: int, seed=None):
     if seed is not None:
         random.seed(seed)
 
-    lo = 1 << (M - 1)   # 2^(M-1); always even for M >= 2
+    lo = 1 << (M - 1)   # 2^(M-1); always even (M >= 2 is enforced above)
     hi = 1 << M          # 2^M
 
     # Odd integers in [lo, hi): lo is even, so first odd is lo+1 = 2^(M-1)+1.
