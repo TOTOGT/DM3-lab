@@ -159,7 +159,8 @@ def main() -> None:
         "n_sparse": n_sparse,
         "dft_dc_magnitude": dc_mag,
         "dft_rms_non_dc": rms_non_dc,
-        f"top_{args.top_k}_dft": top_k,
+        "top_dft_modes": top_k,
+        "top_dft_modes_k": args.top_k,
         "hat_p": {str(a): hat_p[a] for a in residues},
     }
 
