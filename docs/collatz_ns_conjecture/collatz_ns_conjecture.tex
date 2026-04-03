@@ -278,7 +278,7 @@ def v2 : Nat -> Nat
   | 0 => 0
   | n =>
     let rec aux (m : Nat) (cnt : Nat) : Nat :=
-      if m % 2 == 0 then aux (m / 2) (cnt + 1) else cnt
+      if m % 2 = 0 then aux (m / 2) (cnt + 1) else cnt
     aux n 0
 
 def K (m : Nat) : KernelVal :=

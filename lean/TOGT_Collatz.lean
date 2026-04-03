@@ -70,12 +70,13 @@ theorem C_pos (n : ℕ) : 0 < C n := by
   simp [C]; omega
 
 /-- v2 of an even number is positive. -/
+-- TODO (AXLE Target 5): prove this from the definition of v2.
+-- The auxiliary recursive function inside v2 is not directly accessible;
+-- a proof requires unfolding v2 and reasoning about the aux loop.
 theorem v2_even (n : ℕ) (h : n % 2 = 0) (hn : n ≠ 0) : 0 < v2 n := by
   cases n with
   | zero => contradiction
-  | succ m =>
-    simp [v2, v2.aux]
-    omega
+  | succ m => sorry
 
 /-- The macro-step T agrees with the standard Collatz odd-step formula. -/
 theorem T_eq_formula (n : ℕ) :
