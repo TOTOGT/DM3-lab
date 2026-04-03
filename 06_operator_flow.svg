@@ -23,12 +23,13 @@
   <rect x="270" y="40"  width="200" height="120" rx="10" ry="10" fill="#e8f4f8" stroke="#0b6b8a" class="box"/>
   <text x="280" y="70" class="title">K Kernel Valuation</text>
   <text x="280" y="92" class="body">Input: even m</text>
+  <!-- v&#x2082; denotes the 2-adic valuation throughout this diagram -->
   <text x="280" y="112" class="body">Action: K(m) = (k, v&#x2082;(m))</text>
 
   <rect x="510" y="40"  width="200" height="120" rx="10" ry="10" fill="#f4e8f8" stroke="#6b0b8a" class="box"/>
   <text x="520" y="70" class="title">F Flux Dissipation</text>
   <text x="520" y="92" class="body">Input: (k, v)</text>
-  <text x="520" y="112" class="body">Action: h(k) &#x2212; v&#x00B7;log 2</text>
+  <text x="520" y="112" class="body">Action: h(k) &#x2212; v&#x22C5;log&#x202F;2</text>
 
   <rect x="750" y="40"  width="120" height="120" rx="10" ry="10" fill="#e8f8ea" stroke="#0b8a3f" class="box"/>
   <text x="760" y="70" class="title">U Update</text>
@@ -49,7 +50,7 @@
   <text x="478" y="88" class="note">(k, v)</text>
 
   <path d="M710 100 L750 100" class="arrow"/>
-  <text x="714" y="88" class="note">h' = h(k)&#x2212;v&#x00B7;log 2</text>
+  <text x="714" y="88" class="note">h' = h(k)&#x2212;v&#x22C5;log&#x202F;2</text>
 
   <!-- U output arrow down into macro-step box -->
   <path d="M810 160 L650 160 L650 200" class="arrow"/>
