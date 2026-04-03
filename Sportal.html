@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Portal — Principia Orthogona · A1 → D2</title>
+<title>Student Portal — Principia Orthogona Book 3 · Ebook Edition · A1 → D2</title>
 <style>
   :root {
     --navy:  #1a2744; --gold:  #c9a84c; --cream: #faf7f0; --smoke: #f0ece4;
@@ -83,18 +83,36 @@
   .btn-nav:hover, .btn-nav.primary { background: var(--navy); color: var(--gold); }
 
   footer { background: var(--navy); color: #888; padding: 2rem; text-align: center; font-size: 0.8rem; font-family: sans-serif; }
+
+  /* Ebook access notice */
+  .ebook-notice { background: #fffbe6; border: 2px solid var(--gold); padding: 1rem 1.5rem; margin-bottom: 1.5rem; font-family: sans-serif; font-size: 0.88rem; line-height: 1.6; display: flex; align-items: flex-start; gap: 0.75rem; }
+  .ebook-notice-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .ebook-notice strong { color: var(--navy); }
+
+  /* LLM guidance banner */
+  .llm-banner { background: var(--smoke); border-left: 4px solid var(--mid); padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; font-family: sans-serif; font-size: 0.88rem; line-height: 1.7; color: #333; }
+  .llm-banner strong { color: var(--navy); }
+  .llm-banner .llm-models { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .llm-models span { background: var(--navy); color: var(--gold); font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 2px; }
+
+  /* Audience divider */
+  .audience-divider { display: flex; align-items: center; gap: 1rem; margin: 2rem 0 1.5rem; }
+  .audience-divider .aud-line { flex: 1; height: 1px; background: var(--light); }
+  .audience-divider .aud-label { font-family: sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rule); white-space: nowrap; padding: 0.3rem 0.8rem; border: 1px solid var(--light); background: white; }
 </style>
 </head>
 <body>
 
 <nav>
   <a href="index.html" class="nav-back">← Principia Orthogona</a>
-  <span class="nav-logo">STUDENT PORTAL · A1 → D2</span>
+  <span class="nav-logo">STUDENT PORTAL · BOOK 3 EBOOK · A1 → D2</span>
 </nav>
 
 <div class="portal-hero">
+  <div style="font-family:sans-serif;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;">Principia Orthogona · Book 3 · Ebook Edition</div>
   <h1>From <span class="gold-text">A1</span> to <span class="gold-text">D2</span></h1>
-  <p>Structured LLM prompts for every stage of the journey. Each level is a complete operator orbit. Use these prompts with any capable LLM (Claude, GPT-4, Gemini) to progress through the series and across the dimensional threshold.</p>
+  <p style="margin-bottom:0.8rem;">This portal is for students and teachers who purchased the <strong style="color:var(--gold);">Principia Orthogona Book 3 ebook</strong>. Copy any prompt below and paste it into an LLM — the AI reads the course context embedded in every prompt and guides you in building your own original project from this course.</p>
+  <p style="color:#aaa;font-size:0.85rem;font-family:sans-serif;">🤖 LLMs are the tutors. You are the researcher. Each prompt is a complete operator orbit.</p>
 </div>
 
 <!-- Progress bar -->
@@ -117,6 +135,30 @@
 </div>
 
 <div class="portal-content">
+
+<!-- Ebook access notice -->
+<div class="ebook-notice">
+  <div class="ebook-notice-icon">📗</div>
+  <div><strong>Book 3 Ebook — Verified Access.</strong> This LLM prompt portal is included with <em>Principia Orthogona Book 3</em> (ebook edition). Each prompt below is structured so that any capable LLM — Claude, GPT-4, Gemini — can read the course context and guide you, step by step, in creating your own research project based on this course. No prior math experience required to begin.</div>
+</div>
+
+<!-- LLM guidance banner -->
+<div class="llm-banner">
+  <strong>How this portal works:</strong> Every prompt on this page is written for an LLM to read. When you copy a prompt and paste it into an AI assistant, the LLM receives the full course context — your level, the operator you are working with, and the goal — and becomes your personalized guide. The LLM does not just answer questions: it leads you through the operator sequence and helps you produce an original project.
+  <div class="llm-models">
+    <span>Claude</span>
+    <span>GPT-4</span>
+    <span>Gemini</span>
+    <span>Any capable LLM</span>
+  </div>
+</div>
+
+<!-- Audience divider: Student levels -->
+<div class="audience-divider">
+  <div class="aud-line"></div>
+  <div class="aud-label">👩‍🎓 Student Levels — A1 through C1</div>
+  <div class="aud-line"></div>
+</div>
 
 <!-- A1 -->
 <div class="level-section active" id="level-a1">
@@ -277,6 +319,13 @@
     <div class="prompt-text">Help me prepare a 2-page paper applying GTCT to [my chosen domain]. The paper must have: Title, Abstract (200 words), Introduction (explaining the operator chain C→K→F→U as applied to this domain), Results (what the invariant is in this domain), and Discussion (what this implies for the field). I will write each section; you review and push back.</div>
     <button class="copy-btn" onclick="copyPrompt(this)">COPY PROMPT</button>
   </div>
+</div>
+
+<!-- Audience divider: Teacher/Instructor levels -->
+<div class="audience-divider">
+  <div class="aud-line"></div>
+  <div class="aud-label">👩‍🏫 Teacher &amp; Instructor Levels — D1 and D2</div>
+  <div class="aud-line"></div>
 </div>
 
 <!-- D1 -->
