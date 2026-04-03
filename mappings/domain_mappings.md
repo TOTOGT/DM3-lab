@@ -95,6 +95,28 @@ The allostatic unification law $\tau_{12} \leq \min(\tau_1, \tau_2)$ governs cou
 
 ---
 
+## 7. Collatz Conjecture and Riemann Hypothesis (Arithmetic Shadows)
+
+The Collatz conjecture and the Riemann Hypothesis are parallel instances of the same
+generative mechanics: local rules that empirically force global order, blocked by the
+identical Bridge 0 obstacle.
+
+| Operator | Collatz Instantiation | RH Instantiation |
+|---|---|---|
+| **C** | 2-adic valuation: even $n$ halved, compressing degrees of freedom | Euler product: local prime factors compressed into $\zeta(s)$ |
+| **K** | $3n+1$ step: odd $n$ stretched toward fold | Functional equation: curvature drives toward critical line $\operatorname{Re}(s)=\tfrac{1}{2}$ |
+| **F** | Parity fold: local max before halving cascade (rank-1 collapse) | Non-trivial zero: rank-1 degeneration of spectral structure at critical line |
+| **U** | 2-adic dissipation selects descending branch toward $\{4,2,1\}$ | Explicit formula: zeros unfold back into prime-counting function |
+
+**dm³ identification (Collatz):** $\tau=\sqrt{3}$ (triad fingerprint $c=3$); 2-adic Lyapunov exponent = $\mu_{\max}<0$; limit cycle $\{4\to2\to1\}$ = $\Gamma$.
+
+**dm³ identification (RH):** critical line $\operatorname{Re}(s)=\tfrac{1}{2}$ = stability threshold; spectral gap = $\varepsilon_0=\tfrac{1}{3}$; $L$-functions = height/flux regulators.
+
+See [`collatz_rh_comparison.md`](collatz_rh_comparison.md) for the full comparison and publication framing.  
+LaTeX subsection ready to insert: [`docs/analysis_ns/collatz_rh_subsection.tex`](../docs/analysis_ns/collatz_rh_subsection.tex).
+
+---
+
 ## Community Extensions
 
 AXLE is MIT licensed. To contribute a new domain mapping:
