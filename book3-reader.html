@@ -766,7 +766,10 @@
 </div><!-- /reader -->
 
 <script>
-  /* ── Access gate ── */
+  /* ── Access gate ──
+     NOTE: This is a client-side test credential for reviewer access only.
+     It provides convenience gating, not security. For production access
+     control, replace with server-side authentication. */
   const ACCESS_CODE = 'vol3test2026';
 
   function checkAccess() {
