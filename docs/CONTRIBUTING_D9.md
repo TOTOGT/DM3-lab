@@ -20,8 +20,8 @@ conjecture framework within the dm³ project.
 
 ```bash
 # 1. Clone the repo and navigate to scripts/
-git clone https://github.com/TOTOGT/PabloNogueira-dm3-lab.git
-cd PabloNogueira-dm3-lab/scripts/
+git clone https://github.com/TOTOGT/DM3-lab.git
+cd DM3-lab/scripts/
 
 # 2. Run the sampling script with defaults
 python collatz_c9_2_sampling.py
@@ -109,7 +109,7 @@ evidence and formal hygiene.
 
 ## 6. Contact and Discussion
 
-- Open an issue in [TOTOGT/PabloNogueira-dm3-lab](https://github.com/TOTOGT/PabloNogueira-dm3-lab)
+- Open an issue in [TOTOGT/DM3-lab](https://github.com/TOTOGT/DM3-lab)
   and tag it with `D9`, `collatz`, and `community`.
 - For analytic discussions, reference the issue number in your PR description.
 - For large datasets or plots that shouldn't be committed, share a link

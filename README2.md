@@ -84,15 +84,33 @@ The honest contribution: *a new structural language for identifying generative i
 ## Repository Structure
 
 ```
-togt-axle/
-├── diagrams/           # SVG diagrams for GitHub
-│   ├── 01_operator_sequence.svg
-│   ├── 02_saturn_hexagon.svg
-│   ├── 03_coherence_bridge.svg
-│   ├── 04_collatz_dm3.svg
-│   └── 05_domain_map.svg
-├── docs/               # Papers and formal materials
-└── README.md
+DM3-lab/
+├── lean/
+│   └── Main.lean              — Lean 4 formalization of TOGT core
+├── simulations/
+│   ├── connectome_loader.py   — Load/generate fly connectome graph
+│   └── simple_to_operator.py  — Apply C→K→F→U, compute dm³ metric
+├── mappings/
+│   └── domain_mappings.md     — C→K→F→U across six domains
+├── scripts/
+│   ├── collatz_c9_2_sampling.py — D9 empirical sampler (H_mix)
+│   └── README.md              — Script usage guide
+├── docs/
+│   ├── index.md               — Framework overview
+│   ├── c9_1_hypothesis.md     — H_mix statement and testing protocol
+│   ├── CONTRIBUTING_D9.md     — D9 contributor guide
+│   └── analysis_ns/           — NS lane analysis drafts
+├── issues/                    — Open research issue templates
+├── book3-starter/             — GitHub Classroom template (Book 3 students)
+├── 01_operator_sequence.svg   — The four-operator sequence G = U∘F∘K∘C
+├── 02_saturn_hexagon.svg      — Saturn's north polar hexagon
+├── 03_coherence_bridge.svg    — Coherence Bridge Theorem
+├── 04_collatz_dm3.svg         — Collatz conjecture as dm³ system
+├── 05_domain_map.svg          — Full application domain survey
+├── Collatz_Paper_Grossi2026.pdf — Collatz as dm³-System (Zenodo)
+├── lakefile.toml              — Lean 4 / Mathlib project file
+├── README.md
+└── LICENSE (MIT)
 ```
 
 ---
@@ -101,7 +119,8 @@ togt-axle/
 
 - **Principia Orthogona, Vol. III** — The Mini-Beast / Nested Infinities (Book 3, G6 LLC)
 - **GTCT Audit Draft** — Vol. IV, IMPA format
-- **Zenodo:** *Collatz as dm³-System* — DOI pending
+- **Zenodo:** *Collatz as dm³-System* — [10.5281/zenodo.19117400](https://doi.org/10.5281/zenodo.19117400)
+- **HAL preprints:** [hal-05555216](https://hal.science/hal-05555216), [hal-05559997](https://hal.science/hal-05559997)
 
 ---
 
@@ -111,4 +130,4 @@ togt-axle/
 ---
 
 **Contact:** Pablo / G6 LLC  
-**License:** All rights reserved, G6 LLC
+**License:** MIT (see [LICENSE](LICENSE))
