@@ -1,4 +1,4 @@
-# Contributing to AXLE
+# Contributing to DM3-lab / AXLE
 
 Thank you for your interest in contributing to the AXLE community! This guide explains how to add files to the repository — including from your **phone or tablet** using the GitHub mobile app.
 
@@ -12,9 +12,9 @@ You can upload files directly to this repository from your phone without needing
 1. Download the **GitHub** app from the [App Store (iOS)](https://apps.apple.com/app/github/id1477376905) or [Google Play (Android)](https://play.google.com/store/apps/details?id=com.github.android).
 2. Sign in with your GitHub account (or create one for free at [github.com](https://github.com)).
 
-### Step 2 — Open the AXLE Repository
+### Step 2 — Open the DM3-lab Repository
 1. Open the GitHub app on your phone.
-2. Tap the **Search** (🔍) icon and search for `TOTOGT/AXLE`.
+2. Tap the **Search** (🔍) icon and search for `TOTOGT/DM3-lab`.
 3. Tap the repository to open it.
 
 ### Step 3 — Fork the Repository (First-Time Contributors)
@@ -63,6 +63,6 @@ You can upload files directly to this repository from your phone without needing
 
 ## Questions?
 
-Open an [Issue](https://github.com/TOTOGT/AXLE/issues) or reach out:
+Open an [Issue](https://github.com/TOTOGT/DM3-lab/issues) or reach out:
 
 **Contact:** Pablo Grossi | PabloGrossi@hotmail.com | G6 LLC · Newark, NJ · 2026
