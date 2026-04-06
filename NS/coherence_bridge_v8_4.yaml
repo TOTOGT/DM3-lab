@@ -20,3 +20,26 @@
     notes: >
       P vs NP is the computational pillar. TOGT grammar and contact preservation stated.
       Three analytic admits remain. Completes the four-domain coherence square.
+
+        # ──────────────────────────────────────────────────────────────
+  # Analytic pillar — Riemann Hypothesis (Dm3RH.lean v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: riemann_hypothesis
+    name: "Riemann Hypothesis via dm³_rh"
+    claim_level: formally_stated
+    source: "Dm3RH.lean v1.0 — RH_dm3"
+    g_threshold: null
+    togt_C: "Prime information compression into zeta zeros"
+    togt_K: "Curvature of the critical line Re(s)=1/2"
+    togt_F: "Folding at the critical line (non-trivial zeros)"
+    togt_U: "Unfolding to prime distribution (explicit formula)"
+    togt_E: "All non-trivial zeros on the critical line"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3RH.lean v1.0"
+    lean4_theorem: "RH_dm3"
+    lean4_sorry_label: "ADMIT-D_rh (meanContraction_RH), ADMIT-E_rh (lyapunovDescent_RH), ADMIT-F_rh (hasStructuredCycle_RH)"
+    lean4_sorry_count: 3
+    notes: >
+      RH is the analytic pillar. TOGT grammar and contact preservation stated.
+      Three analytic admits remain. Completes the five-pillar coherence bridge.
