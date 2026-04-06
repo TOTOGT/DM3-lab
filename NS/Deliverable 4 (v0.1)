@@ -1,0 +1,174 @@
+\section*{Deliverable 4 (v0.1): Local Energy Inequality $\Longrightarrow$ Dyadic Carleson Candidate Bound}
+
+\subsection*{0. Purpose}
+
+This deliverable constructs the \emph{local} bridge plank needed for the global flux program:
+a derivation of a \emph{dyadic Carleson-type dissipation bound} from the \emph{local energy inequality} for
+suitable weak solutions.
+
+The structure is:
+
+
+
+\[
+\boxed{\text{Local energy inequality}}
+\ \Longrightarrow\
+\boxed{\text{localized dissipation estimate}}
+\ \Longrightarrow\
+\boxed{\text{dyadic Carleson candidate}}
+\]
+
+
+
+with an explicit obstruction: the nonlocal pressure term and commutator interactions with cutoff functions.
+
+This is the “local half” of Attempt Lemma~3.3 in Deliverable~3.
+
+\subsection*{1. Setup: suitable weak solutions and local testing}
+
+Let $u$ be a suitable weak solution to 3D incompressible Navier--Stokes on $\mathbb{T}^3$ on $[0,T]$.
+Thus $u$ satisfies the local energy inequality: for every nonnegative $\phi\in C_c^\infty((0,T)\times\mathbb{T}^3)$,
+
+\begin{align}\label{eq:lei}
+\int_{\mathbb{T}^3} |u(t)|^2 \phi(t)\,dx
+&+ 2\nu \int_0^t\!\!\int_{\mathbb{T}^3} |\nabla u|^2 \phi\,dx\,ds \\
+&\le \int_0^t\!\!\int_{\mathbb{T}^3} |u|^2 (\partial_s\phi + \nu\Delta\phi)\,dx\,ds
++ \int_0^t\!\!\int_{\mathbb{T}^3} (|u|^2 + 2p) u\cdot\nabla\phi\,dx\,ds. \nonumber
+\end{align}
+
+We choose $\phi$ to be a \emph{parabolic cutoff} adapted to a dyadic box:
+
+
+\[
+\phi_{x_0,k}(s,x) = \eta\!\left(2^k|x-x_0|\right)\,\zeta\!\left(2^{2k}s\right),
+\]
+
+
+where $\eta,\zeta$ are smooth bump functions supported in $B(0,c)$ and $[0,1]$ respectively.
+
+This is the standard CKN localization, but tuned to the dyadic geometry of Deliverable~3.
+
+\subsection*{2. Localized dissipation estimate (first step)}
+
+Testing \eqref{eq:lei} with $\phi_{x_0,k}$ yields:
+
+\begin{align}\label{eq:lei-localized}
+2\nu \int_0^{2^{-2k}}\!\!\int_{B(x_0,c2^{-k})} |\nabla u|^2\,dx\,ds
+&\le
+\int_0^{2^{-2k}}\!\!\int |u|^2 (\partial_s\phi_{x_0,k} + \nu\Delta\phi_{x_0,k})\,dx\,ds \\
+&\quad + \int_0^{2^{-2k}}\!\!\int (|u|^2 + 2p) u\cdot\nabla\phi_{x_0,k}\,dx\,ds. \nonumber
+\end{align}
+
+The right-hand side contains three types of terms:
+
+\begin{itemize}
+  \item \textbf{Cutoff-derivative terms} involving $\partial_s\phi$ and $\Delta\phi$,
+  \item \textbf{Transport-type terms} involving $|u|^2 u\cdot\nabla\phi$,
+  \item \textbf{Pressure-localization terms} involving $p\,u\cdot\nabla\phi$.
+\end{itemize}
+
+The first two can be controlled by $E_0$ and local $L^3$-type bounds. The pressure term is the main obstruction.
+
+\subsection*{3. Dyadic Carleson candidate bound (formal target)}
+
+We aim to show that for each $(x_0,k)$,
+\begin{equation}\label{eq:carleson-candidate}
+2^k \int_0^{2^{-2k}}\!\!\int_{B(x_0,c2^{-k})} |\nabla u|^2\,dx\,ds
+\;\le\;
+C\Big( E_0 + \mathcal{F}_{\mathrm{loc}}(x_0,k) \Big),
+\end{equation}
+where $\mathcal{F}_{\mathrm{loc}}(x_0,k)$ is a \emph{localized flux quantity} to be matched with the shell flux
+$\Pi_j$ in Deliverable~3.
+
+This is the dyadic Carleson candidate bound that feeds Attempt Lemma~3.3.
+
+\subsection*{4. Attempt Lemma 4.1 (Local energy inequality $\Rightarrow$ dyadic Carleson candidate)}
+
+\paragraph{Statement.}
+For each $x_0\in\mathbb{T}^3$ and $k\ge -1$, there exists a localized flux functional
+$\mathcal{F}_{\mathrm{loc}}(x_0,k)$ such that
+\begin{equation}\label{eq:attempt-lemma-4-1}
+2^k \int_0^{2^{-2k}}\!\!\int_{B(x_0,c2^{-k})} |\nabla u|^2\,dx\,ds
+\;\le\;
+C\Big( E_0 + \mathcal{F}_{\mathrm{loc}}(x_0,k) \Big),
+\end{equation}
+where $C$ depends only on the cutoff profiles and $\nu$.
+
+\paragraph{Sketch of derivation.}
+From \eqref{eq:lei-localized}, multiply both sides by $2^k$ and estimate:
+
+\begin{itemize}
+  \item \textbf{Cutoff-derivative terms:}  
+  $\partial_s\phi$ contributes a factor $2^{2k}$, $\Delta\phi$ contributes $2^{2k}$, but the support is
+  $B(x_0,c2^{-k})\times[0,2^{-2k}]$, giving a net factor $2^{-k}$ after integration.  
+  These terms are bounded by $C E_0$.
+
+  \item \textbf{Transport terms:}  
+  $|u|^2 u\cdot\nabla\phi$ contributes $2^k$ from $\nabla\phi$, but the support is small; using Hölder and
+  interpolation, these terms are bounded by $C E_0$ or absorbed into $\mathcal{F}_{\mathrm{loc}}$.
+
+  \item \textbf{Pressure term (main difficulty):}  
+  $p\,u\cdot\nabla\phi$ requires a localized pressure decomposition:
+  
+
+\[
+  p = \mathcal{R}_i\mathcal{R}_j(u_i u_j),
+  \]
+
+
+  where $\mathcal{R}_i$ are Riesz transforms.  
+  Localizing this term introduces commutators:
+  
+
+\[
+  [\mathcal{R}_i\mathcal{R}_j, \phi] (u_i u_j),
+  \]
+
+
+  which are nonlocal and do not have a clean sign.  
+  These terms are grouped into $\mathcal{F}_{\mathrm{loc}}(x_0,k)$.
+\end{itemize}
+
+Thus \eqref{eq:attempt-lemma-4-1} holds with
+
+
+\[
+\mathcal{F}_{\mathrm{loc}}(x_0,k)
+:= \int_0^{2^{-2k}}\!\!\int_{B(x_0,c2^{-k})} 
+\big( |u|^2 u\cdot\nabla\phi + 2p\,u\cdot\nabla\phi \big)\,dx\,ds.
+\]
+
+
+
+\subsection*{5. Obstruction (explicit)}
+
+The obstruction to upgrading \eqref{eq:attempt-lemma-4-1} to the global dyadic Carleson bound of Deliverable~3 is:
+
+\begin{itemize}
+  \item \textbf{Pressure nonlocality:}  
+  The commutator $[\mathcal{R}_i\mathcal{R}_j, \phi]$ is nonlocal and does not admit a clean dyadic summation
+  without additional structure.
+
+  \item \textbf{Localization-commutator interaction:}  
+  The cutoff $\phi_{x_0,k}$ introduces $2^k$-scaled gradients that interact with high-frequency components of $u$,
+  producing borderline terms.
+
+  \item \textbf{No unconditional parabolic-box control:}  
+  The local energy inequality controls $\int |\nabla u|^2$ on each box, but does not prevent concentration across
+  infinitely many boxes at different scales.
+\end{itemize}
+
+These obstructions are exactly the ones identified in Attempt Lemma~3.3.
+
+\subsection*{6. TOGT-native artifact summary}
+
+\begin{itemize}
+  \item \texttt{AttemptLemma-LocalEnergyToCarlesonCandidate}: \eqref{eq:attempt-lemma-4-1}.
+  \item \texttt{DependsOn}: local energy inequality; cutoff geometry; pressure decomposition.
+  \item \texttt{Feeds}: Attempt Lemma~3.3 (local flux $\to$ Carleson).
+  \item \texttt{Obstruction}: pressure nonlocality + commutator terms + lack of unconditional parabolic-box control.
+\end{itemize}
+
+\bigskip
+\noindent\textbf{Status.} \texttt{v0.1}. This is the local half of the flux program: a dyadic Carleson candidate bound
+derived from the local energy inequality, with explicit obstructions to summing across scales.
