@@ -1,0 +1,22 @@
+  # ──────────────────────────────────────────────────────────────
+  # Computational pillar — P vs NP (Dm3Comp.lean v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: p_vs_np
+    name: "P vs NP via dm³_comp"
+    claim_level: formally_stated
+    source: "Dm3Comp.lean v1.0 — PNP_dm3"
+    g_threshold: null
+    togt_C: "Certificate compression"
+    togt_K: "Complexity blow-up under reductions"
+    togt_F: "Nondeterministic branching"
+    togt_U: "Solution-space structure (canonical NP-complete attractor)"
+    togt_E: "P = NP boundary"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3Comp.lean v1.0"
+    lean4_theorem: "PNP_dm3"
+    lean4_sorry_label: "ADMIT-D_comp (meanContraction_comp), ADMIT-E_comp (lyapunovDescent_comp), ADMIT-F_comp (hasStructuredCycle_comp)"
+    lean4_sorry_count: 3
+    notes: >
+      P vs NP is the computational pillar. TOGT grammar and contact preservation stated.
+      Three analytic admits remain. Completes the four-domain coherence square.
