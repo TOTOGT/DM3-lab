@@ -1,0 +1,229 @@
+\section*{Deliverable 5 (v0.1): Local Remainders $\Longrightarrow$ Shell Flux Attempt (Matching $\mathcal{R}_{\mathrm{conv}},\mathcal{R}_{\mathrm{prs}}$ to $\Pi_k$)}
+
+\subsection*{0. Purpose}
+
+This deliverable attempts the \emph{matching step} between the local LEI decomposition (Deliverable~4) and the
+frequency-shell flux picture (Deliverable~3). Concretely, we seek to relate the localized remainders
+
+
+\[
+\mathcal{R}_{\mathrm{conv}}(x_0,k),\quad \mathcal{R}_{\mathrm{prs}}(x_0,k)
+\]
+
+
+to shell fluxes $\Pi_j$ (or weighted sums of $|\Pi_j|$) in a way compatible with dyadic parabolic boxes and the
+Carleson endpoint.
+
+The schematic target is:
+
+
+\[
+\boxed{\text{LEI $\Rightarrow$ local dissipation $\le$ cutoff + conv + prs (Deliverable 4)}}\ \Longrightarrow\
+\boxed{\text{conv/prs remainders $\lesssim$ shell flux sums}}\ \Longrightarrow\
+\boxed{\text{Attempt Lemma 3.3 (local flux $\to$ Carleson)}}.
+\]
+
+
+
+\subsection*{1. Objects in play (from Deliverables 3 and 4)}
+
+From Deliverable~3 (v0.4):
+\begin{itemize}
+  \item Shell energy/dissipation/flux:
+  
+
+\[
+  E_k(t) := \|u_k(t)\|_{L^2_x}^2,\quad
+  D_k(t) := \|\nabla u_k(t)\|_{L^2_x}^2,\quad
+  \Pi_k(t) := -\langle \Delta_k \mathbb{P}\nabla\cdot(u\otimes u),u_k\rangle.
+  \]
+
+
+  \item Shell balance:
+  
+
+\[
+  \frac12 \frac{d}{dt}E_k(t) + \nu D_k(t) = \Pi_k(t).
+  \]
+
+
+  \item Dyadic Carleson target:
+  
+
+\[
+  \|\nabla u\|_{\mathcal{C}_{\mathrm{dyad}}(0,T)}^2
+  :=
+  \sup_{x_0,k} 2^k \int_0^{\min\{T,2^{-2k}\}}\int_{B(x_0,c2^{-k})} |\nabla u|^2\,dx\,dt.
+  \]
+
+
+\end{itemize}
+
+From Deliverable~4 (v0.1):
+\begin{itemize}
+  \item Local LEI-based decomposition on a parabolic box centered at $(x_0,k)$:
+  
+
+\[
+  2^k \int_0^{\tau_k}\!\!\int_{B(x_0,2^{-k})} |\nabla u|^2
+  \;\le\;
+  C\Big(E_0 + \mathcal{R}_{\mathrm{cut}}(x_0,k) + \mathcal{R}_{\mathrm{conv}}(x_0,k) + \mathcal{R}_{\mathrm{prs}}(x_0,k)\Big),
+  \]
+
+
+  with $\mathcal{R}_{\mathrm{cut}}$ controlled by $CE_0$ and
+  
+
+\[
+  \mathcal{R}_{\mathrm{conv}}(x_0,k)
+  := 2^k \Big|\int_0^{\tau_k}\!\!\int |u|^2 u\cdot\nabla\phi_{x_0,k}\Big|,
+  \quad
+  \mathcal{R}_{\mathrm{prs}}(x_0,k)
+  := 2^k \Big|\int_0^{\tau_k}\!\!\int 2p\,u\cdot\nabla\phi_{x_0,k}\Big|.
+  \]
+
+
+\end{itemize}
+
+\subsection*{2. Attempt: frequency localization of the convective remainder}
+
+We write $u = \sum_j u_j$ with $u_j := \Delta_j u$ and $S_{j-1}u := \sum_{\ell<j} u_\ell$. Using Bony’s
+paraproduct decomposition on $u\otimes u$,
+
+
+\[
+u\otimes u = \sum_j \big( S_{j-1}u \otimes u_j + u_j \otimes S_{j-1}u + R_j(u,u)\big),
+\]
+
+
+and the Leray projection $\mathbb{P}$, the shell flux $\Pi_k$ captures the interaction of $u$ with $\Delta_k$ of
+$\mathbb{P}\nabla\cdot(u\otimes u)$.
+
+\paragraph{Heuristic matching.}
+Formally, one expects that the localized convective term
+
+
+\[
+\int |u|^2 u\cdot\nabla\phi_{x_0,k}
+\]
+
+
+can be expressed (up to commutators and lower-order terms) as a sum over $j\ge k$ of contributions involving
+$\Pi_j$ weighted by spatial localization around $x_0$ and time localization on $[0,\tau_k]$.
+
+\paragraph{Attempt Lemma 5.1 (convective remainder $\to$ shell flux sum; heuristic form).}
+For each $(x_0,k)$,
+\begin{equation}\label{eq:attempt-lemma-5-1}
+\mathcal{R}_{\mathrm{conv}}(x_0,k)
+\;\lesssim\;
+2^k \int_0^{\tau_k} \sum_{j\ge k} 2^{-\alpha(j-k)} |\Pi_j(t)|\,dt
+\;+\;
+\mathcal{E}_{\mathrm{comm}}(x_0,k),
+\end{equation}
+for some $\alpha>0$ (decay in $j-k$) and an error term $\mathcal{E}_{\mathrm{comm}}$ built from commutators
+between $\Delta_j$, $\mathbb{P}$, and $\phi_{x_0,k}$.
+
+\medskip
+\noindent
+\emph{Status.} This is an \textbf{attempt} statement: the decay exponent $\alpha$ and the structure of
+$\mathcal{E}_{\mathrm{comm}}$ are not justified here. The goal is to isolate the exact place where localization and
+frequency decomposition interact.
+
+\subsection*{3. Attempt: pressure remainder via Riesz transforms and commutators}
+
+Using $p = \mathcal{R}_i\mathcal{R}_j(u_i u_j)$ (Riesz transforms on $\mathbb{T}^3$), we rewrite
+
+
+\[
+\mathcal{R}_{\mathrm{prs}}(x_0,k)
+= 2^k \left|\int_0^{\tau_k}\!\!\int 2\,\mathcal{R}_i\mathcal{R}_j(u_i u_j)\,u\cdot\nabla\phi_{x_0,k}\right|.
+\]
+
+
+
+\paragraph{Commutator decomposition.}
+Formally,
+
+
+\[
+\mathcal{R}_i\mathcal{R}_j(u_i u_j)\,u\cdot\nabla\phi
+=
+\mathcal{R}_i\mathcal{R}_j\big((u_i u_j) u\cdot\nabla\phi\big)
++
+[\mathcal{R}_i\mathcal{R}_j,\phi](u_i u_j)\,u\cdot\nabla\phi,
+\]
+
+
+where $[\mathcal{R}_i\mathcal{R}_j,\phi]$ is the commutator. The first term is morally of the same type as the
+convective remainder; the second is a genuinely nonlocal localization error.
+
+\paragraph{Attempt Lemma 5.2 (pressure remainder $\to$ shell flux + commutators; heuristic form).}
+For each $(x_0,k)$,
+\begin{equation}\label{eq:attempt-lemma-5-2}
+\mathcal{R}_{\mathrm{prs}}(x_0,k)
+\;\lesssim\;
+2^k \int_0^{\tau_k} \sum_{j\ge k} 2^{-\beta(j-k)} |\Pi_j(t)|\,dt
+\;+\;
+\mathcal{E}_{\mathrm{prs-comm}}(x_0,k),
+\end{equation}
+for some $\beta>0$ and a commutator error $\mathcal{E}_{\mathrm{prs-comm}}$ involving
+$[\mathcal{R}_i\mathcal{R}_j,\phi_{x_0,k}]$.
+
+\medskip
+\noindent
+\emph{Status.} Again, this is an \textbf{attempt} statement: the decay $\beta$ and the precise control of
+$\mathcal{E}_{\mathrm{prs-comm}}$ are not established.
+
+\subsection*{4. Combined target: local flux $\to$ Carleson (Attempt Lemma 3.3)}
+
+If \eqref{eq:attempt-lemma-5-1} and \eqref{eq:attempt-lemma-5-2} held with:
+\begin{itemize}
+  \item summable decay in $j-k$ (e.g.\ $\alpha,\beta>0$),
+  \item commutator errors $\mathcal{E}_{\mathrm{comm}}$, $\mathcal{E}_{\mathrm{prs-comm}}$ controlled by $CE_0$ or
+  by the same shell-flux sums,
+\end{itemize}
+then combining Deliverable~4 with these bounds would yield a localized inequality of the form
+
+
+\[
+2^k \int_0^{\tau_k}\!\!\int_{B(x_0,2^{-k})} |\nabla u|^2
+\;\lesssim\;
+E_0 + \int_0^T \sum_{j\ge k} 2^{j/2} |\Pi_j(t)|\,dt,
+\]
+
+
+which is exactly the structure of Attempt Lemma~3.3 in Deliverable~3.
+
+\subsection*{5. Obstruction (matching step)}
+
+The main obstructions in turning the above heuristic into a theorem are:
+
+\begin{itemize}
+  \item \textbf{Borderline commutators.}
+  The operators $\Delta_j$, $\mathbb{P}$, and $\mathcal{R}_i\mathcal{R}_j$ do not commute with multiplication by
+  $\phi_{x_0,k}$. The resulting commutators are nonlocal and scale critically with $2^k$.
+
+  \item \textbf{Lack of clean scale separation.}
+  The parabolic box $(x_0,k)$ couples spatial scale $2^{-k}$ and time scale $2^{-2k}$, while the shell flux
+  $\Pi_j$ is defined globally in space. Localizing $\Pi_j$ to $B(x_0,2^{-k})$ without losing control at critical
+  scaling is nontrivial.
+
+  \item \textbf{Intermittency and concentration.}
+  Even if one can express $\mathcal{R}_{\mathrm{conv}}$ and $\mathcal{R}_{\mathrm{prs}}$ in terms of shell fluxes,
+  nothing in the Leray–Hopf or suitable framework prevents concentration of flux in a sparse set of boxes
+  $(x_0,k)$, which is exactly what the Carleson endpoint is designed to rule out.
+\end{itemize}
+
+\subsection*{6. TOGT-native artifact summary}
+
+\begin{itemize}
+  \item \texttt{AttemptLemma-LocalRemaindersToShellFlux}: heuristic forms \eqref{eq:attempt-lemma-5-1}, \eqref{eq:attempt-lemma-5-2}.
+  \item \texttt{DependsOn}: Deliverable 3 (shell flux $\Pi_k$), Deliverable 4 (local LEI decomposition), LP/paraproduct calculus, pressure representation.
+  \item \texttt{Feeds}: Attempt Lemma~3.3 (local flux $\to$ Carleson), by proposing a route to bound
+  $\mathcal{R}_{\mathrm{conv}}$ and $\mathcal{R}_{\mathrm{prs}}$ via shell flux sums.
+  \item \texttt{Obstruction}: nonlocal commutators at critical scaling, lack of robust localization of $\Pi_k$ to parabolic boxes, and potential intermittency of flux concentration.
+\end{itemize}
+
+\bigskip
+\noindent\textbf{Status.} \texttt{v0.1 (attempt)}. This deliverable does not claim the matching lemmas; it isolates
+their exact desired form and the analytic obstructions that must be overcome to complete Attempt Lemma~3.3.
