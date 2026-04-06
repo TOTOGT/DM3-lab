@@ -149,10 +149,10 @@ domains:
       The g=33 identification is not supported by phyllotaxis data.
       Included as empirical anchor for the broader spiral-packing motif.
 
-- id: collatz
-    name: "Collatz conjecture via dm³/GQM bridge"
+  - id: collatz
+    name: "Collatz conjecture via dm³_disc"
     claim_level: formally_stated
-    source: "AXLE v8.2 Main.lean — collatz_conjecture_via_dm3_gqm (ADMIT-D)"
+    source: "AXLE v8.2 DiscreteDm3.lean v1.5 — CollatzDm3Candidate"
     g_threshold: null
     g_threshold_source: "Not applicable: pure combinatorial problem; no stability threshold."
     togt_C: "Halving map n → n/2 (compression of even integers)"
@@ -168,15 +168,17 @@ domains:
       Pure mathematical conjecture. Physical parameterization not applicable.
       The (mu_max, omega, beta) slots are structural parameters for physical
       domains; they have no meaning here.
-    lean4_theorem: "collatz_conjecture_via_dm3_gqm"
-    lean4_sorry_label: "ADMIT-D"
-    lean4_sorry_count: 1
+    lean4_sorry_label: "ADMIT-D, ADMIT-E, ADMIT-F"
+    lean4_sorry_count: 3
+    axle_status: "DiscreteDm3.lean v1.5 — CollatzDm3Candidate"
     notes: >
-      The dm³/GQM bridge embeds ℕ → PhaseVector via the GQM η-weighting.
-      The intertwining lemma (applyG ∘ ι = ι ∘ Collatz_step) is the key
-      unproven claim. This is an open problem; the claim level is formally_stated
-      because the theorem is precisely stated in Lean 4, not because it is proven.
-
+      dm³_disc v1.5 proves operatorDecomposition (TOGT grammar) and contactForm
+      with zero sorry. The remaining analytic axioms — meanContraction,
+      lyapunovDescent, and hasStructuredCycle — are open (ADMIT-D, ADMIT-E,
+      ADMIT-F). Collatz is now a concrete object in DiscreteDm3Category with
+      two structural theorems fully verified. The lean4_theorem field is omitted
+      because the claim is distributed across multiple theorems in the candidate
+      structure rather than a single named theorem.
 
   - id: bsd
     name: "Birch and Swinnerton-Dyer conjecture"
