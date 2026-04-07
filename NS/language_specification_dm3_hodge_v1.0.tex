@@ -1,0 +1,150 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\lstset{
+  language=Lean,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  numbers=left
+}
+
+\title{\textbf{Hodge Conjecture as a dm³ System (Classical First)}\\
+A Lean-First Language Specification \\
+(Algebraic–Geometric Pillar of the Unified Framework)}
+\author{Pablo Nogueira Grossi \\ G6 LLC / AXLE Project}
+\date{v1.0 — April 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Classical Hodge Conjecture in the dm³\_hodge framework.
+Smooth projective varieties over $\mathbb{C}$, Hodge cycles vs algebraic cycles.
+C = cohomological compression, K = curvature of the Hodge bundle,
+F = folding via degenerations, U = unfolding to algebraic cycles.
+This mirrors the other dm³ pillars and leaves explicit hooks for mixed and absolute Hodge.
+\end{abstract}
+
+\section{dm³ Grammar (Lean-first)}
+
+\subsection{Syntax}
+\begin{lstlisting}
+inductive Dm3Op
+| C | K | F | U
+\end{lstlisting}
+
+\subsection{Classical Interpretation}
+C = cohomological compression (projection to Hodge pieces), \\
+K = curvature of the Hodge bundle, \\
+F = folding via degenerations / limiting mixed Hodge structures, \\
+U = unfolding to algebraic cycles.
+
+\subsection{Composition}
+\[
+G = U \circ F \circ K \circ C.
+\]
+
+\section{The dm³\_hodge Category (Classical)}
+
+\subsection{Objects}
+\begin{lstlisting}
+structure Dm3HodgeObject :=
+  (X           : HodgeVariety)
+  (contactForm : HodgeVariety → HodgeVariety)
+  (classical   : Prop := True)
+\end{lstlisting}
+
+\subsection{Morphisms}
+\begin{lstlisting}
+structure Dm3HodgeMorph (A B : Dm3HodgeObject) :=
+  (map               : A.X → B.X)
+  (preserves_contact :
+    ∀ x, map (A.contactForm x) = B.contactForm (map x))
+\end{lstlisting}
+
+\section{Hodge as a dm³ Object (Classical)}
+
+\subsection{State Space}
+\begin{lstlisting}
+def Hodge_state : Type := HodgeVariety
+\end{lstlisting}
+
+\subsection{Contact Form}
+\begin{lstlisting}
+def Hodge_contact : Hodge_state → Hodge_state := hodgeContact
+\end{lstlisting}
+
+\subsection{Object Definition}
+\begin{lstlisting}
+def Hodge_dm3 : Dm3HodgeObject :=
+{ X           := Hodge_X,
+  contactForm := Hodge_contact,
+  classical   := True }
+\end{lstlisting}
+
+\section{The Hodge → dm³\_hodge Embedding}
+
+\subsection{Operator Decomposition}
+\begin{lstlisting}
+theorem Hodge_operatorDecomposition :
+  ∀ X : Hodge_state,
+    Hodge_step X = (G C_Hodge K_Hodge F_Hodge U_Hodge) X := ...
+\end{lstlisting}
+
+\subsection{Contact Preservation}
+\begin{lstlisting}
+axiom Hodge_preserves_contact :
+  ∀ X : Hodge_state,
+    Hodge_step (Hodge_contact X) = Hodge_contact (Hodge_step X)
+\end{lstlisting}
+
+\section{Remaining Analytic Axioms (Classical Hodge)}
+
+\subsection{meanContraction\_hodge}
+\begin{lstlisting}
+axiom meanContraction_hodge :
+  ∀ X : Hodge_state,
+    (∫ _ : Hodge_state,
+        Real.log (hodgeCurvature (Hodge_step X) / hodgeCurvature X) ∂μ) < 0
+\end{lstlisting}
+
+\subsection{lyapunovDescent\_hodge}
+\begin{lstlisting}
+axiom lyapunovDescent_hodge :
+  ∀ X : Hodge_state,
+    hodgeHeight (Hodge_step X) < hodgeHeight X
+\end{lstlisting}
+
+\subsection{hasStructuredCycle\_hodge}
+\begin{lstlisting}
+axiom hasStructuredCycle_hodge :
+  ∃ A : Set Hodge_state, is_dm3_hodge_cycle A
+\end{lstlisting}
+
+\section{Coherence Bridge Synchronization}
+
+\begin{lstlisting}[language=YAML]
+- id: hodge_conjecture
+  claim_level: formally_stated
+  lean4_sorry_label: "ADMIT-D_hodge, ADMIT-E_hodge, ADMIT-F_hodge"
+  lean4_sorry_count: 3
+  axle_status: "Dm3Hodge.lean v1.0 — Classical Hodge"
+\end{lstlisting}
+
+\section{Extensions: Mixed and Absolute Hodge}
+
+Mixed and absolute Hodge structures can be added by replacing
+\texttt{HodgeVariety} with appropriate categories and extending the
+contact form to variations of mixed or absolute Hodge structures.
+The dm³ operator grammar remains unchanged.
+
+\end{document}
