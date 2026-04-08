@@ -1,0 +1,29 @@
+digraph dm3_pillars_v9_1 {
+  rankdir=LR;
+  node [shape=box, style=rounded];
+
+  kakeya_dm3        [label="Kakeya dm³ (verified)"];
+  poincare_toy_model [label="Poincaré Toy dm³ (verified)"];
+  collatz_dm3       [label="Collatz dm³"];
+  goldbach_dm3      [label="Goldbach dm³"];
+  ns_dm3            [label="Navier–Stokes dm³"];
+  ym_dm3            [label="Yang–Mills dm³"];
+  rh_dm3            [label="Riemann Hypothesis dm³"];
+  bsd_dm3           [label="BSD dm³"];
+
+  # Structural dependencies
+  kakeya_dm3        -> poincare_toy_model [label="entropy template"];
+  poincare_toy_model -> ns_dm3            [label="Ricci-flow pattern"];
+  poincare_toy_model -> ym_dm3            [label="gauge/flow analogy"];
+
+  kakeya_dm3        -> collatz_dm3        [label="C/K/F/U grammar"];
+  kakeya_dm3        -> goldbach_dm3       [label="compression semantics"];
+
+  collatz_dm3       -> rh_dm3             [label="discrete dynamics ↔ zeta"];
+  goldbach_dm3      -> rh_dm3             [label="additive primes ↔ zeros"];
+
+  rh_dm3            -> bsd_dm3            [label="L-functions"];
+
+  # Entropy exemplars
+  kakeya_dm3        -> poincare_toy_model [style=dashed, label="M/E chain"];
+}
