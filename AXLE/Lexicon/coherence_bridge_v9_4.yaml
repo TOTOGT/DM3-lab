@@ -1,0 +1,159 @@
+# AXLE/Lexicon/coherence_bridge_v9_4.yaml
+# Version: 9.4
+# Author: G6 LLC / Pablo Nogueira Grossi
+# Date: 2026-04-06
+# Purpose: Machine-readable coherence bridge with two entropy-complete toy pillars
+#          + the first true Collatz pillar (macro-step with honest analytic gaps).
+
+schema_version: "1.0"
+created: "2026-04-06"
+axle_version: "9.4"
+bridge_version: "9.4"
+
+claim_level_rules:
+  empirical:
+    description: "Domain has measured parameters calibrated to physical data; all five TOGT questions answered from the domain."
+    required_togt_questions_answered: 5
+    parameters_required: true
+  analogical:
+    description: "Structural similarity identified; 3–4 TOGT questions answered."
+    required_togt_questions_answered: "3-4"
+    parameters_required: false
+  formally_stated:
+    description: "Theorem stated in Lean 4 with honest sorry; precise and falsifiable."
+    required_togt_questions_answered: "N/A (pure mathematics)"
+    parameters_required: false
+  formally_verified:
+    description: "Proven in Lean 4 with zero sorry."
+    required_togt_questions_answered: "N/A (pure mathematics)"
+    parameters_required: false
+
+translation_engine:
+  five_questions:
+    C: "Compression / reduction"
+    K: "Curvature / metric deformation"
+    F: "Folding / transition / bifurcation"
+    U: "Unfolding / attractor"
+    E: "Stability criterion / threshold"
+
+domains:
+
+  # Empirical anchors (unchanged)
+
+  # ──────────────────────────────────────────────────────────────
+  # Discrete pillar — Collatz (dm³_disc v1.6)
+  # ──────────────────────────────────────────────────────────────
+  - id: collatz
+    name: "Collatz conjecture via dm³_disc"
+    claim_level: formally_stated
+    source: "DiscreteDm3.lean v1.6 — CollatzDm3Candidate"
+    g_threshold: null
+    togt_C: "Halving map n → n/2 (compression)"
+    togt_K: "Parity constraint / 2-adic curvature"
+    togt_F: "3n+1 step (folding)"
+    togt_U: "4 → 2 → 1 cycle (unique attractor)"
+    togt_E: "Every orbit reaches 1"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "DiscreteDm3.lean v1.6"
+    lean4_theorem: "collatz_converges"
+    lean4_sorry_label: "ADMIT-D (meanContraction), ADMIT-E (lyapunovDescent), ADMIT-F (hasStructuredCycle)"
+    lean4_sorry_count: 3
+    notes: "Foundational discrete pillar."
+
+  # [All other formal pillars remain unchanged]
+
+  # ──────────────────────────────────────────────────────────────
+  # Topological pillar — Poincaré Toy Model (entropy chain)
+  # ──────────────────────────────────────────────────────────────
+  - id: poincare_toy_model
+    name: "Poincaré Conjecture — Toy Ricci-Flow Model (entropy chain)"
+    claim_level: formally_verified
+    source: "Dm3PoincareToy.lean v1.0"
+    g_threshold: null
+    togt_C: "Compression of complexity (C_toy)"
+    togt_K: "Curvature (identity in toy model)"
+    togt_F: "Folding (identity in toy model)"
+    togt_U: "Unfolding to sphereComplex"
+    togt_E: "Stability at sphereComplex"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3PoincareToy.lean v1.0"
+    lean4_theorem: "toyPoincare_converges"
+    lean4_sorry_label: none
+    lean4_sorry_count: 0
+    entropy:
+      M: "M_toy (complexity = 0)"
+      E: "E_toy (X = sphereComplex)"
+      theorems:
+        - id: E_toy_iff_sphere
+        - id: M_toy_iff_E_toy
+        - id: entropy_monotone
+    notes: "First entropy-complete toy pillar."
+
+  # ──────────────────────────────────────────────────────────────
+  # Discrete pillar — Collatz Toy Model (entropy chain)
+  # ──────────────────────────────────────────────────────────────
+  - id: collatz_toy_model
+    name: "Collatz Conjecture — Toy Model (entropy chain)"
+    claim_level: formally_verified
+    source: "Dm3CollatzToy.lean v1.0"
+    g_threshold: null
+    togt_C: "Compression of value (C_collatz = pred)"
+    togt_K: "Curvature (identity in toy model)"
+    togt_F: "Folding (identity in toy model)"
+    togt_U: "Unfolding to attractor"
+    togt_E: "Stability at attractor"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3CollatzToy.lean v1.0"
+    lean4_theorem: "collatz_converges"
+    lean4_sorry_label: none
+    lean4_sorry_count: 0
+    entropy:
+      M: "M_collatz (value = 0)"
+      E: "E_collatz (X = attractor)"
+      theorems:
+        - id: E_collatz_iff_value_zero
+        - id: M_collatz_iff_E_collatz
+        - id: entropy_monotone
+    notes: "Second entropy-complete toy pillar."
+
+  # ──────────────────────────────────────────────────────────────
+  # Discrete pillar — True Collatz Macro-Step (dm³_collatz v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: collatz_true_pillar
+    name: "Collatz Conjecture — True Macro-Step Pillar"
+    claim_level: formally_stated
+    source: "Dm3Collatz.lean v1.0"
+    g_threshold: null
+    togt_C: "Even compression (C_collatz)"
+    togt_K: "Odd expansion (K_collatz)"
+    togt_F: "2-adic normalization (F_collatz)"
+    togt_U: "Unfolding / normalization"
+    togt_E: "Stability at the 4-2-1 attractor"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3Collatz.lean v1.0"
+    lean4_theorem: "collatz_converges"
+    lean4_sorry_label: "iterate_to_attractor (Collatz conjecture), M_collatz_iff_E_collatz (unique fixed point)"
+    lean4_sorry_count: 2
+    entropy:
+      M: "M_collatz (fixed point of macro-step)"
+      E: "E_collatz (X = attractor)"
+      theorems:
+        - id: M_collatz_iff_E_collatz
+    notes: >
+      True Collatz macro-step with 2-adic normalization.
+      Two genuine analytic gaps remain (convergence + unique fixed point).
+      This is the first pillar with the authentic arithmetic dynamics.
+
+formally_verified_rows:
+  - "kakeya_conjecture (finite directions)"
+  - "poincare_toy_model (entropy chain)"
+  - "collatz_toy_model (entropy chain)"
+
+notes:
+  - "Two entropy-complete toy pillars + the first true Collatz pillar now live in the bridge."
+  - "TOGT grammar G = U ∘ F ∘ K ∘ C and the contact geometry are identical across all pillars."
+  - "The coherence bridge is complete and now contains the authentic Collatz macro-step."
