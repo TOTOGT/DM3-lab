@@ -1,0 +1,29 @@
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[scale=1.1, every node/.style={font=\small}]
+
+% Cylinder (microtubule)
+\draw[thick] (0,0) ellipse (2 and 0.6);
+\draw[thick] (0,5) ellipse (2 and 0.6);
+\draw[thick] (-2,0) -- (-2,5);
+\draw[thick] (2,0) -- (2,5);
+
+% Helical protofilament
+\foreach \y in {0,0.8,...,4.8} {
+    \pgfmathsetmacro{\x}{2*cos(30*\y)}
+    \pgfmathsetmacro{\z}{0.6*sin(30*\y)}
+    \draw[blue!60, thick] (\x,\y) circle (0.12);
+}
+
+% Labels
+\node at (0,-0.8) {Microtubule (13 protofilaments)};
+\node at (0,5.6) {$8\,\text{nm}$ dimer spacing};
+\node at (0,6.1) {Contact structure $(M^3,\alpha)$};
+
+\end{tikzpicture}
+
+\caption{Microtubule lattice as a contact 3-manifold.  
+The helical protofilament structure realizes the curvature plane $\ker\alpha$;  
+the longitudinal axis realizes the Reeb flow $R_\alpha$.}
+\label{fig:microtubule-contact}
+\end{figure}
