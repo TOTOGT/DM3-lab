@@ -1,0 +1,51 @@
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[scale=1.1, every node/.style={font=\small}]
+
+% Fusion tree for Ising anyons
+\node at (-3,3) {\textbf{Ising anyons}};
+\draw (-4,2) -- (-3,1);
+\draw (-2,2) -- (-3,1);
+\draw (-3,1) -- (-3,0);
+\node at (-4,2.2) {$\sigma$};
+\node at (-2,2.2) {$\sigma$};
+\node at (-2.6,1.2) {$1,\psi$};
+
+% F-symbol matrix
+\node at (-3,-0.5) {$F^{\sigma\sigma\sigma}_\sigma =
+\frac{1}{\sqrt{2}}
+\begin{pmatrix}
+1 & 1 \\
+1 & -1
+\end{pmatrix}$};
+
+% R-symbol
+\node at (-3,-2) {$R^{\sigma\sigma} =
+e^{i\pi/8}
+\begin{pmatrix}
+1 & 0 \\
+0 & i
+\end{pmatrix}$};
+
+% Fibonacci anyons
+\node at (3,3) {\textbf{Fibonacci anyons}};
+\draw (2,2) -- (3,1);
+\draw (4,2) -- (3,1);
+\draw (3,1) -- (3,0);
+\node at (2,2.2) {$\tau$};
+\node at (4,2.2) {$\tau$};
+\node at (3.5,1.2) {$1,\tau$};
+
+% F-symbol (phi)
+\node at (3,-0.5) {$F^{\tau\tau\tau}_\tau =
+\begin{pmatrix}
+\phi^{-1} & \phi^{-1/2} \\
+\phi^{-1/2} & -\phi^{-1}
+\end{pmatrix}$};
+
+\end{tikzpicture}
+
+\caption{Microscopic anyonic realization of $\ker\alpha$.  
+Ising anyons provide topological memory; Fibonacci anyons provide universal generative grammar.}
+\label{fig:anyons}
+\end{figure}
