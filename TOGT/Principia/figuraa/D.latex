@@ -1,0 +1,24 @@
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[scale=1.1]
+
+% Axes
+\draw[->] (0,0) -- (8,0) node[right] {frequency (Hz)};
+\draw[->] (0,0) -- (0,4) node[above] {power};
+
+% Peaks at eta^k
+\foreach \k in {0,1,2,3} {
+    \pgfmathsetmacro{\x}{1.5*1.839286755^\k}
+    \draw[red!70, thick] (\x,0) -- (\x,3-\k*0.5);
+    \node[red!70] at (\x,-0.3) {$\eta^\k$};
+}
+
+\node at (4,3.5) {Fractal time-crystal spectrum};
+
+\end{tikzpicture}
+
+\caption{Predicted power spectrum of microtubule fractal time crystals.  
+Resonances appear at $\eta^k$ multiples of a base frequency,  
+matching the orthogenetic recurrence.}
+\label{fig:time-crystal-spectrum}
+\end{figure}
