@@ -1,0 +1,10 @@
+# Script output files (attached to issues, not committed)
+scripts/out/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Lean build artifacts
+.lake/
