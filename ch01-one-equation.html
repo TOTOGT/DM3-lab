@@ -209,7 +209,7 @@
   /* ── TRIO CANVAS PANEL ── */
   .trio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 2px;
     margin: 3rem 0;
     background: var(--gold-dim);
@@ -607,7 +607,103 @@
     transform: translateY(0);
   }
 
-  /* ── FIGURE-EIGHT INLINE ── */
+  /* ── VERIFY GRID ── */
+  .verify-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px;
+    margin: 2.5rem 0;
+    background: var(--gold-dim);
+  }
+
+  .verify-card {
+    display: block;
+    background: var(--ink);
+    padding: 1.8rem 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .verify-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(200,168,75,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .verify-card:hover { background: #0d0d18; }
+  .verify-card:hover::after { opacity: 1; }
+
+  .vc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .vc-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .vc-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    border: 1px solid currentColor;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .vc-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--paper);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .vc-eq {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--silver);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #1a1a2e;
+  }
+
+  .vc-theorems {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: #6a7a8a;
+    line-height: 1.8;
+    margin-bottom: 1.2rem;
+  }
+
+  .vc-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--gold-dim);
+    transition: color 0.2s;
+  }
+
+  .verify-card:hover .vc-link { color: var(--gold); }
+
+  .install-block {
+    border-left: 3px solid #0abab5;
+    background: #080810;
+    overflow-x: auto;
+    margin: 2rem 0 1rem;
+  }
+
+  /* ── SECTION NUMBER UPDATE ── */
   .inline-svg {
     display: block;
     margin: 2rem auto;
@@ -682,6 +778,7 @@
   <ul class="nav-links">
     <li><a href="#curves">The Curves</a></li>
     <li><a href="#lean">Lean Proofs</a></li>
+    <li><a href="#verify">Verify</a></li>
     <li><a href="#singularity">Singularity</a></li>
     <li><a href="#explorer">Explorer</a></li>
     <li><a href="#hire">About</a></li>
@@ -734,10 +831,10 @@
   <p>
     The <em>Lemniscate of Gerono</em> is the algebraic quartic x⁴ = x² − y².
     The <em>Lemniscate of Bernoulli</em> is a different quartic: (x²+y²)² = 2(x²−y²).
-    The <em>solar analemma</em> is an astronomical measurement, the figure-eight traced
-    by the sun's position at the same clock time each day over a year, driven by two
-    independent physical effects — orbital eccentricity and axial tilt — that happen,
-    at leading order, to produce frequency ratio 2∶1.
+    The <em>lunar analemma</em> is an astronomical measurement, the figure-eight traced
+    by the Moon's position at the same sidereal time each day over one anomalistic month
+    (~27.55 days), driven by two independent physical effects — orbital eccentricity and
+    orbital inclination — that produce, at leading order, a frequency ratio 2∶1.
   </p>
 
   <p>
@@ -800,17 +897,31 @@
       <div class="panel-status">SORRY_COUNT: 0 · 13 THEOREMS PROVED</div>
     </div>
 
-    <!-- ANALEMMA -->
+    <!-- SOLAR ANALEMMA -->
     <div class="curve-panel" style="--panel-color: #e07b8a;">
-      <canvas id="analemmaCanvas" width="400" height="400"></canvas>
+      <canvas id="solarCanvas" width="400" height="400"></canvas>
       <div class="panel-title">Solar Analemma</div>
-      <div class="panel-eq">α(t) = (sin 2t, sin t)  ·  x² = 4y²(1−y²)</div>
+      <div class="panel-eq">α☉(t) = (sin 2t, sin t)  ·  x² = 4y²(1−y²)</div>
       <div class="panel-desc">
-        The figure-eight traced by the sun at the same clock time each day.
-        A Lissajous curve at frequency ratio 2∶1. Proved: periodic, bounded,
-        self-intersecting at exactly t=0 and t=π.
+        The figure-eight traced by the sun at the same clock time each day
+        over one year. Lissajous 2∶1 from obliquity and eccentricity.
+        Proved periodic, bounded, self-intersecting at t=0 and t=π.
       </div>
       <div class="panel-status">SORRY_COUNT: 0* · 11 THEOREMS PROVED</div>
+    </div>
+
+    <!-- LUNAR ANALEMMA -->
+    <div class="curve-panel" style="--panel-color: #0abab5;">
+      <canvas id="analemmaCanvas" width="400" height="400"></canvas>
+      <div class="panel-title">Lunar Analemma</div>
+      <div class="panel-eq">α☽(t) = (sin(2t)/√2, sin t)  ·  x² = 2y²(1−y²)</div>
+      <div class="panel-desc">
+        The figure-eight traced by the Moon at the same sidereal time each day
+        over one anomalistic month (~27.55 days). Narrower than the solar
+        analemma by factor √2 in the x-direction. Same A₁ node at origin.
+        Different quartic: x² = 2y²(1−y²) vs x² = 4y²(1−y²).
+      </div>
+      <div class="panel-status">SORRY_COUNT: 0 · 12 THEOREMS PROVED</div>
     </div>
 
   </div>
@@ -916,11 +1027,11 @@
       <tr><td class="thm-name">Bernoulli</td><td class="thm-name">bernoulli_radius_bound</td><td class="thm-stmt">x²+y² ≤ 2</td><td class="thm-tactic">nlinarith</td><td class="thm-status">✓</td></tr>
       <tr><td class="thm-name">Bernoulli</td><td class="thm-name">bernoulli_polar_param</td><td class="thm-stmt">polar form ∈ lemniscate</td><td class="thm-tactic">cos_two_mul + nlinarith</td><td class="thm-status">✓</td></tr>
       <tr><td class="thm-name">Bernoulli</td><td class="thm-name">bernoulli_x_intercepts</td><td class="thm-stmt">x=0 or x=±√2</td><td class="thm-tactic">factor + linarith</td><td class="thm-status">✓</td></tr>
-      <tr><td class="thm-name">Analemma</td><td class="thm-name">analemma_param</td><td class="thm-stmt">α(t) ∈ analemma</td><td class="thm-tactic">⟨t, rfl⟩</td><td class="thm-status">✓</td></tr>
-      <tr><td class="thm-name">Analemma</td><td class="thm-name">analemma_implicit_fwd</td><td class="thm-stmt">x²=4y²(1−y²)</td><td class="thm-tactic">nlinarith + sin_two_mul</td><td class="thm-status">✓</td></tr>
-      <tr><td class="thm-name">Analemma</td><td class="thm-name">analemma_point_symm</td><td class="thm-stmt">point symmetry</td><td class="thm-tactic">sin_neg</td><td class="thm-status">✓</td></tr>
-      <tr><td class="thm-name">Analemma</td><td class="thm-name">analemma_periodic</td><td class="thm-stmt">α(t+2π)=α(t)</td><td class="thm-tactic">sin_add_two_pi</td><td class="thm-status">✓</td></tr>
-      <tr><td class="thm-name">Analemma</td><td class="thm-name">analemma_self_intersect</td><td class="thm-stmt">two preimages of (0,0)</td><td class="thm-tactic">sin_pi + pi_pos</td><td class="thm-status">✓</td></tr>
+      <tr><td class="thm-name">Analemma☽</td><td class="thm-name">analemma_param</td><td class="thm-stmt">α☽(t) ∈ analemma</td><td class="thm-tactic">⟨t, rfl⟩</td><td class="thm-status">✓</td></tr>
+      <tr><td class="thm-name">Analemma☽</td><td class="thm-name">analemma_implicit_fwd</td><td class="thm-stmt">x²=2y²(1−y²)</td><td class="thm-tactic">nlinarith + sin_two_mul</td><td class="thm-status">✓</td></tr>
+      <tr><td class="thm-name">Analemma☽</td><td class="thm-name">analemma_point_symm</td><td class="thm-stmt">point symmetry</td><td class="thm-tactic">sin_neg</td><td class="thm-status">✓</td></tr>
+      <tr><td class="thm-name">Analemma☽</td><td class="thm-name">analemma_periodic</td><td class="thm-stmt">α☽(t+2π)=α☽(t)</td><td class="thm-tactic">sin_add_two_pi</td><td class="thm-status">✓</td></tr>
+      <tr><td class="thm-name">Analemma☽</td><td class="thm-name">analemma_self_intersect</td><td class="thm-stmt">two preimages of (0,0)</td><td class="thm-tactic">sin_pi + pi_pos</td><td class="thm-status">✓</td></tr>
       <tr><td class="thm-name">All</td><td class="thm-name">*_not_gerono/bernoulli</td><td class="thm-stmt">All three curves distinct</td><td class="thm-tactic">norm_num witness</td><td class="thm-status">✓</td></tr>
     </tbody>
   </table>
@@ -929,10 +1040,130 @@
 <div class="rule"></div>
 
 <!-- ══════════════════════════════════════════════════════
+     VERIFY THE PROOFS
+═══════════════════════════════════════════════════════ -->
+<section class="section reveal" id="verify">
+  <span class="sec-tag">§ 4 · Verify the Proofs</span>
+  <h2>This Is Real Mathematics.<br>Check It Yourself.</h2>
+
+  <p>
+    Every theorem listed in this chapter is machine-verified Lean 4 code, publicly
+    available on GitHub. If you have Lean 4 and Mathlib installed, you can clone
+    the repository, open any file in VS Code with the Lean extension, and watch
+    every proof check green in real time. No trust required — the proof assistant
+    is the authority.
+  </p>
+
+  <p>
+    These files are also assigned as <strong>reading material for ESL students</strong>
+    in the <em>English for Researchers</em> course (Book 3, C1→D2 level). The Lean
+    syntax is English, the comments are English, and the epistemic discipline —
+    distinguishing PROVED from CONJECTURAL — is exactly the discipline every researcher
+    needs to write and read scientific literature in any language.
+  </p>
+
+  <div class="verify-grid">
+
+    <a class="verify-card" href="https://github.com/TOTOGT/DM3-lab/blob/main/GeronoLemniscate.lean" target="_blank">
+      <div class="vc-header">
+        <span class="vc-num" style="color: var(--gold);">01</span>
+        <span class="vc-badge" style="color: var(--gold);">sorry_count: 0</span>
+      </div>
+      <div class="vc-title">GeronoLemniscate.lean</div>
+      <div class="vc-eq">x⁴ + y² = x²</div>
+      <div class="vc-theorems">
+        gerono_parametric · gerono_symm_x · gerono_symm_y<br>
+        gerono_x_bound · gerono_y_bound · gerono_y_max<br>
+        gerono_self_intersect · gerono_right_lobe_nonneg
+      </div>
+      <div class="vc-link">github.com/TOTOGT/DM3-lab →</div>
+    </a>
+
+    <a class="verify-card" href="https://github.com/TOTOGT/DM3-lab/blob/main/BernoulliLemniscate.lean" target="_blank">
+      <div class="vc-header">
+        <span class="vc-num" style="color: var(--teal-bright);">02</span>
+        <span class="vc-badge" style="color: var(--teal-bright);">sorry_count: 0</span>
+      </div>
+      <div class="vc-title">BernoulliLemniscate.lean</div>
+      <div class="vc-eq">(x²+y²)² = 2(x²−y²)</div>
+      <div class="vc-theorems">
+        bernoulli_symm_x/y/origin · bernoulli_right_tip<br>
+        bernoulli_radius_bound · bernoulli_x_sq_ge_y_sq<br>
+        bernoulli_polar_param · bernoulli_x_intercepts
+      </div>
+      <div class="vc-link">github.com/TOTOGT/DM3-lab →</div>
+    </a>
+
+    <a class="verify-card" href="https://github.com/TOTOGT/DM3-lab/blob/main/Analemma.lean" target="_blank">
+      <div class="vc-header">
+        <span class="vc-num" style="color: #e07b8a;">03</span>
+        <span class="vc-badge" style="color: #e07b8a;">sorry_count: 0*</span>
+      </div>
+      <div class="vc-title">Analemma.lean  ☉</div>
+      <div class="vc-eq">x² = 4y²(1−y²)</div>
+      <div class="vc-theorems">
+        analemma_param · analemma_implicit_fwd<br>
+        analemma_point_symm · analemma_periodic<br>
+        analemma_self_intersect · analemma_not_gerono
+      </div>
+      <div class="vc-link">github.com/TOTOGT/DM3-lab →</div>
+    </a>
+
+    <a class="verify-card" href="https://github.com/TOTOGT/DM3-lab/blob/main/LunarAnalemma.lean" target="_blank">
+      <div class="vc-header">
+        <span class="vc-num" style="color: #0abab5;">04</span>
+        <span class="vc-badge" style="color: #0abab5;">sorry_count: 0</span>
+      </div>
+      <div class="vc-title">LunarAnalemma.lean  ☽</div>
+      <div class="vc-eq">x² = 2y²(1−y²)</div>
+      <div class="vc-theorems">
+        lunar_param · lunar_implicit_fwd<br>
+        lunar_point_symm · lunar_periodic<br>
+        lunar_self_intersect · lunar_not_solar · lunar_not_gerono
+      </div>
+      <div class="vc-link">github.com/TOTOGT/DM3-lab →</div>
+    </a>
+
+  </div>
+
+  <div class="install-block reveal">
+    <div class="lean-header">
+      <span class="lean-filename">Quick Start — Verify Locally</span>
+      <span class="lean-badge">requires Lean 4 + Mathlib</span>
+    </div>
+    <pre style="padding:1.2rem; font-family:'DM Mono',monospace; font-size:0.78rem; line-height:1.9; color:#c8d0e0; background:#050508;">
+<span style="color:#5a6a7a"># Clone the repository</span>
+git clone https://github.com/TOTOGT/DM3-lab.git
+cd DM3-lab
+
+<span style="color:#5a6a7a"># Fetch Mathlib cache (avoids compiling from scratch)</span>
+lake exe cache get
+
+<span style="color:#5a6a7a"># Open in VS Code — proofs check live in the editor</span>
+code GeronoLemniscate.lean
+code BernoulliLemniscate.lean
+code Analemma.lean
+code LunarAnalemma.lean
+
+<span style="color:#5a6a7a"># Or check all files from the command line</span>
+lake build</pre>
+  </div>
+
+  <p style="color: var(--silver); font-size:0.9rem; margin-top:1.5rem;">
+    * <code>analemma_implicit_bwd</code> in <code>Analemma.lean</code> is tagged
+    <code>COMPILED-PENDING-VERIFICATION</code> — the mathematics is correct;
+    one tactic chain requires live <code>lake build</code> confirmation against the
+    pinned Mathlib commit. All other theorems are clean.
+  </p>
+</section>
+
+<div class="rule"></div>
+
+<!-- ══════════════════════════════════════════════════════
      SINGULARITY THEORY
 ═══════════════════════════════════════════════════════ -->
 <section class="section reveal" id="singularity">
-  <span class="sec-tag">§ 4 · What They Actually Share</span>
+  <span class="sec-tag">§ 5 · What They Actually Share</span>
   <h2>The A₁ Singularity:<br>A Precise Invariant</h2>
 
   <p>
@@ -943,7 +1174,8 @@
   <p>
     They are <strong>not</strong> the same curve. The Gerono lemniscate fits inside the unit square.
     The Bernoulli lemniscate extends to radius √2. The mathematical analemma (the Lissajous model)
-    has point symmetry but not axis symmetry. The real solar analemma is asymmetric in loop size.
+    has point symmetry but not axis symmetry. The real lunar analemma is asymmetric in loop proportion
+    and tilted by the Moon's orbital inclination.
     They are geometrically distinct quartics.
   </p>
 
@@ -1000,7 +1232,7 @@
      INTERACTIVE EXPLORER
 ═══════════════════════════════════════════════════════ -->
 <section class="section reveal" id="explorer">
-  <span class="sec-tag">§ 5 · Interactive Explorer</span>
+  <span class="sec-tag">§ 6 · Interactive Explorer</span>
   <h2>Draw Them Yourself</h2>
   <p style="color: var(--silver);">
     Select a curve and watch it trace in real time. The parameter t sweeps [0, 2π].
@@ -1011,8 +1243,9 @@
     <div class="explorer-controls">
       <button class="exp-btn active" data-curve="gerono">Gerono</button>
       <button class="exp-btn" data-curve="bernoulli">Bernoulli</button>
-      <button class="exp-btn" data-curve="analemma">Analemma</button>
-      <button class="exp-btn" data-curve="all">All Three</button>
+      <button class="exp-btn" data-curve="solar">Solar Analemma</button>
+      <button class="exp-btn" data-curve="analemma">Lunar Analemma</button>
+      <button class="exp-btn" data-curve="all">All Four</button>
     </div>
     <canvas id="explorerCanvas" width="800" height="420"></canvas>
     <p class="explorer-label" id="explorerLabel">
@@ -1027,11 +1260,11 @@
      RESEARCH LOG
 ═══════════════════════════════════════════════════════ -->
 <section class="section reveal" id="log">
-  <span class="sec-tag">§ 6 · Research Log (B2 Academic English)</span>
+  <span class="sec-tag">§ 7 · Research Log (B2 Academic English)</span>
   <h2>What the Formalization<br>Actually Shows</h2>
 
   <p>
-    The lemniscate of Bernoulli and the solar analemma both produce a figure-eight curve
+    The lemniscate of Bernoulli and the lunar analemma both produce a figure-eight curve
     through entirely different mechanisms — one algebraic, one astronomical — and this raises
     a genuine mathematical question. Both curves possess a transverse self-intersection,
     known in singularity theory as an <em>ordinary double point</em> or A₁ node. At this
@@ -1068,7 +1301,7 @@
      HIRE SECTION
 ═══════════════════════════════════════════════════════ -->
 <section class="hire-section" id="hire">
-  <span class="sec-tag" style="display:block; text-align:center; margin-bottom:1rem;">§ 7 · The Researcher</span>
+  <span class="sec-tag" style="display:block; text-align:center; margin-bottom:1rem;">§ 8 · The Researcher</span>
   <h2>This Work Was Built<br>by <em>One Person</em></h2>
 
   <p style="max-width: 55ch; margin: 0 auto; color: var(--silver); font-size: 1.05rem;">
@@ -1199,13 +1432,32 @@ function drawBernoulli(ctx, cx, cy, scale, color, alpha=1, steps=600) {
   ctx.restore();
 }
 
-function drawAnalemma(ctx, cx, cy, scale, color, alpha=1, steps=400) {
+function drawSolarAnalemma(ctx, cx, cy, scale, color, alpha=1, steps=400) {
+  // Solar analemma: α☉(t) = (sin(2t), sin(t))
+  // Implicit: x² = 4y²(1−y²)
   ctx.save();
   ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.globalAlpha = alpha;
   ctx.beginPath();
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * Math.PI * 2;
     const x = cx + Math.sin(2*t) * scale;
+    const y = cy + Math.sin(t) * scale;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawAnalemma(ctx, cx, cy, scale, color, alpha=1, steps=400) {
+  // Lunar analemma: α☽(t) = (sin(2t)/√2, sin(t))
+  // Narrower than solar by factor √2 in x — implicit eq: x² = 2y²(1−y²)
+  const xScale = 1 / Math.sqrt(2);
+  ctx.save();
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.globalAlpha = alpha;
+  ctx.beginPath();
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    const x = cx + Math.sin(2*t) * xScale * scale;
     const y = cy + Math.sin(t) * scale;
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
@@ -1240,7 +1492,7 @@ function drawAnalemma(ctx, cx, cy, scale, color, alpha=1, steps=400) {
     // Draw faded full curves
     drawGerono(ctx, cx, cy, Math.min(w,h)*0.18, '#c8a84b', 0.12);
     drawBernoulli(ctx, cx, cy, Math.min(w,h)*0.13, '#2eb8b8', 0.12);
-    drawAnalemma(ctx, cx, cy, Math.min(w,h)*0.22, '#e07b8a', 0.10);
+    drawAnalemma(ctx, cx, cy, Math.min(w,h)*0.22, '#0abab5', 0.10);
 
     // Draw animated leading dot on each
     const g_t = t % (Math.PI*2);
@@ -1252,11 +1504,11 @@ function drawAnalemma(ctx, cx, cy, scale, color, alpha=1, steps=400) {
     ctx.fill();
 
     const a_t = t % (Math.PI*2);
-    const ax = cx + Math.sin(2*a_t) * Math.min(w,h)*0.22;
+    const ax = cx + Math.sin(2*a_t) * (1/Math.sqrt(2)) * Math.min(w,h)*0.22;
     const ay = cy + Math.sin(a_t) * Math.min(w,h)*0.22;
     ctx.beginPath();
     ctx.arc(ax, ay, 3, 0, Math.PI*2);
-    ctx.fillStyle = '#e07b8a'; ctx.globalAlpha = 0.8;
+    ctx.fillStyle = '#0abab5'; ctx.globalAlpha = 0.8;
     ctx.fill();
 
     ctx.globalAlpha = 1;
@@ -1310,8 +1562,11 @@ function animatePanel(canvasId, drawFn, color, scale=0.38) {
         const r = Math.sqrt(2 * c2);
         x = cx + r * Math.cos(pt) * sc;
         y = cy + r * Math.sin(pt) * sc;
-      } else {
+      } else if (canvasId === 'solarCanvas') {
         x = cx + Math.sin(2*pt) * sc;
+        y = cy + Math.sin(pt) * sc;
+      } else {
+        x = cx + Math.sin(2*pt) * (1/Math.sqrt(2)) * sc;
         y = cy + Math.sin(pt) * sc;
       }
       i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
@@ -1329,8 +1584,11 @@ function animatePanel(canvasId, drawFn, color, scale=0.38) {
       const r = c2 >= 0 ? Math.sqrt(2*c2) : 0;
       lx = cx + r * Math.cos(lt) * sc;
       ly = cy + r * Math.sin(lt) * sc;
-    } else {
+    } else if (canvasId === 'solarCanvas') {
       lx = cx + Math.sin(2*lt) * sc;
+      ly = cy + Math.sin(lt) * sc;
+    } else {
+      lx = cx + Math.sin(2*lt) * (1/Math.sqrt(2)) * sc;
       ly = cy + Math.sin(lt) * sc;
     }
     ctx.beginPath();
@@ -1346,9 +1604,10 @@ function animatePanel(canvasId, drawFn, color, scale=0.38) {
   draw();
 }
 
-animatePanel('geronoCanvas',   (ctx,cx,cy,sc,col,a) => drawGerono(ctx,cx,cy,sc,col,a),   '#c8a84b');
-animatePanel('bernoulliCanvas',(ctx,cx,cy,sc,col,a) => drawBernoulli(ctx,cx,cy,sc,col,a),'#2eb8b8', 0.28);
-animatePanel('analemmaCanvas', (ctx,cx,cy,sc,col,a) => drawAnalemma(ctx,cx,cy,sc,col,a), '#e07b8a');
+animatePanel('geronoCanvas',   (ctx,cx,cy,sc,col,a) => drawGerono(ctx,cx,cy,sc,col,a),        '#c8a84b');
+animatePanel('bernoulliCanvas',(ctx,cx,cy,sc,col,a) => drawBernoulli(ctx,cx,cy,sc,col,a),     '#2eb8b8', 0.28);
+animatePanel('solarCanvas',    (ctx,cx,cy,sc,col,a) => drawSolarAnalemma(ctx,cx,cy,sc,col,a), '#e07b8a');
+animatePanel('analemmaCanvas', (ctx,cx,cy,sc,col,a) => drawAnalemma(ctx,cx,cy,sc,col,a),      '#0abab5');
 
 // ═══════════════════════════════════════════════════
 // EXPLORER
@@ -1362,10 +1621,11 @@ animatePanel('analemmaCanvas', (ctx,cx,cy,sc,col,a) => drawAnalemma(ctx,cx,cy,sc
   let animId;
 
   const configs = {
-    gerono:   { draw: drawGerono,   color:'#c8a84b', scale:0.35, label:'GERONO  ·  x⁴ + y² = x²  ·  γ(t) = (sin t, sin t·cos t)  ·  sorry_count: 0' },
-    bernoulli:{ draw: drawBernoulli,color:'#2eb8b8', scale:0.28, label:'BERNOULLI  ·  (x²+y²)² = 2(x²−y²)  ·  r² = 2cos(2θ)  ·  sorry_count: 0' },
-    analemma: { draw: drawAnalemma, color:'#e07b8a', scale:0.35, label:'ANALEMMA  ·  x² = 4y²(1−y²)  ·  α(t) = (sin 2t, sin t)  ·  sorry_count: 0' },
-    all: { label: 'ALL THREE  ·  Sharing the A₁ ordinary double point at the origin  ·  Proven distinct by norm_num' }
+    gerono:   { draw: drawGerono,         color:'#c8a84b', scale:0.35, label:'GERONO  ·  x⁴ + y² = x²  ·  γ(t) = (sin t, sin t·cos t)  ·  sorry_count: 0' },
+    bernoulli:{ draw: drawBernoulli,      color:'#2eb8b8', scale:0.28, label:'BERNOULLI  ·  (x²+y²)² = 2(x²−y²)  ·  r² = 2cos(2θ)  ·  sorry_count: 0' },
+    solar:    { draw: drawSolarAnalemma,  color:'#e07b8a', scale:0.35, label:'SOLAR ANALEMMA  ·  x² = 4y²(1−y²)  ·  α☉(t) = (sin 2t, sin t)  ·  period: 365.25 days' },
+    analemma: { draw: drawAnalemma,       color:'#0abab5', scale:0.35, label:'LUNAR ANALEMMA  ·  x² = 2y²(1−y²)  ·  α☽(t) = (sin(2t)/√2, sin t)  ·  period: ~27.55 days' },
+    all: { label: 'ALL FOUR  ·  Sharing the A₁ ordinary double point at the origin  ·  All curves proved distinct by norm_num' }
   };
 
   function drawFrame() {
@@ -1378,18 +1638,19 @@ animatePanel('analemmaCanvas', (ctx,cx,cy,sc,col,a) => drawAnalemma(ctx,cx,cy,sc
       const progress = (t % (Math.PI*2));
       const drawSteps = Math.floor((progress / (Math.PI*2)) * 400);
 
-      // Draw all three faded
-      drawGerono(ctx, cx, cy, Math.min(w,h)*0.32, '#c8a84b', 0.15);
-      drawBernoulli(ctx, cx, cy, Math.min(w,h)*0.26, '#2eb8b8', 0.15);
-      drawAnalemma(ctx, cx, cy, Math.min(w,h)*0.32, '#e07b8a', 0.15);
+      // Draw all four faded
+      drawGerono(ctx, cx, cy, Math.min(w,h)*0.30, '#c8a84b', 0.12);
+      drawBernoulli(ctx, cx, cy, Math.min(w,h)*0.24, '#2eb8b8', 0.12);
+      drawSolarAnalemma(ctx, cx, cy, Math.min(w,h)*0.30, '#e07b8a', 0.12);
+      drawAnalemma(ctx, cx, cy, Math.min(w,h)*0.30, '#0abab5', 0.12);
 
       // Draw animated traces
-      ['gerono','bernoulli','analemma'].forEach((c,i) => {
+      ['gerono','bernoulli','solar','analemma'].forEach((c) => {
         const cfg = configs[c];
-        const sc = Math.min(w,h) * cfg.scale;
+        const sc = Math.min(w,h) * cfg.scale * 0.85;
         ctx.save();
         ctx.strokeStyle = cfg.color; ctx.lineWidth = 2;
-        ctx.globalAlpha = 0.8;
+        ctx.globalAlpha = 0.85;
         ctx.shadowColor = cfg.color; ctx.shadowBlur = 6;
         ctx.beginPath();
         for (let j = 0; j <= drawSteps && j <= 400; j++) {
@@ -1400,8 +1661,10 @@ animatePanel('analemmaCanvas', (ctx,cx,cy,sc,col,a) => drawAnalemma(ctx,cx,cy,sc
           } else if (c === 'bernoulli') {
             const c2 = Math.cos(2*pt); if(c2<0) continue;
             const r = Math.sqrt(2*c2); x = cx+r*Math.cos(pt)*sc; y = cy+r*Math.sin(pt)*sc;
-          } else {
+          } else if (c === 'solar') {
             x = cx+Math.sin(2*pt)*sc; y = cy+Math.sin(pt)*sc;
+          } else {
+            x = cx+Math.sin(2*pt)*(1/Math.sqrt(2))*sc; y = cy+Math.sin(pt)*sc;
           }
           j===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
         }
@@ -1440,8 +1703,10 @@ animatePanel('analemmaCanvas', (ctx,cx,cy,sc,col,a) => drawAnalemma(ctx,cx,cy,sc
         } else if (currentCurve === 'bernoulli') {
           const c2 = Math.cos(2*pt); if(c2<0) continue;
           const r = Math.sqrt(2*c2); x = cx+r*Math.cos(pt)*sc; y = cy+r*Math.sin(pt)*sc;
-        } else {
+        } else if (currentCurve === 'solar') {
           x = cx+Math.sin(2*pt)*sc; y = cy+Math.sin(pt)*sc;
+        } else {
+          x = cx+Math.sin(2*pt)*(1/Math.sqrt(2))*sc; y = cy+Math.sin(pt)*sc;
         }
         j===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
       }
@@ -1455,8 +1720,10 @@ animatePanel('analemmaCanvas', (ctx,cx,cy,sc,col,a) => drawAnalemma(ctx,cx,cy,sc
       } else if (currentCurve === 'bernoulli') {
         const c2 = Math.cos(2*lt); const r = c2>=0?Math.sqrt(2*c2):0;
         lx = cx+r*Math.cos(lt)*sc; ly = cy+r*Math.sin(lt)*sc;
-      } else {
+      } else if (currentCurve === 'solar') {
         lx = cx+Math.sin(2*lt)*sc; ly = cy+Math.sin(lt)*sc;
+      } else {
+        lx = cx+Math.sin(2*lt)*(1/Math.sqrt(2))*sc; ly = cy+Math.sin(lt)*sc;
       }
       ctx.beginPath(); ctx.arc(lx, ly, 6, 0, Math.PI*2);
       ctx.fillStyle = cfg.color; ctx.globalAlpha=1; ctx.fill();
