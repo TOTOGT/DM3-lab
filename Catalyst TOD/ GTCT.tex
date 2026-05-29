@@ -1,0 +1,358 @@
+#!/usr/bin/env python3
+"""
+operator_order_bot.py
+═════════════════════
+TOGT / Generative Contact Mechanics — Operator Order Detector
+Detects the C → K → F → U firing sequence in live market data.
+
+Author : Pablo Nogueira Grossi
+Affil  : G6 LLC, Newark, NJ | ORCID: 0009-0000-6496-2186
+Repo   : github.com/TOTOGT/AXLE
+Zenodo : 10.5281/zenodo.19117399
+
+Theory
+------
+The four operators fire in a system-dependent order. In financial markets:
+  C  (Compress)   — volatility contraction; Bollinger Band squeeze;
+                    reduced degrees of freedom before a regime change.
+  K  (Constrain)  — momentum locks into a directional channel;
+                    price follows a constrained path (trend channel).
+  F  (Fold)       — irreversible bifurcation; breakout / breakdown;
+                    the Whitney A1 event at curvature threshold κ*.
+  U  (Stabilise)  — post-fold mean reversion; new regime stabilises
+                    around a new fixed point x*.
+
+Non-commutativity: K∘F ≠ F∘K produces different market outcomes.
+  C→K→F→U : orderly breakout (constraint precedes fold) — trending market
+  C→F→K→U : flash-crash type (fold precedes constraint) — chaotic, then channel
+  K→C→F→U : channel tightens into squeeze then breaks — classic Bollinger squeeze
+  F→K→C→U : post-crash consolidation — rare, most dangerous for longs
+
+IPR analog: when the 'participation ratio' of returns across a rolling window
+approaches 1 (self-trapping), a C event is imminent.
+
+Usage
+-----
+  python3 operator_order_bot.py              # default: SPY, 60d, 1h bars
+  python3 operator_order_bot.py AAPL 90d 1h
+  python3 operator_order_bot.py BTC-USD 30d 15m
+"""
+
+import sys
+import warnings
+warnings.filterwarnings('ignore')
+
+import numpy as np
+import pandas as pd
+import yfinance as yf
+from scipy.signal import find_peaks
+from datetime import datetime
+
+# ── ANSI colours ─────────────────────────────────────────────────────────────
+R  = '\033[91m'   # red    → F (fold / danger)
+G  = '\033[92m'   # green  → U (stabilised)
+Y  = '\033[93m'   # yellow → K (constrained path)
+B  = '\033[94m'   # blue   → C (compression)
+W  = '\033[97m'   # white
+BO = '\033[1m'
+RS = '\033[0m'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §1  Parameters
+# ─────────────────────────────────────────────────────────────────────────────
+
+TICKER   = sys.argv[1] if len(sys.argv) > 1 else 'SPY'
+PERIOD   = sys.argv[2] if len(sys.argv) > 2 else '60d'
+INTERVAL = sys.argv[3] if len(sys.argv) > 3 else '1h'
+
+# Operator detection windows (in bars)
+C_WINDOW  = 20    # Bollinger Band width lookback for compression signal
+K_WINDOW  = 14    # ADX / channel slope window for constrained-path signal
+F_WINDOW  = 5     # Short window around breakout point
+U_WINDOW  = 10    # Post-fold stabilisation check window
+
+# Thresholds
+C_SQUEEZE_PCT  = 0.25   # BB width in bottom 25% of its range → C firing
+K_ADX_MIN      = 20.0   # ADX > 20 → directional channel (K active)
+F_BREAKOUT_STD = 1.5    # Price moves > 1.5σ in F_WINDOW bars → fold event
+U_REVERT_STD   = 0.8    # Post-fold volatility < 0.8σ → stabilised (U)
+IPR_THRESHOLD  = 0.5    # IPR > 0.5 → self-trapped (pre-C warning)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §2  Data fetch
+# ─────────────────────────────────────────────────────────────────────────────
+
+def fetch_data(ticker, period, interval):
+    print(f"\n{BO}[AXLE / TOGT Operator-Order Bot]{RS}")
+    print(f"Fetching {BO}{ticker}{RS} | period={period} | interval={interval}")
+    df = yf.download(ticker, period=period, interval=interval,
+                     auto_adjust=True, progress=False)
+    if df.empty:
+        raise ValueError(f"No data returned for {ticker}. Check ticker / interval.")
+    # Handle both flat and multi-level columns from yfinance
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = [col[0].lower() for col in df.columns]
+    df = df[[col for col in ["open","high","low","close","volume"] if col in df.columns]].copy()
+    df.rename(columns={"Adj Close": "close"}, inplace=True)
+    # fallback
+    df = df[['High','Low','Close','Volume']].copy()
+    df.columns = ['open','high','low','close','volume']
+    df.dropna(inplace=True)
+    print(f"  {len(df)} bars loaded  |  "
+          f"{df.index[0].strftime('%Y-%m-%d')} → {df.index[-1].strftime('%Y-%m-%d')}")
+    return df
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §3  Operator signal functions
+# ─────────────────────────────────────────────────────────────────────────────
+
+def bollinger_width(close, window=20):
+    """BB width = (upper - lower) / middle. Normalised 0→1 over history."""
+    mid  = close.rolling(window).mean()
+    std  = close.rolling(window).std()
+    upper = mid + 2*std
+    lower = mid - 2*std
+    width = (upper - lower) / mid
+    # normalise to [0,1] over rolling 100-bar window
+    w_min = width.rolling(100, min_periods=window).min()
+    w_max = width.rolling(100, min_periods=window).max()
+    return (width - w_min) / (w_max - w_min + 1e-9)
+
+def adx(high, low, close, window=14):
+    """Average Directional Index — measures trend strength (K signal)."""
+    delta_high = high.diff()
+    delta_low  = -low.diff()
+    plus_dm  = np.where((delta_high > delta_low) & (delta_high > 0), delta_high, 0.0)
+    minus_dm = np.where((delta_low > delta_high) & (delta_low > 0), delta_low,  0.0)
+    tr = pd.concat([high - low,
+                    (high - close.shift()).abs(),
+                    (low  - close.shift()).abs()], axis=1).max(axis=1)
+    atr     = tr.ewm(span=window, adjust=False).mean()
+    plus_di  = 100 * pd.Series(plus_dm,  index=high.index).ewm(span=window, adjust=False).mean() / (atr + 1e-9)
+    minus_di = 100 * pd.Series(minus_dm, index=high.index).ewm(span=window, adjust=False).mean() / (atr + 1e-9)
+    dx = 100 * (plus_di - minus_di).abs() / (plus_di + minus_di + 1e-9)
+    return dx.ewm(span=window, adjust=False).mean()
+
+def rolling_ipr(returns, window=20):
+    """
+    IPR analog for market returns.
+    IPR = Σ r_i^4 / (Σ r_i^2)^2 over rolling window.
+    IPR → 1/N : delocalised (normal market)
+    IPR → 1   : self-trapped (one bar dominates → pre-compression signal)
+    """
+    def _ipr(arr):
+        a = arr**2
+        denom = np.sum(a)**2
+        if denom < 1e-20:
+            return 1.0/len(arr)
+        return np.sum(a**2) / denom
+    return returns.rolling(window).apply(_ipr, raw=True)
+
+def fold_signal(returns, window=5, threshold=1.5):
+    """
+    F fires when price makes a large, fast move (breakout / breakdown).
+    Signal = rolling z-score of |return| over short window vs longer history.
+    """
+    abs_ret  = returns.abs()
+    roll_mean = abs_ret.rolling(window).mean()
+    long_std  = abs_ret.rolling(60).std()
+    return roll_mean / (long_std + 1e-9)
+
+def stabilisation_signal(returns, window=10, threshold=0.8):
+    """
+    U fires when volatility drops after a fold event — new regime settling.
+    Signal = rolling std normalised by 60-bar std.
+    Low value (< threshold) → stabilised.
+    """
+    roll_std = returns.rolling(window).std()
+    long_std = returns.rolling(60).std()
+    return roll_std / (long_std + 1e-9)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §4  Operator-order detection
+# ─────────────────────────────────────────────────────────────────────────────
+
+def detect_operator_sequence(df):
+    """
+    For each bar, assign which operator is currently active.
+    Returns a DataFrame with columns: C, K, F, U (boolean) and
+    'sequence' (string of active operators in order of last firing).
+    """
+    close   = df['close']
+    high    = df['high']
+    low     = df['low']
+    returns = close.pct_change()
+
+    # Compute signals
+    bb_norm   = bollinger_width(close, C_WINDOW)
+    adx_val   = adx(high, low, close, K_WINDOW)
+    ipr       = rolling_ipr(returns, C_WINDOW)
+    fold_z    = fold_signal(returns, F_WINDOW, F_BREAKOUT_STD)
+    stab_norm = stabilisation_signal(returns, U_WINDOW, U_REVERT_STD)
+
+    # Binary operator flags
+    df['C_active'] = bb_norm < C_SQUEEZE_PCT          # Bollinger squeeze
+    df['K_active'] = adx_val > K_ADX_MIN              # Directional channel
+    df['F_active'] = fold_z  > F_BREAKOUT_STD         # Breakout / fold
+    df['U_active'] = (stab_norm < U_REVERT_STD) & ~(fold_z > F_BREAKOUT_STD)
+    df['IPR']      = ipr
+    df['IPR_warn'] = ipr > IPR_THRESHOLD               # Self-trapping warning
+
+    # Store signal values for reporting
+    df['bb_norm']   = bb_norm
+    df['adx_val']   = adx_val
+    df['fold_z']    = fold_z
+    df['stab_norm'] = stab_norm
+
+    return df
+
+def classify_sequence(row):
+    """
+    Given the active operator flags at a bar, classify the firing pattern.
+    Returns a string label and a regime description.
+    """
+    c = row['C_active']
+    k = row['K_active']
+    f = row['F_active']
+    u = row['U_active']
+
+    if f and not k:
+        return 'C→F→K→U*', 'Flash-crash type: fold before constraint — chaotic'
+    if c and k and f:
+        return 'C→K→F',    'Orderly breakout building: all three firing'
+    if c and k and not f:
+        return 'C→K',      'Constrained compression: channel tightening'
+    if k and f and not c:
+        return 'K→F',      'Channel break: fold from constrained path'
+    if f and u:
+        return 'F→U',      'Post-fold stabilisation: new regime forming'
+    if c and not k and not f:
+        return 'C',        'Pure compression: squeeze, awaiting direction'
+    if k and not f and not c:
+        return 'K',        'Constrained path active: trending, no breakout yet'
+    if u and not f:
+        return 'U',        'Stabilised: system at or near fixed point x*'
+    if f and not u:
+        return 'F!',       'Active fold: breakout/breakdown in progress'
+    return '—',            'No dominant operator active'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §5  Report
+# ─────────────────────────────────────────────────────────────────────────────
+
+def colour_op(op):
+    colours = {'C': B, 'K': Y, 'F': R, 'U': G}
+    result = op
+    for o, c in colours.items():
+        result = result.replace(o, f"{c}{BO}{o}{RS}")
+    return result
+
+def print_report(df, ticker):
+    df = df.dropna(subset=['bb_norm','adx_val','fold_z','stab_norm'])
+
+    print(f"\n{BO}{'─'*64}{RS}")
+    print(f"{BO}  OPERATOR ORDER REPORT — {ticker}{RS}")
+    print(f"{'─'*64}")
+
+    # ── Last 10 bars ──────────────────────────────────────────────
+    print(f"\n{BO}Last 10 bars:{RS}")
+    print(f"  {'Time':<20} {'Seq':<12} {'BB%':>6} {'ADX':>6} "
+          f"{'FoldZ':>6} {'Stab':>6} {'IPR':>6}  Regime")
+    print(f"  {'─'*20} {'─'*12} {'─'*6} {'─'*6} {'─'*6} {'─'*6} {'─'*6}")
+
+    recent = df.tail(10)
+    for ts, row in recent.iterrows():
+        seq, regime = classify_sequence(row)
+        ts_str = str(ts)[:16]
+        ipr_warn = f"{R}●{RS}" if row['IPR_warn'] else ' '
+        print(f"  {ts_str:<20} {colour_op(seq):<22} "
+              f"{row['bb_norm']:>6.2f} {row['adx_val']:>6.1f} "
+              f"{row['fold_z']:>6.2f} {row['stab_norm']:>6.2f} "
+              f"{row['IPR']:>6.3f}{ipr_warn}  {regime}")
+
+    # ── Current state ─────────────────────────────────────────────
+    last = df.iloc[-1]
+    seq, regime = classify_sequence(last)
+    price = last['close']
+
+    print(f"\n{BO}{'─'*64}{RS}")
+    print(f"{BO}  CURRENT STATE{RS}")
+    print(f"  Ticker  : {BO}{ticker}{RS}  |  Price: {price:.4f}")
+    print(f"  Sequence: {colour_op(seq)}")
+    print(f"  Regime  : {regime}")
+    print(f"  BB norm : {last['bb_norm']:.3f}  {'← SQUEEZE (C active)' if last['C_active'] else ''}")
+    print(f"  ADX     : {last['adx_val']:.1f}   {'← TRENDING (K active)' if last['K_active'] else ''}")
+    print(f"  Fold Z  : {last['fold_z']:.2f}   {'← FOLD FIRING (F active)!' if last['F_active'] else ''}")
+    print(f"  Stab    : {last['stab_norm']:.3f}  {'← STABILISED (U active)' if last['U_active'] else ''}")
+    print(f"  IPR     : {last['IPR']:.4f}  "
+          f"{'← SELF-TRAPPING WARNING — C imminent' if last['IPR_warn'] else '(normal)'}")
+
+    # ── Non-commutativity alert ───────────────────────────────────
+    print(f"\n{BO}  NON-COMMUTATIVITY CHECK{RS}")
+    recent_seqs = [classify_sequence(row)[0] for _, row in df.tail(30).iterrows()]
+    has_kf = any('K→F' in s for s in recent_seqs)
+    has_fk = any('F→K' in s or 'C→F→K' in s for s in recent_seqs)
+    if has_kf and has_fk:
+        print(f"  {R}{BO}⚠  KF ≠ FK detected in last 30 bars — regime flip occurred{RS}")
+        print(f"     This is a non-commutativity event: different operator orders")
+        print(f"     produced different outcomes. High uncertainty regime.")
+    elif has_fk:
+        print(f"  {R}F fired before K in recent window — flash-crash type pattern{RS}")
+    elif has_kf:
+        print(f"  {G}K fired before F — orderly breakout pattern (lower risk){RS}")
+    else:
+        print(f"  {W}No KF/FK alternation detected in last 30 bars{RS}")
+
+    # ── Operator frequency table ──────────────────────────────────
+    print(f"\n{BO}  OPERATOR FREQUENCY (full history){RS}")
+    n = len(df)
+    for op, col, label in [
+        ('C', 'C_active', 'Compression   (Bollinger squeeze)'),
+        ('K', 'K_active', 'Constrained   (ADX trending)     '),
+        ('F', 'F_active', 'Fold          (breakout/down)    '),
+        ('U', 'U_active', 'Stabilised    (post-fold quiet)  '),
+    ]:
+        pct = 100 * df[col].sum() / n
+        bar = '█' * int(pct / 2)
+        print(f"  {colour_op(op)}  {label}  {pct:5.1f}%  {bar}")
+
+    print(f"\n{BO}{'─'*64}{RS}")
+    print(f"  {B}C{RS}=Compress  {Y}K{RS}=Constrain  {R}F{RS}=Fold  {G}U{RS}=Stabilise  "
+          f"{R}●{RS}=IPR self-trap warning")
+    print(f"  Theory: TO/TOGT — Grossi (2026) | github.com/TOTOGT/AXLE")
+    print(f"{'─'*64}\n")
+
+    # ── Sequence history (operator-order timeline) ────────────────
+    print(f"{BO}  OPERATOR SEQUENCE TIMELINE (last 20 bars){RS}")
+    timeline = []
+    for ts, row in df.tail(20).iterrows():
+        seq, _ = classify_sequence(row)
+        timeline.append(seq)
+    print("  " + "  →  ".join([colour_op(s) for s in timeline]))
+    print()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §6  CSV export
+# ─────────────────────────────────────────────────────────────────────────────
+
+def export_csv(df, ticker):
+    out_cols = ['open','high','low','close','volume',
+                'C_active','K_active','F_active','U_active',
+                'bb_norm','adx_val','fold_z','stab_norm','IPR','IPR_warn']
+    fname = f"operator_order_{ticker}_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+    df[out_cols].to_csv(fname)
+    print(f"  CSV exported → {fname}")
+    return fname
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §7  Main
+# ─────────────────────────────────────────────────────────────────────────────
+
+def main():
+    df = fetch_data(TICKER, PERIOD, INTERVAL)
+    df = detect_operator_sequence(df)
+    print_report(df, TICKER)
+    export_csv(df, TICKER)
+
+if __name__ == '__main__':
+    main()
