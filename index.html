@@ -1,578 +1,229 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Principia Orthogona — G¹–G⁵ Complete Completeness</title>
-<meta name="description" content="The complete G-series in Generative Temporal Contact Theory. G6 LLC · Newark NJ · 2026.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DM3-lab</title>
+<meta name="description" content="DM3-lab: contact geometry for dissipative systems that settle into structured cycles. An independent lab at G6 LLC, Newark, NJ. Every result carries a status.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy:  #1a2744;
-    --gold:  #c9a84c;
-    --cream: #faf7f0;
-    --smoke: #f0ece4;
-    --mid:   #3a4f7a;
-    --rule:  #8a7340;
-    --text:  #1c1c1c;
-    --green: #2d5a27;
-    --light: #e8e2d4;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Georgia', 'Times New Roman', serif; color: var(--text); background: var(--cream); }
-
-  /* ── Typography ── */
-  h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.15; }
-  h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
-  h3 { font-size: 1.2rem; }
-  p  { line-height: 1.75; }
-
-  /* ── Navigation ── */
-  nav {
-    background: var(--navy);
-    padding: 0.75rem 2rem;
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .nav-logo { color: var(--gold); font-weight: bold; font-size: 1rem; letter-spacing: 0.1em; text-decoration: none; font-family: sans-serif; }
-  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
-  .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-family: sans-serif; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--gold); }
-
-  /* ── Hero ── */
-  .hero { background: var(--navy); color: white; padding: 5rem 2rem 4rem; text-align: center; }
-  .hero-eyebrow { font-family: sans-serif; font-size: 0.85rem; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 1.2rem; }
-  .hero h1 { color: white; margin-bottom: 0.8rem; }
-  .hero-subtitle { color: var(--gold); font-size: 1.3rem; margin-bottom: 1.5rem; font-style: italic; }
-  .hero-desc { max-width: 660px; margin: 0 auto 2rem; color: #c8c8c8; font-size: 1rem; line-height: 1.8; }
-  .gold-rule { width: 80px; height: 2px; background: var(--gold); margin: 1.5rem auto; }
-  .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
-  .btn-primary { background: var(--gold); color: var(--navy); padding: 0.9rem 2rem; border: none; font-size: 1rem; font-weight: bold; font-family: sans-serif; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity 0.2s; }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-secondary { background: transparent; color: var(--gold); padding: 0.9rem 2rem; border: 1.5px solid var(--gold); font-size: 1rem; font-family: sans-serif; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; }
-  .btn-secondary:hover { background: var(--gold); color: var(--navy); }
-
-  /* ── Operator banner ── */
-  .op-banner { background: var(--gold); color: var(--navy); text-align: center; padding: 1rem 2rem; font-size: 1.4rem; font-weight: bold; letter-spacing: 0.15em; font-family: sans-serif; }
-
-  /* ── Sections ── */
-  section { padding: 4rem 2rem; }
-  .section-inner { max-width: 900px; margin: 0 auto; }
-  .section-label { font-family: sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rule); margin-bottom: 0.5rem; }
-  .gold-underline { border-bottom: 2px solid var(--gold); padding-bottom: 0.4rem; display: inline-block; margin-bottom: 1.5rem; }
-
-  /* ── G-series grid ── */
-  .g-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-  .g-card { background: white; border-top: 3px solid var(--gold); padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .g-card.open { border-top-color: var(--mid); opacity: 0.8; }
-  .g-level { font-family: sans-serif; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rule); margin-bottom: 0.4rem; }
-  .g-title { font-size: 1.1rem; font-weight: bold; color: var(--navy); margin-bottom: 0.5rem; }
-  .g-desc  { font-size: 0.9rem; line-height: 1.6; color: #444; }
-  .g-isbn  { font-family: monospace; font-size: 0.75rem; color: var(--rule); margin-top: 0.8rem; }
-
-  /* ── Journey section ── */
-  .journey-bg { background: var(--navy); color: white; }
-  .journey-bg .section-label { color: var(--gold); }
-  .journey-bg h2 { color: white; }
-  .journey-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0; margin-top: 2.5rem; }
-  .j-step  { padding: 1.5rem 1rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.1); }
-  .j-step:last-child { border-right: none; }
-  .j-level { font-family: sans-serif; font-size: 1.8rem; font-weight: bold; color: var(--gold); margin-bottom: 0.4rem; }
-  .j-name  { font-size: 0.9rem; color: #ccc; line-height: 1.4; }
-  .j-arrow { color: var(--gold); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; padding-top: 1.8rem; }
-
-  /* ── Constants strip ── */
-  .constants-strip { background: var(--smoke); padding: 2rem; margin: 2rem 0; }
-  .constants-grid  { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
-  .const-chip { background: var(--navy); color: white; padding: 0.5rem 1rem; font-family: monospace; font-size: 0.9rem; border-left: 3px solid var(--gold); }
-
-  /* ── AXLE section ── */
-  .axle-section { background: var(--smoke); }
-  .axle-box { background: var(--navy); color: var(--gold); padding: 1.5rem; font-family: monospace; font-size: 0.85rem; line-height: 1.7; border-left: 4px solid var(--gold); margin: 1.5rem 0; overflow-x: auto; }
-
-  /* ── Pull quote ── */
-  .pull-quote { text-align: center; padding: 3rem 2rem; }
-  .pull-quote blockquote { font-size: clamp(1.1rem, 2.5vw, 1.5rem); font-style: italic; color: var(--navy); max-width: 700px; margin: 0 auto; line-height: 1.8; }
-  .pull-quote cite { display: block; margin-top: 1rem; font-size: 0.85rem; color: var(--rule); font-style: normal; font-family: sans-serif; }
-
-  /* ── Pricing ── */
-  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-  .price-card { background: white; padding: 2rem; text-align: center; border: 1px solid var(--light); }
-  .price-card.featured { border: 2px solid var(--gold); }
-  .price-card.linked { text-decoration: none; color: inherit; display: block; transition: box-shadow 0.2s; }
-  .price-card.linked:hover { box-shadow: 0 4px 16px rgba(201,168,76,0.25); border-color: var(--gold); }
-  .price-badge  { font-family: sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; background: var(--gold); color: var(--navy); padding: 0.2rem 0.6rem; display: inline-block; margin-bottom: 1rem; }
-  .price-title  { font-size: 1rem; font-weight: bold; color: var(--navy); margin-bottom: 0.5rem; }
-  .price-amount { font-size: 2rem; font-weight: bold; color: var(--navy); font-family: sans-serif; }
-  .price-note   { font-size: 0.8rem; color: #666; margin-top: 0.4rem; }
-  .price-isbn   { font-family: monospace; font-size: 0.75rem; color: var(--rule); margin-top: 0.8rem; }
-  .price-cta    { font-family: sans-serif; font-size: 0.75rem; color: var(--mid); margin-top: 0.8rem; font-weight: bold; letter-spacing: 0.05em; }
-
-  /* ── SVG fallback ── */
-  .svg-wrap { background: white; padding: 1rem; border-top: 3px solid var(--gold); }
-  .svg-wrap img { width: 100%; height: auto; display: block; min-height: 120px; background: var(--smoke); }
-  .svg-caption { font-size: 0.8rem; color: var(--rule); margin-top: 0.5rem; font-family: sans-serif; }
-  .svg-fallback { display: none; font-family: monospace; font-size: 0.85rem; color: var(--mid); padding: 2rem 1rem; text-align: center; background: var(--smoke); }
-  img.error + .svg-fallback { display: block; }
-
-  /* ── Footer ── */
-  footer { background: var(--navy); color: #999; padding: 3rem 2rem; text-align: center; }
-  .footer-logo  { color: var(--gold); font-size: 1.2rem; font-weight: bold; font-family: sans-serif; margin-bottom: 1rem; }
-  .footer-links { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
-  .footer-links a { color: #888; text-decoration: none; font-size: 0.85rem; font-family: sans-serif; }
-  .footer-links a:hover { color: var(--gold); }
-  .footer-small { font-size: 0.75rem; color: #666; margin-top: 1.5rem; line-height: 1.8; }
-
-  /* ── Portal CTA ── */
-  .portal-cta { background: var(--green); color: white; padding: 3rem 2rem; text-align: center; }
-  .portal-cta h2 { color: white; margin-bottom: 1rem; }
-  .portal-cta p  { color: rgba(255,255,255,0.85); max-width: 600px; margin: 0 auto 2rem; }
-
-  /* ── Made in America ── */
-  .mia-strip { background: var(--cream); border-top: 3px solid var(--gold); border-bottom: 3px solid var(--gold); text-align: center; padding: 1.2rem 2rem; font-family: sans-serif; font-size: 0.85rem; color: var(--navy); letter-spacing: 0.1em; font-weight: bold; }
+:root{
+  --bg:#f6f3ec; --bg2:#ece7db; --fg:#1c1b19; --fg2:#57534b; --rule:#d6cfbf;
+  --accent:#b4432b; --ok:#2e6b4f; --ok-bg:#dcebe2; --chk:#2c5a7a; --chk-bg:#dce8f1;
+  --der:#6b4f9a; --der-bg:#e8e1f3; --open:#a4630f; --open-bg:#f6e5c9;
+  --gray:#5b5750; --gray-bg:#e4e0d6; --wd:#8a2d2d; --wd-bg:#f2dcdc;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14130f; --bg2:#1d1b16; --fg:#ece7da; --fg2:#a8a294; --rule:#38342a;
+  --accent:#e0765a; --ok:#7fc6a0; --ok-bg:#1c3328; --chk:#86b8dc; --chk-bg:#1a2c3a;
+  --der:#b9a0e6; --der-bg:#2a2340; --open:#e2a95a; --open-bg:#3a2a12;
+  --gray:#aaa396; --gray-bg:#2a2820; --wd:#e58a8a; --wd-bg:#3b1e1e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14130f; --bg2:#1d1b16; --fg:#ece7da; --fg2:#a8a294; --rule:#38342a;
+  --accent:#e0765a; --ok:#7fc6a0; --ok-bg:#1c3328; --chk:#86b8dc; --chk-bg:#1a2c3a;
+  --der:#b9a0e6; --der-bg:#2a2340; --open:#e2a95a; --open-bg:#3a2a12;
+  --gray:#aaa396; --gray-bg:#2a2820; --wd:#e58a8a; --wd-bg:#3b1e1e; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.62 "Newsreader",Georgia,"Times New Roman",serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+.wrap{max-width:62rem;margin:0 auto;padding-inline:max(16px,4vw)}
+header.top{border-bottom:1px solid var(--rule);padding-block:.7rem}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.brand{font:600 .95rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);text-decoration:none}
+nav a{font:400 .78rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace;letter-spacing:.06em;color:var(--fg2);text-decoration:none;margin-left:1.1rem}
+nav a:hover{color:var(--accent)}
+.hero{display:grid;grid-template-columns:1fr minmax(0,17rem);gap:2.5rem;align-items:center;padding-block:clamp(2.5rem,7vw,5rem) clamp(2rem,5vw,3.5rem)}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.orbit{max-width:13rem;margin-inline:auto}}
+h1{font:400 clamp(2.6rem,7vw,4.4rem)/1.02 "Newsreader",Georgia,serif;letter-spacing:-.02em;margin:0 0 1rem}
+h1 em{font-style:italic;color:var(--accent)}
+.strap{font-size:1.28rem;line-height:1.45;color:var(--fg);margin:0 0 1.1rem;text-wrap:balance}
+.lede{color:var(--fg2);max-width:38rem;margin:0}
+.orbit{width:100%;height:auto;display:block}
+.orbit-cap{font:400 .72rem/1.4 "JetBrains Mono",ui-monospace,monospace;color:var(--fg2);margin-top:.4rem;text-align:center}
+section{padding-block:clamp(2rem,5vw,3.2rem);border-top:1px solid var(--rule)}
+h2{font:600 .8rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--fg2);margin:0 0 1.4rem}
+h3{font:600 1.15rem/1.3 "Newsreader",Georgia,serif;margin:0 0 .4rem}
+p{margin:0 0 1rem;max-width:40rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(15.5rem,1fr));gap:1.1rem}
+.card{border:1px solid var(--rule);background:var(--bg2);padding:1.1rem 1.2rem;min-width:0}
+.card p{font-size:.97rem;margin-bottom:.7rem;max-width:none}
+.card .meta{font:400 .74rem/1.5 "JetBrains Mono",ui-monospace,monospace;color:var(--fg2)}
+.chip{display:inline-block;font:600 .66rem/1 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.09em;text-transform:uppercase;padding:.3rem .5rem;border-radius:2px;white-space:nowrap}
+.c-verified{background:var(--ok-bg);color:var(--ok)}
+.c-checked{background:var(--chk-bg);color:var(--chk)}
+.c-derived{background:var(--der-bg);color:var(--der)}
+.c-open{background:var(--open-bg);color:var(--open)}
+.c-unaudited{background:var(--gray-bg);color:var(--gray)}
+.c-withdrawn{background:var(--wd-bg);color:var(--wd)}
+.c-progress{background:var(--gray-bg);color:var(--gray)}
+.tablewrap{overflow-x:auto;border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;min-width:44rem;font-size:.95rem}
+th{font:600 .68rem/1 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--fg2);text-align:left;padding:.7rem .8rem;background:var(--bg2);border-bottom:1px solid var(--rule)}
+td{vertical-align:top;padding:.8rem;border-bottom:1px solid var(--rule)}
+tr:last-child td{border-bottom:0}
+td.item{width:28%}
+td.stat{width:9.5rem}
+td .src{font:400 .76rem/1.5 "JetBrains Mono",ui-monospace,monospace;color:var(--fg2);word-break:break-word}
+pre{font:400 .84rem/1.6 "JetBrains Mono",ui-monospace,Menlo,monospace;background:var(--bg2);border:1px solid var(--rule);padding:1rem 1.1rem;overflow-x:auto;margin:0 0 1rem}
+code{font:400 .88em "JetBrains Mono",ui-monospace,monospace}
+.note{border-left:3px solid var(--accent);padding:.2rem 0 .2rem 1rem;color:var(--fg2);max-width:40rem;margin:0 0 1rem}
+dl.people{margin:0;display:grid;grid-template-columns:minmax(0,11rem) 1fr;gap:.4rem 1.2rem;max-width:40rem}
+dl.people dt{font:600 .74rem/1.6 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--fg2)}
+dl.people dd{margin:0}
+footer{border-top:1px solid var(--rule);padding-block:1.6rem 3rem;color:var(--fg2);font:400 .78rem/1.7 "JetBrains Mono",ui-monospace,monospace}
+footer .wrap>div{margin-bottom:.3rem}
+.themebtn{background:none;border:1px solid var(--rule);color:var(--fg2);font:400 .72rem "JetBrains Mono",monospace;padding:.35rem .6rem;cursor:pointer;margin-left:1.1rem}
+.themebtn:hover{color:var(--accent);border-color:var(--accent)}
 </style>
 </head>
 <body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#top">DM3-lab</a>
+  <nav aria-label="Sections"><a href="#origin">Origin</a><a href="#work">Work</a><a href="#status">Status</a><a href="#check">Check it</a><a href="#people">People</a><button class="themebtn" id="themebtn" type="button" aria-label="Toggle light or dark">light / dark</button></nav>
+</div></header>
 
-<!-- Navigation -->
-<nav>
-  <a href="#" class="nav-logo">PRINCIPIA ORTHOGONA</a>
-  <ul class="nav-links">
-    <li><a href="#series">The Series</a></li>
-    <li><a href="#diagrams">Diagrams</a></li>
-    <li><a href="#papers">Papers</a></li>
-    <li><a href="#journey">D1 → D2</a></li>
-    <li><a href="#axle">AXLE</a></li>
-    <li><a href="#pricing">Get the Book</a></li>
-    <li><a href="portal.html" style="color:var(--gold); font-weight:bold;">Student Portal →</a></li>
-    <li><a href="https://totogt.github.io/AXLE/impa-portal.html" style="color:var(--gold);">IMPA →</a></li>
-  </ul>
-</nav>
-
-<!-- Hero -->
+<main id="top">
+<div class="wrap">
 <div class="hero">
-  <div class="hero-eyebrow">G6 LLC · Newark, New Jersey · 2026</div>
-  <h1>Principia Orthogona</h1>
-  <div class="hero-subtitle">G¹–G⁵ · Complete Completeness</div>
-  <div class="gold-rule"></div>
-  <p class="hero-desc">
-    The complete series in Generative Temporal Contact Theory. Five volumes. Five complete orbits of the operator G.
-    From abstract algebra to formal machine-verified proof. The series is its own fixed point.
-  </p>
-  <p style="color:var(--gold); font-size:0.9rem; letter-spacing:0.1em; font-family:sans-serif;">
-    AXLE v6.1 · 0 axioms beyond Mathlib4 · 8 verified constants · Lean 4
-  </p>
-  <div class="cta-group">
-    <a href="#pricing" class="btn-primary">Get the Complete Series — $199.99</a>
-    <a href="portal.html" class="btn-secondary">Student Portal — Start D1 Training</a>
+  <div>
+    <h1>DM<sup style="font-size:.55em;vertical-align:.5em">3</sup>-<em>lab</em></h1>
+    <p class="strap">Contact geometry for dissipative systems that settle into structured cycles.</p>
+    <p class="lede">An independent research lab at G6 LLC in Newark, New Jersey. It works on the dm&sup3; system, a class of dissipative dynamical systems with a hyperbolic limit cycle, and, separately, on a model of zeolite shape-selectivity that uses the same contact form: why two zeolites with the same acid chemistry select different products. Every claim on this page carries a status, and what is open is listed beside what is shown.</p>
   </div>
+  <figure style="margin:0">
+    <svg class="orbit" viewBox="0 0 300 300" role="img" aria-label="Illustration: a trajectory spiralling inward onto a closed limit cycle. Computed from r = 1 + 1.35 exp(-0.21 t); not experimental data.">
+  <circle cx="150" cy="150" r="62" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+  <path d="M270.3 67.7 L264.8 61.8 L259.0 56.3 L253.0 51.1 L246.8 46.2 L240.4 41.8 L233.8 37.7 L227.0 34.0 L220.0 30.7 L213.0 27.8 L205.8 25.3 L198.5 23.3 L191.2 21.6 L183.9 20.3 L176.6 19.5 L169.2 19.0 L161.9 19.0 L154.7 19.3 L147.5 20.0 L140.4 21.1 L133.5 22.6 L126.6 24.5 L119.9 26.7 L113.4 29.2 L107.1 32.1 L101.0 35.3 L95.0 38.9 L89.4 42.7 L83.9 46.8 L78.8 51.1 L73.9 55.7 L69.3 60.5 L64.9 65.6 L60.9 70.8 L57.2 76.3 L53.8 81.8 L50.8 87.6 L48.1 93.4 L45.7 99.4 L43.6 105.4 L41.9 111.6 L40.5 117.7 L39.5 123.9 L38.8 130.2 L38.5 136.4 L38.5 142.6 L38.8 148.7 L39.5 154.8 L40.5 160.8 L41.8 166.7 L43.4 172.5 L45.3 178.2 L47.5 183.8 L50.0 189.2 L52.8 194.4 L55.8 199.4 L59.1 204.3 L62.7 208.9 L66.4 213.3 L70.4 217.5 L74.6 221.4 L79.0 225.1 L83.5 228.5 L88.2 231.7 L93.1 234.6 L98.0 237.2 L103.1 239.5 L108.3 241.6 L113.6 243.3 L118.9 244.7 L124.2 245.9 L129.6 246.7 L135.1 247.3 L140.5 247.6 L145.9 247.5 L151.2 247.2 L156.5 246.6 L161.8 245.7 L167.0 244.5 L172.0 243.0 L177.0 241.3 L181.9 239.3 L186.6 237.1 L191.1 234.6 L195.6 231.9 L199.8 229.0 L203.9 225.8 L207.7 222.5 L211.4 218.9 L214.8 215.2 L218.1 211.3 L221.1 207.3 L223.8 203.1 L226.4 198.7 L228.6 194.3 L230.7 189.8 L232.4 185.2 L233.9 180.5 L235.2 175.7 L236.2 170.9 L236.9 166.1 L237.3 161.3 L237.5 156.4 L237.5 151.6 L237.1 146.8 L236.5 142.0 L235.7 137.3 L234.6 132.7 L233.2 128.1 L231.6 123.7 L229.8 119.3 L227.8 115.1 L225.5 111.0 L223.0 107.1 L220.3 103.2 L217.4 99.6 L214.4 96.1 L211.1 92.9 L207.7 89.8 L204.2 86.9 L200.5 84.2 L196.6 81.7 L192.7 79.4 L188.6 77.4 L184.5 75.6 L180.2 74.0 L176.0 72.7 L171.6 71.6 L167.2 70.8 L162.8 70.2 L158.4 69.8 L153.9 69.7 L149.5 69.8 L145.1 70.1 L140.8 70.7 L136.5 71.6 L132.2 72.6 L128.0 73.9 L124.0 75.4 L120.0 77.1 L116.1 79.1 L112.3 81.2 L108.7 83.6 L105.2 86.1 L101.9 88.8 L98.7 91.7 L95.7 94.7 L92.9 97.9 L90.2 101.2 L87.8 104.7 L85.5 108.2 L83.5 111.9 L81.6 115.7 L80.0 119.6 L78.6 123.6 L77.4 127.6 L76.4 131.6 L75.7 135.7 L75.2 139.9 L74.9 144.0 L74.8 148.1 L75.0 152.3 L75.4 156.4 L76.0 160.4 L76.8 164.5 L77.9 168.4 L79.1 172.3 L80.6 176.1 L82.3 179.9 L84.1 183.5 L86.2 187.0 L88.4 190.4 L90.9 193.6 L93.4 196.7 L96.2 199.7 L99.1 202.4 L102.1 205.1 L105.3 207.5 L108.6 209.8 L112.0 211.9 L115.5 213.7 L119.1 215.4 L122.8 216.9 L126.6 218.2 L130.4 219.3 L134.3 220.1 L138.2 220.8 L142.1 221.2 L146.0 221.4 L150.0 221.4 L153.9 221.2 L157.8 220.8 L161.6 220.2 L165.5 219.3 L169.2 218.3 L172.9 217.0 L176.5 215.5 L180.0 213.9 L183.5 212.1 L186.8 210.0 L190.0 207.9 L193.0 205.5 L195.9 203.0 L198.7 200.3 L201.3 197.5 L203.8 194.5 L206.1 191.5 L208.2 188.3 L210.2 185.0 L211.9 181.6 L213.5 178.1 L214.8 174.5 L216.0 170.9 L217.0 167.2 L217.7 163.5 L218.3 159.7 L218.6 155.9 L218.8 152.2 L218.7 148.4 L218.5 144.6 L218.0 140.9 L217.3 137.2 L216.4 133.5 L215.3 129.9 L214.1 126.3 L212.6 122.9 L211.0 119.5 L209.1 116.3 L207.1 113.1 L205.0 110.0 L202.6 107.1 L200.1 104.3 L197.5 101.7 L194.7 99.2 L191.8 96.9 L188.8 94.7 L185.7 92.7 L182.5 90.9 L179.1 89.3 L175.7 87.8 L172.2 86.6 L168.7 85.5 L165.1 84.6 L161.5 83.9 L157.8 83.5 L154.2 83.2 L150.5 83.1 L146.8 83.2 L143.1 83.6 L139.5 84.1 L135.9 84.8 L132.4 85.8 L128.9 86.9 L125.5 88.2 L122.1 89.7 L118.9 91.3 L115.7 93.2 L112.7 95.2 L109.8 97.4 L107.0 99.7 L104.3 102.2 L101.8 104.8 L99.4 107.5 L97.2 110.4 L95.1 113.4 L93.2 116.5 L91.5 119.7 L90.0 123.0 L88.6 126.3 L87.4 129.8 L86.5 133.2 L85.7 136.8 L85.1 140.3 L84.7 143.9 L84.5 147.5 L84.5 151.1 L84.7 154.7 L85.1 158.3 L85.7 161.8 L86.5 165.3 L87.5 168.8 L88.6 172.2 L90.0 175.5 L91.5 178.8 L93.2 181.9 L95.1 185.0 L97.1 187.9 L99.3 190.7 L101.6 193.4 L104.1 196.0 L106.8 198.4 L109.5 200.7 L112.4 202.8 L115.4 204.8 L118.4 206.6 L121.6 208.2 L124.9 209.7 L128.2 210.9 L131.6 212.0 L135.0 212.9 L138.5 213.6 L142.0 214.1 L145.6 214.4 L149.1 214.5 L152.7 214.4 L156.2 214.2 L159.7 213.7 L163.2 213.0 L166.6 212.2 L170.0 211.2 L173.3 209.9 L176.6 208.6 L179.8 207.0 L182.8 205.2 L185.8 203.3 L188.7 201.3 L191.4 199.0 L194.0 196.7 L196.5 194.2 L198.8 191.5 L201.0 188.8 L203.1 185.9 L204.9 182.9 L206.6 179.8 L208.2 176.6 L209.5 173.4 L210.7 170.1 L211.7 166.7 L212.5 163.3 L213.1 159.8 L213.5 156.3 L213.8 152.8 L213.8 149.3 L213.7 145.8 L213.3 142.3 L212.8 138.9 L212.0 135.4 L211.1 132.1 L210.0 128.7 L208.8 125.5 L207.3 122.3 L205.7 119.2 L203.9 116.2 L201.9 113.3 L199.8 110.5 L197.6 107.8 L195.2 105.3 L192.6 102.9 L189.9 100.6 L187.2 98.5 L184.3 96.6 L181.3 94.8 L178.2 93.2 L175.0 91.7 L171.8 90.4 L168.5 89.4 L165.1 88.5 L161.7 87.7 L158.2 87.2 L154.8 86.9 L151.3 86.7 L147.8 86.7 L144.3 87.0 L140.9 87.4 L137.5 88.0 L134.1 88.8 L130.7 89.8 L127.5 90.9 L124.3 92.3 L121.1 93.8 L118.1 95.5 L115.1 97.3 L112.3 99.3 L109.6 101.5 L107.0 103.8 L104.5 106.2 L102.2 108.8 L100.0 111.5 L98.0 114.3 L96.1 117.3 L94.4 120.3 L92.9 123.4 L91.5 126.6 L90.3 129.8 L89.3 133.1 L88.5 136.5 L87.8 139.9 L87.4 143.3 L87.1 146.8 L87.1 150.2 L87.2 153.7 L87.5 157.1 L88.0 160.6 L88.7 164.0 L89.5 167.3 L90.6 170.6 L91.8 173.8 L93.2 177.0 L94.8 180.1 L96.6 183.0 L98.5 185.9 L100.5 188.7 L102.7 191.4 L105.1 193.9 L107.6 196.3 L110.2 198.5 L112.9 200.6 L115.8 202.6 L118.7 204.4 L121.8 206.0 L124.9 207.5 L128.1 208.8 L131.3 209.9 L134.7 210.8 L138.0 211.6 L141.4 212.1 L144.9 212.5 L148.3 212.7 L151.8 212.6 L155.2 212.4 L158.6 212.1 L162.0 211.5 L165.4 210.7 L168.7 209.8 L171.9 208.7 L175.1 207.4 L178.2 205.9 L181.3 204.2 L184.2 202.4 L187.0 200.5 L189.7 198.3 L192.3 196.1 L194.8 193.7 L197.1 191.1 L199.3 188.5 L201.4 185.7 L203.2 182.8 L204.9 179.9 L206.5 176.8 L207.9 173.6 L209.1 170.4 L210.1 167.1 L211.0 163.8 L211.6 160.4 L212.1 157.0 L212.4 153.6 L212.5 150.2 L212.4 146.7 L212.1 143.3 L211.6 139.9 L211.0 136.5 L210.2 133.2 L209.1 129.9 L207.9 126.7 L206.6 123.6 L205.0 120.5 L203.3 117.5 L201.4 114.6 L199.4 111.9 L197.2 109.2 L194.9 106.7 L192.5 104.3 L189.9 102.0 L187.2 99.9 L184.4 97.9 L181.5 96.1 L178.4 94.5 L175.4 93.0 L172.2 91.7 L168.9 90.6 L165.6 89.6 L162.3 88.9 L158.9 88.3 L155.5 87.9 L152.1 87.7 L148.7 87.7 L145.2 87.8 L141.8 88.2 L138.4 88.7 L135.1 89.5 L131.8 90.4 L128.5 91.5 L125.4 92.8 L122.3 94.2 L119.2 95.8 L116.3 97.6 L113.5 99.5 L110.8 101.6 L108.2 103.8 L105.7 106.2 L103.3 108.7 L101.2 111.4 L99.1 114.1 L97.2 117.0 L95.5 119.9 L93.9 122.9 L92.5 126.1 L91.3 129.3 L90.2 132.5 L89.4 135.8 L88.7 139.2 L88.2 142.6 L87.9 146.0 L87.8 149.4 L87.8 152.8 L88.1 156.3 L88.5 159.6 L89.1 163.0 L89.9 166.3 L90.9 169.6 L92.1 172.8 L93.5 176.0 L95.0 179.0 L96.7 182.0 L98.5 184.9 L100.5 187.7 L102.6 190.3 L104.9 192.9 L107.4 195.3 L109.9 197.6 L112.6 199.7" fill="none" stroke="var(--fg2)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="270.3" cy="67.7" r="3.2" fill="var(--fg)"/>
+</svg>
+    <figcaption class="orbit-cap">Illustration: a trajectory approaching a limit cycle. Computed from r = 1 + 1.35e<sup>-0.21t</sup>. Not data.</figcaption>
+  </figure>
+</div>
 </div>
 
-<!-- Operator banner -->
-<div class="op-banner">C &nbsp;→&nbsp; K &nbsp;→&nbsp; F &nbsp;→&nbsp; U &nbsp;→&nbsp; ∞</div>
+<div class="wrap"><section id="origin">
+  <h2>Origin</h2>
+  <p>The dm&sup3; system first appears in <strong>Generative Contact Mechanics</strong> (GCM). In that paper a dm&sup3; system is a smooth Riemannian manifold with a hyperbolic limit cycle, a Lyapunov function and a stochastic extension, defined by eight axioms, with an operator algebra and an embedding in contact geometry. GCM is the lab's foundation text.</p>
+  <p class="note">Why contact geometry: a Hamiltonian flow on a symplectic manifold preserves volume and cannot have an attracting limit cycle. A contact flow can dissipate. The same point appears below in a narrower form: a Reeb flow preserves contact volume and has no attracting set, so any confinement in the zeolite model has to come from somewhere else.</p>
+</section></div>
 
-<!-- G-Series -->
-<section id="series">
-  <div class="section-inner">
-    <div class="section-label">The G-Series</div>
-    <h2 class="gold-underline">Five Turns of the Spiral</h2>
-    <p>Each volume is a complete orbit around the same fixed point. You do not need to have read the others to use any one. The series is a circuit, not a staircase. G applied to itself five times is Complete Completeness.</p>
-    <div class="g-grid">
-      <div class="g-card">
-        <div class="g-level">G¹ · Volume I</div>
-        <div class="g-title">The Orthogonal Operator Framework</div>
-        <div class="g-desc">Abstract operator algebra and matrix compression. The operator sequence G = U ∘ F ∘ K ∘ C defined and proved. The foundation of the entire series.</div>
-        <div class="g-isbn">Print: 979-8-9954416-2-5 · $47</div>
-      </div>
-      <div class="g-card">
-        <div class="g-level">G² · Volume II</div>
-        <div class="g-title">TOGT: Applications Across Domains</div>
-        <div class="g-desc">Contact geometry realised. The operator chain C → K → F → U instantiated across physics, biology, linguistics, architecture, and formal computation. The threshold constant g₃₃ = 33 identifies the minimum operator cycles for stable lock in any domain.</div>
-        <div class="g-isbn">Print: 979-8-9954416-4-9 · $47</div>
-      </div>
-      <div class="g-card">
-        <div class="g-level">G³ · Volume III</div>
-        <div class="g-title">The Mini-Beast: Biological Instantiations</div>
-        <div class="g-desc">C1→C2 English for researchers. The operator chain in living systems. The cajueiro principle. Entry point for new readers and advanced language learners.</div>
-        <div class="g-isbn">eBook: 979-8-9954416-6-3 · $19.99</div>
-      </div>
-      <div class="g-card">
-        <div class="g-level">G⁴ · Volume IV</div>
-        <div class="g-title">GTCT T1 — The IMPA Edition</div>
-        <div class="g-desc">Temporal contact theory formalised. Bilingual (EN/PT). Submitted to IMPA. Science and language integrated from day 21 of instruction — CEFR → TO/TOGT.</div>
-        <div class="g-isbn">Included in Complete Series</div>
-      </div>
-      <div class="g-card">
-        <div class="g-level">G⁵ · Volume V + AXLE</div>
-        <div class="g-title">The Seed — Complete Completeness</div>
-        <div class="g-desc">Banach Fixed Point Theorem applied to GTCT. Formal Lean 4 verification (AXLE v6.1). 0 axioms beyond Mathlib4. The series proves itself. The fixed point exists.</div>
-        <div class="g-isbn">Print: 979-8-9954416-4-9 · eBook: 979-8-9954416-5-6</div>
-      </div>
-      <div class="g-card open">
-        <div class="g-level">G⁶ · Issue 6 — OPEN</div>
-        <div class="g-title">The Return: χ(H*(X⁶)) = 33 ∀n</div>
-        <div class="g-desc">The sixth application of G to itself — a distinct object from the threshold constant g₃₃. The conjecture states that the Euler characteristic of the sixth-level cohomology equals 33 for all n. This is an open problem in algebraic topology. AXLE v6.1 marks it as one honest sorry. Join the work.</div>
-        <div class="g-isbn" style="color:var(--mid);">Open conjecture · 2026 · Not the same as g₃₃</div>
-      </div>
+<div class="wrap"><section id="work">
+  <h2>Work</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="chip c-unaudited">Foundation text</span>
+      <h3 style="margin-top:.7rem">Generative Contact Mechanics</h3>
+      <p>Eight axioms, an operator algebra (g-, L-, R-, U-), and four stated theorems on existence, unification, a normal form and C&sup1; stability. The paper's own page says it was submitted to <em>Journal of Geometric Mechanics</em> in 2026; no acceptance is claimed here.</p>
+      <div class="meta">Zenodo 10.5281/zenodo.20230610</div>
+    </div>
+    <div class="card">
+      <span class="chip c-verified">Lean-checked core</span>
+      <h3 style="margin-top:.7rem">The Self-Trapping Selectivity Principle</h3>
+      <p>A model of why HZSM-5 and HMCM-22 diverge in ethanol-to-hydrocarbon selectivity, with a second case in Pt&ndash;Sn ensemble effects. The paper is deliberately narrow: what could not be derived was cut, and what is open is stated as open.</p>
+      <div class="meta">Version 6, 24 Sep 2026 &middot; Zenodo 10.5281/zenodo.22929142</div>
+    </div>
+    <div class="card">
+      <span class="chip c-progress">In progress</span>
+      <h3 style="margin-top:.7rem">Contact links of orthogonal quiver varieties</h3>
+      <p>An early draft (v0.1) with scripts that check the lens-space links and the ADE data. No link to the dm&sup3; systems is claimed. Until a derivation exists, any connection is an analogy.</p>
+      <div class="meta">Draft &middot; not deposited</div>
     </div>
   </div>
-</section>
+</section></div>
 
-<!-- Verified constants -->
-<div class="constants-strip">
-  <div class="section-inner" style="text-align:center;">
-    <div class="section-label" style="text-align:center; margin-bottom:1rem;">AXLE v6.1 — Verified Constants · 0 Axioms Beyond Mathlib4</div>
-    <div class="constants-grid">
-      <div class="const-chip">g₃₃ = 33 &nbsp;<span style="font-size:0.7rem;opacity:0.6;">(threshold cycles)</span></div>
-      <div class="const-chip">ε* = 1/3</div>
-      <div class="const-chip">τ = 2</div>
-      <div class="const-chip">g₆₄ = 2⁶ = 64 &nbsp;<span style="font-size:0.7rem;opacity:0.6;">(kether orthogon)</span></div>
-      <div class="const-chip">T* = 2π</div>
-      <div class="const-chip">κ ≤ √(7/9) ≈ 0.882</div>
-      <div class="const-chip">τ·ε* = 2/3</div>
-      <div class="const-chip">ε₀ = 1/3</div>
-    </div>
-    <p style="font-size:0.75rem; color:#888; margin-top:1rem; font-family:sans-serif;">
-      Note: g₃₃ (threshold invariant) and G⁶ (sixth operator application, open conjecture) both involve 33 — they are distinct mathematical objects.
-    </p>
-  </div>
-</div>
+<div class="wrap"><section id="status">
+  <h2>Status ledger</h2>
+  <p>What each claim is, and how it was checked. <strong>Verified</strong> means the Lean kernel accepted the statement as written, and a statement can be weaker than its name. <strong>Checked by script</strong> means a program ran a test that could fail. <strong>Derived</strong> means a complete pen-and-paper derivation, not formalized. Dates and counts are as recorded in the sources named in the last column.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Claim</th><th>Status</th><th>What the check is, and its limits</th><th>Source</th></tr></thead>
+    <tbody>
+    <tr><td class="item">GCM: the contact form is the Gibbs form with the heat term removed</td>
+        <td class="stat"><span class="chip c-checked">Checked by script</span></td>
+        <td>The identification is tested on 200,000 random tangent vectors and the script prints the worst disagreement. It is an algebraic identity, so this is a sanity check, not a proof of anything deeper.</td>
+        <td><span class="src">geometry / gcm-framework-verify.py</span></td></tr>
+    <tr><td class="item">GCM Theorems A&ndash;D (existence, unification, normal form, C&sup1; stability)</td>
+        <td class="stat"><span class="chip c-unaudited">Unaudited</span></td>
+        <td>Stated in the paper. The paper's page was later revised so that Theorem A(ii) no longer claims the winding integral is an integer. The four theorems themselves have not been independently audited or formalized.</td>
+        <td><span class="src">geometry / gcm-framework.html</span></td></tr>
+    <tr><td class="item">Selectivity identities and the core inequalities of the zeolite model</td>
+        <td class="stat"><span class="chip c-verified">Verified</span></td>
+        <td>23 theorems in the V6 Lean file, each on the standard three axioms, run by the author on Lean 4.32 and on the repository's pinned Lean 4.14, with the repository's CI green at a gate of 23. The paper says plainly where a theorem is weaker than its name: for example <code>helical_selectivity</code> is monotonicity of the square root and carries no dynamics.</td>
+        <td><span class="src">io / CatGT/CatGT_Main.lean</span></td></tr>
+    <tr><td class="item">Post-V6 additions (section 4d)</td>
+        <td class="stat"><span class="chip c-verified">Verified</span></td>
+        <td>The repository file now has 28 theorems; the author's runs on 6 Oct 2026 report 28 of 28 on the standard three axioms under both toolchains. The raw output was reported in chat and is not stored in the repository. These theorems are not in the deposited V6.</td>
+        <td><span class="src">io commit 6127948</span></td></tr>
+    <tr><td class="item">The width of a trapped state at fixed norm, r*<sub>P</sub> = 4aJ/(&lambda;P)</td>
+        <td class="stat"><span class="chip c-derived">Derived</span></td>
+        <td>Derived from the stationary continuum DNLS equation; the step from the equation to the width is Lean-checked. Not proved: the continuum limit itself and the norm relation P = 2A&sup2;w/a. The older form a&radic;(J/&lambda;) is kept as the fixed-peak-amplitude case.</td>
+        <td><span class="src">io / paper section 4b&ndash;4c</span></td></tr>
+    <tr><td class="item">Where the width law holds</td>
+        <td class="stat"><span class="chip c-checked">Checked by script</span></td>
+        <td>In quasi-one-dimensional channels (the ZSM-5 case) the width law is checked numerically. In two- and three-dimensional cages (the MCM-22 supercage) the simulation shows a self-trapping threshold, not a width, so the smooth law should not be assumed there.</td>
+        <td><span class="src">io / scripts: fixed_norm_width_check.py, cage_threshold_check.py</span></td></tr>
+    <tr><td class="item">Quantitative fit to the measured selectivities of Sousa et al.</td>
+        <td class="stat"><span class="chip c-open">Open</span></td>
+        <td>The direction matches the published abstract. The fit itself needs the measured selectivity tables, which were not accessible. No numbers have been filled in.</td>
+        <td><span class="src">io / paper, open items</span></td></tr>
+    <tr><td class="item">C, K, F, U as operators on a function space; the fixed-point link to confinement</td>
+        <td class="stat"><span class="chip c-open">Open</span></td>
+        <td>These are not defined as formal objects anywhere in the zeolite paper, which states the gap and does not assume a definition into existence.</td>
+        <td><span class="src">io / paper, Theorem 1(ii)</span></td></tr>
+    <tr><td class="item">Coherence Bridge across seven domains; helical-phase prediction; extrudate-shape corollary; clean-energy extension</td>
+        <td class="stat"><span class="chip c-withdrawn">Withdrawn</span></td>
+        <td>Cut in the V5 narrowing, not carried forward. The scale &radic;(J/&lambda;) is the generic crossover between spreading and localizing in many systems, so a shared functional form is not a shared invariant. The helical-phase prediction depended on Reeb orbits being helical, and they are not.</td>
+        <td><span class="src">io / paper, scope section</span></td></tr>
+    </tbody>
+  </table></div>
+</section></div>
 
-<!-- Journey D1 → D2 -->
-<section id="journey" class="journey-bg">
-  <div class="section-inner">
-    <div class="section-label">The Student Journey</div>
-    <h2>From A1 to D2 — Becoming an Operator of Collective Intelligence</h2>
-    <p style="color:#bbb; margin-top:0.8rem; max-width:600px;">
-      The series defines a precise pathway: from first contact with language through individual mastery to collective dimensional threshold.
-      D2 is not a metaphor. It is a mathematically verified threshold: Θ = g₃₃ + N × M.
-    </p>
-    <div class="journey-steps">
-      <div class="j-step">
-        <div class="j-level">A1</div>
-        <div class="j-name">First contact<br>Compression C</div>
-      </div>
-      <div class="j-arrow">→</div>
-      <div class="j-step">
-        <div class="j-level">A2</div>
-        <div class="j-name">Pattern recognition<br>Curvature K<br><em style="font-size:0.8rem; color:var(--gold);">Day 21: science begins</em></div>
-      </div>
-      <div class="j-arrow">→</div>
-      <div class="j-step">
-        <div class="j-level">B1–B2</div>
-        <div class="j-name">Folding F<br>Domain entry</div>
-      </div>
-      <div class="j-arrow">→</div>
-      <div class="j-step">
-        <div class="j-level">C1</div>
-        <div class="j-name">Unfolding U<br>Research generation</div>
-      </div>
-      <div class="j-arrow">→</div>
-      <div class="j-step">
-        <div class="j-level" style="color:#fff;">D1</div>
-        <div class="j-name">g₃₃ = 33 cycles<br>Individual fixed point<br><em style="font-size:0.8rem; color:var(--gold);">I lost count</em></div>
-      </div>
-      <div class="j-arrow">→</div>
-      <div class="j-step">
-        <div class="j-level">D2</div>
-        <div class="j-name">Θ = 33 + N×M<br>Collective intelligence<br><em style="font-size:0.8rem; color:var(--gold);">Complete Completeness</em></div>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="wrap"><section id="check">
+  <h2>Check it yourself</h2>
+  <p>The commands below are the ones the author used. They need your own toolchain, and a clean run says only that the file compiled on the day you ran it.</p>
+<pre>git clone https://github.com/TOTOGT/geometry
+cd geometry
+python3 gcm-framework-verify.py     # the Gibbs-form check and the corpus counts
 
-<!-- Pull quote -->
-<div class="pull-quote">
-  <blockquote>"Your education is yours. No one can take it away from you."</blockquote>
-  <cite>— Pablo Nogueira Grossi, Newark NJ · The Seed (Principia Orthogona Vol V)</cite>
-</div>
+lake build CatGT                    # the Lean file, under the toolchain in lean-toolchain
+# then, in a file that imports it:
+#   #print axioms &lt;theorem name&gt;     # expect only propext, Classical.choice, Quot.sound</pre>
+  <p class="note">A passing check is not proof that a theorem says what its name says. Every new theorem here is read for what it states, not what it is called, before it is treated as settled.</p>
+</section></div>
 
-<!-- AXLE -->
-<section id="axle" class="axle-section">
-  <div class="section-inner">
-    <div class="section-label">Formal Verification</div>
-    <h2 class="gold-underline">AXLE — The Series Proves Itself</h2>
-    <p>AXLE (Automated eXtensible Lean Engine) is the formal verification backbone of Principia Orthogona. All 8 structural constants are machine-verified in Lean 4 + Mathlib4, with zero additional axioms. The mathematics is honest: 9 open problems are named precisely as sorrys — each a conjecture with a known missing lemma, not an evasion.</p>
-    <div class="axle-box">
-      /-<br>
-      &nbsp; Mathematics is a language.<br>
-      &nbsp; These theorems have been proved in every language simultaneously.<br>
-      <br>
-      &nbsp; A matemática é uma linguagem. (Portuguese)<br>
-      &nbsp; Las matemáticas son un idioma. (Spanish)<br>
-      &nbsp; Les mathématiques sont une langue. (French)<br>
-      &nbsp; Mathematik ist eine Sprache. (German)<br>
-      &nbsp; 数学は言語である。 (Japanese)<br>
-      &nbsp; 数学是一种语言。 (Mandarin)<br>
-      &nbsp; الرياضيات لغة. (Arabic)<br>
-      &nbsp; Математика — это язык. (Russian)<br>
-      &nbsp; Hisabati ni lugha. (Swahili)<br>
-      &nbsp; गणित एक भाषा है। (Hindi)<br>
-      -/<br>
-      <br>
-      -- 0 axioms beyond Mathlib4<br>
-      -- 8 verified constants · 9 honest sorrys<br>
-      -- g₃₃=33 · ε*=1/3 · τ=2 · g₆₄=64 · T*=2π · κ≤0.882
-    </div>
-    <div style="text-align:center; margin-top:1.5rem;">
-      <a href="https://github.com/TOTOGT/AXLE" class="btn-secondary" target="_blank">View AXLE on GitHub →</a>
-    </div>
-  </div>
-</section>
+<div class="wrap"><section id="people">
+  <h2>People</h2>
+  <dl class="people">
+    <dt>Principal</dt><dd>Pablo Nogueira Grossi &middot; G6 LLC, Newark, New Jersey &middot; <a href="https://orcid.org/0009-0000-6496-2186">ORCID 0009-0000-6496-2186</a></dd>
+    <dt>Contact</dt><dd><a href="mailto:g6llc@proton.me">g6llc@proton.me</a></dd>
+    <dt>Code and papers</dt><dd><a href="https://github.com/TOTOGT/io">TOTOGT/io</a> (zeolite paper and Lean) &middot; <a href="https://github.com/TOTOGT/geometry">TOTOGT/geometry</a> (the series) &middot; <a href="https://totogt.github.io/AXLE/">AXLE</a></dd>
+    <dt>How it is made</dt><dd>Written with substantial assistance from Claude (Anthropic) and checked by scripts and the Lean kernel. The author is responsible for every statement.</dd>
+  </dl>
+</section></div>
+</main>
 
-<!-- Student Portal CTA -->
-<div class="portal-cta">
-  <h2>Student &amp; Teacher Portal</h2>
-  <p>Paid access to structured LLM prompts that guide you from A1/A2 through C1 to D1 and D2. Each level is a complete operator orbit. The threshold is mathematical. You will know when you cross it.</p>
-  <a href="portal.html" class="btn-primary">Enter the Portal →</a>
-</div>
+<footer><div class="wrap">
+  <div>DM3-lab &middot; G6 LLC &middot; Newark, NJ &middot; page last revised 2026-10-30</div>
+  <div>The earlier homepage (April 2026) is kept for the record at <a href="index-legacy.html">index-legacy.html</a>. It states goals and sales offers that this page does not repeat; where they differ, the status ledger above governs.</div>
+  <div>Text on this page: CC BY-NC-ND 4.0, as the papers. Lean sources and scripts carry the licence stated in their repositories.</div>
+</div></footer>
 
-<!-- Diagrams -->
-<section id="diagrams" style="background: var(--smoke);">
-  <div class="section-inner">
-    <div class="section-label">Visual Framework</div>
-    <h2 class="gold-underline">TOGT Diagrams</h2>
-    <p>Five diagrams covering the operator sequence, Saturn's hexagon as canonical instantiation, the Coherence Bridge across domains, the Collatz conjecture as dm³ system, and the full application map. All available on <a href="https://github.com/TOTOGT/AXLE" target="_blank" style="color:var(--mid);">GitHub</a>.</p>
-    <p style="font-size:0.8rem; color:var(--rule); margin-top:0.6rem; font-family:sans-serif;">
-      ⚠ If diagrams show as blank: the SVG files must be committed to the AXLE repo alongside this page. Paths expected: <code>./01_operator_sequence.svg</code> through <code>./05_domain_map.svg</code>.
-    </p>
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-top:2rem;">
-      <div class="svg-wrap">
-        <img src="./01_operator_sequence.svg" alt="Operator Sequence G = U∘F∘K∘C" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="svg-fallback">[ 01_operator_sequence.svg ]<br>G = U ∘ F ∘ K ∘ C<br><small>File not yet committed to repo</small></div>
-        <p class="svg-caption">G = U ∘ F ∘ K ∘ C — The four-operator sequence</p>
-      </div>
-      <div class="svg-wrap">
-        <img src="./02_saturn_hexagon.svg" alt="Saturn Hexagon dm3 instantiation" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="svg-fallback">[ 02_saturn_hexagon.svg ]<br>Saturn North Polar Hexagon<br><small>File not yet committed to repo</small></div>
-        <p class="svg-caption">Saturn's north polar hexagon — canonical dm³ instantiation</p>
-      </div>
-      <div class="svg-wrap">
-        <img src="./03_coherence_bridge.svg" alt="Coherence Bridge across domains" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="svg-fallback">[ 03_coherence_bridge.svg ]<br>Coherence Bridge — 6 domains<br><small>File not yet committed to repo</small></div>
-        <p class="svg-caption">Coherence Bridge — exact morphisms across 6 domains</p>
-      </div>
-      <div class="svg-wrap">
-        <img src="./04_collatz_dm3.svg" alt="Collatz as dm3 system" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="svg-fallback">[ 04_collatz_dm3.svg ]<br>Collatz as dm³ System<br><small>File not yet committed to repo</small></div>
-        <p class="svg-caption">Collatz conjecture as dm³ system — AXLE Target 5</p>
-      </div>
-      <div class="svg-wrap">
-        <img src="./05_domain_map.svg" alt="Domain application map" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="svg-fallback">[ 05_domain_map.svg ]<br>Application Domain Map — 20+ fields<br><small>File not yet committed to repo</small></div>
-        <p class="svg-caption">Application domain map — 20+ fields</p>
-      </div>
-    </div>
-
-    <!-- Interactive Tools -->
-    <div style="margin-top:2.5rem;">
-      <div class="section-label" style="margin-bottom:1rem;">Interactive Tools</div>
-      <a href="https://totogt.github.io/AXLE/sim-lyapunov.html" target="_blank"
-         style="display:flex; gap:1.5rem; align-items:center; background:var(--navy); border-left:4px solid var(--gold); padding:1.4rem 1.6rem; text-decoration:none; transition:opacity 0.2s;"
-         onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
-        <div style="flex-shrink:0; text-align:center; font-family:monospace; font-size:0.7rem; letter-spacing:0.08em; color:var(--gold); background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); padding:0.6rem 0.9rem; line-height:1.6;">
-          LIVE<br>SIM
-        </div>
-        <div style="flex:1;">
-          <div style="font-family:sans-serif; font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--rule); margin-bottom:0.3rem;">Interactive Simulation · Collatz / AXLE Target 5</div>
-          <div style="font-size:1.05rem; font-weight:bold; color:white; margin-bottom:0.35rem;">Lyapunov Exponent — Syracuse Return Map</div>
-          <div style="font-size:0.85rem; color:#aaa; line-height:1.65;">
-            Live computation of the Lyapunov exponent λ for the Syracuse return map.
-            Adjustable parameters: orbit length N, seed n₀, branch weights (odd/even), noise amplitude σ.
-            Visualises the Collatz trajectory, exponent convergence, and return-map scatter in real time.
-            Directly probes AXLE Target 5 — the dm³ embedding of the Collatz conjecture.
-          </div>
-        </div>
-        <div style="color:var(--gold); font-size:1.3rem; flex-shrink:0;">↗</div>
-      </a>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════
-     PAPERS — All Zenodo DOIs
-     ═══════════════════════════════════════════════ -->
-<section id="papers">
-  <div class="section-inner">
-    <div class="section-label">Open Access Research</div>
-    <h2 class="gold-underline">Papers on Zenodo</h2>
-    <p>All papers are freely available. Cite via DOI. Each paper is a self-contained contribution — you do not need the full series to read any one paper.</p>
-
-    <div class="g-grid" style="margin-top:2rem;">
-
-      <!-- Vol I -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19117400</div>
-        <div class="g-title">Principia Orthogona, Volume One</div>
-        <div class="g-desc">The Mathematics of Generative Transitions. Abstract operator algebra, the operator sequence C → K → F → U defined and proved. Singularity classification (Whitney A1–A3), symplectic preservation theorem, curvature threshold κ*. The foundation.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19117400" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19117400</a></div>
-      </div>
-
-      <!-- Vol II -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19379473</div>
-        <div class="g-title">Principia Orthogona, Volume Two</div>
-        <div class="g-desc">Contact Realization of Generative Transitions. Explicit contact-geometric realization of Volume One. Threshold Equivalence theorem: |κ| ↑ κ* ⟺ μ_max &lt; 0 ⟺ τ ∈ (0,∞). Four dm³ bifurcations ↔ Whitney A1–A3 singularity types. Submitted to IMPA.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19379473" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19379473</a></div>
-      </div>
-
-      <!-- GCM -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19122168</div>
-        <div class="g-title">Generative Contact Mechanics</div>
-        <div class="g-desc">A Geometric Framework for Dissipative Systems with Structured Limit Cycles. Complete operator algebra (g-, L-, R-, U-operators). Universal contact normal form (μ_max, ω, β). Stability radius ε₀ = 1/3. Submitted to Journal of Geometric Mechanics.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19122168" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19122168</a></div>
-      </div>
-
-      <!-- DM3 Toy Model -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19379385</div>
-        <div class="g-title">The dm³ Operator — Explicit Toy Model</div>
-        <div class="g-desc">Global Dynamic Analysis on contact manifold M = ℝ²×ℝ. Canonical invariant triple (T*, μ_max, τ) = (2π, −2, 2). Global attractor Γ₁₂, four bifurcations, stochastic concentration below embodiment threshold τ = 2. Submitted to SIAM J. Applied Dynamical Systems.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19379385" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19379385</a></div>
-      </div>
-
-      <!-- G6 Crystal -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19162013</div>
-        <div class="g-title">The G6 Crystal</div>
-        <div class="g-desc">A dm³-derived architectural form for resonance-stable tall structures. Six applications of G yield a hexagonal tower with aspect ratio 66 = 33·τ. Passive Schumann n=4 resonance coupling at 33.516 Hz via Arnold tongue A4:1. Noise tolerance τ·ε₀ = 2/3.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19162013" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19162013</a></div>
-      </div>
-
-      <!-- Collatz supplement -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19378742</div>
-        <div class="g-title">The Collatz Conjecture as a Corollary of Crystal Geometry</div>
-        <div class="g-desc">Supplement to the Crystal Paper. The coefficient c = 3 in 3n+1 is the fingerprint of triad stabilisation (3×11 = 33). The conjecture is visible from within crystal geometry before it is provable within it. The polar vortex is the empirical certificate.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19378742" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19378742</a></div>
-      </div>
-
-      <!-- Biological Transitions -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19208015</div>
-        <div class="g-title">Biological Transitions as Multi-Agent Realisations of TO/TOGT</div>
-        <div class="g-desc">Neural oscillations, HPA-axis stress response, circadian regulation, immune adaptation, and protein conformational change modelled as multi-agent realisations of G = U∘F∘K∘C. Fixed-point, contraction, and saturated pitchfork results applied.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19208015" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19208015</a></div>
-      </div>
-
-      <!-- Fruit-Fly -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19210137</div>
-        <div class="g-title">Fruit-Fly Connectome Toy Model</div>
-        <div class="g-desc">Biological Transitions as Multi-Agent Realisations of TO/TOGT: A Drosophila connectome toy model. Neural clusters as coupled agents whose trajectories stabilise under six applications of G. Reproduces neural coherence, oscillatory entrainment, and stress-response switching.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19210137" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19210137</a></div>
-      </div>
-
-      <!-- Swarm Simulator -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19208284</div>
-        <div class="g-title">The Swarm Simulator</div>
-        <div class="g-desc">A Dynamical Systems Model of Collective Intelligence using the TO/TOGT Operator Pipeline. Four collective operators: shared-intent stability It, coordination efficiency Ct, type-propagation multiplier Mt, diffusion factor Ft. All results proved from established theorems.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19208284" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19208284</a></div>
-      </div>
-
-      <!-- Multi-Orbit -->
-      <div class="g-card">
-        <div class="g-level">Zenodo · 10.5281/zenodo.19210058</div>
-        <div class="g-title">Mathematical Foundations of Multi-Orbit Identity Theory</div>
-        <div class="g-desc">Identity orbits defined as operator-generated closed trajectories with invariant structure within the TO/TOGT framework. U-, R-, L-, and B-operator families. Categorical invariants and compositional operator algebra. Mathematically independent of speculative cosmological models.</div>
-        <div class="g-isbn"><a href="https://doi.org/10.5281/zenodo.19210058" target="_blank" style="color:var(--mid);">doi.org/10.5281/zenodo.19210058</a></div>
-      </div>
-
-      <!-- Forthcoming -->
-      <div class="g-card open">
-        <div class="g-level">Zenodo · forthcoming</div>
-        <div class="g-title">Additional Papers</div>
-        <div class="g-desc">GTCT — The Generative Time Circuit Theorem (Ring 5) · Wavenumber 6: Orthogenetic Stability Generator · The dm³ Criticality Principle · The Number 33. DOIs will appear here upon publication.</div>
-        <div class="g-isbn" style="color:var(--mid);">Links to be added</div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- Pricing -->
-<section id="pricing">
-  <div class="section-inner">
-    <div class="section-label">Get the Series</div>
-    <h2 class="gold-underline">Editions &amp; Pricing</h2>
-    <div class="pricing-grid">
-      <a href="https://www.paypal.com/paypalme/pgrossi/213.24" class="price-card featured linked" target="_blank">
-        <div class="price-badge">Complete Series</div>
-        <div class="price-title">Principia Orthogona<br>G¹–G⁵ · Print</div>
-        <div class="price-amount">$199.99</div>
-        <div class="price-note">456 pages · IngramSpark<br><span style="font-size:0.75rem; color:#999;">NJ tax incl.: $213.24</span></div>
-        <div class="price-isbn">ISBN 979-8-9954416-0-1</div>
-        <div class="price-cta">Buy via PayPal →</div>
-      </a>
-      <a href="https://www.paypal.com/paypalme/pgrossi/213.24" class="price-card linked" target="_blank">
-        <div class="price-badge">eBook</div>
-        <div class="price-title">Complete Series<br>Adobe PDF</div>
-        <div class="price-amount">$199.99</div>
-        <div class="price-note">Includes AXLE v6.1 embedded<br><span style="font-size:0.75rem; color:#999;">NJ tax incl.: $213.24</span></div>
-        <div class="price-isbn">ISBN 979-8-9954416-1-8</div>
-        <div class="price-cta">Buy via PayPal →</div>
-      </a>
-      <a href="https://www.paypal.com/paypalme/pgrossi/50.11" class="price-card linked" target="_blank">
-        <div class="price-badge">Individual</div>
-        <div class="price-title">Volume I · GOMC Science<br>Hardback</div>
-        <div class="price-amount">$47</div>
-        <div class="price-note">139 pages<br><span style="font-size:0.75rem; color:#999;">NJ tax incl.: $50.11</span></div>
-        <div class="price-isbn">ISBN 979-8-9954416-2-5</div>
-        <div class="price-cta">Buy via PayPal →</div>
-      </a>
-      <a href="https://www.paypal.com/paypalme/pgrossi/50.11" class="price-card linked" target="_blank">
-        <div class="price-badge">Individual</div>
-        <div class="price-title">Volume II · TOGT<br>Hardback</div>
-        <div class="price-amount">$47</div>
-        <div class="price-note">122 pages<br><span style="font-size:0.75rem; color:#999;">NJ tax incl.: $50.11</span></div>
-        <div class="price-isbn">ISBN 979-8-9954416-4-9</div>
-        <div class="price-cta">Buy via PayPal →</div>
-      </a>
-      <a href="https://www.paypal.com/paypalme/pgrossi/21.31" class="price-card linked" target="_blank">
-        <div class="price-badge">Entry Point</div>
-        <div class="price-title">Volume III · Mini-Beast<br>eBook only</div>
-        <div class="price-amount">$19.99</div>
-        <div class="price-note">107 pages · C1→C2 English<br><span style="font-size:0.75rem; color:#999;">NJ tax incl.: $21.31 · Tax-exempt? Use custom →</span></div>
-        <div class="price-isbn">ISBN 979-8-9954416-6-3</div>
-        <div class="price-cta">Buy via PayPal →</div>
-      </a>
-      <a href="https://totogt.github.io/AXLE/impa-portal.html" class="price-card linked">
-        <div class="price-badge">IMPA Edition</div>
-        <div class="price-title">Complete Series<br>Hardback · IMPA</div>
-        <div class="price-amount">$247</div>
-        <div class="price-note">Distributed via IMPA portal</div>
-        <div class="price-isbn">ISBN 979-8-9954416-8-7</div>
-        <div class="price-cta">Purchase via Portal →</div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Made in America -->
-<div class="mia-strip">MADE IN AMERICA · G6 LLC · NEWARK, NEW JERSEY · ORCID 0009-0000-6496-2186</div>
-
-<!-- Footer -->
-<footer>
-  <div class="footer-logo">PRINCIPIA ORTHOGONA</div>
-  <div class="footer-links">
-    <a href="#series">The Series</a>
-    <a href="#journey">D1 → D2</a>
-    <a href="#axle">AXLE</a>
-    <a href="https://github.com/TOTOGT/AXLE" target="_blank">GitHub</a>
-    <a href="https://zenodo.org/search?q=grossi+pablo+principia+orthogona&sort=newest" target="_blank">Zenodo</a>
-    <a href="https://x-colony.com/PoCo/index.php/spatial-intelligence/" target="_blank">XColony</a>
-    <a href="portal.html">Student Portal</a>
-    <a href="https://totogt.github.io/AXLE/impa-portal.html">IMPA Portal</a>
-  </div>
-  <div class="footer-small">
-    © 2026 Pablo Nogueira Grossi / G6 LLC · Newark, New Jersey, USA<br>
-    ORCID: 0009-0000-6496-2186 · Zenodo: <a href="https://zenodo.org/search?q=grossi+pablo+principia+orthogona&sort=newest" target="_blank" style="color:#888;">zenodo.org/grossi-pablo</a><br>
-    Complete Series Print ISBN: 979-8-9954416-0-1 · eBook ISBN: 979-8-9954416-1-8
-  </div>
-</footer>
-
+<script>
+(function(){
+  var root=document.documentElement, key="dm3lab-theme";
+  try{var s=localStorage.getItem(key); if(s) root.setAttribute("data-theme", s);}catch(e){}
+  var b=document.getElementById("themebtn");
+  b.addEventListener("click", function(){
+    var cur=root.getAttribute("data-theme");
+    if(!cur) cur=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+    var next=cur==="dark"?"light":"dark";
+    root.setAttribute("data-theme", next);
+    try{localStorage.setItem(key,next);}catch(e){}
+  });
+})();
+</script>
 </body>
 </html>
