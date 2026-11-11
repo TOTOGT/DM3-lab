@@ -60,7 +60,7 @@ import AXLE_v5_1
 
 -- Collatz/Syracuse: real C/K/F/U grammar, convergence axiomatic
 -- namespace Dm3Collatz
-import dm3Collatz
+import AXLE.Lexicon.dm3Collatz
 
 -- P vs NP: computational dm³ pillar
 -- namespace Dm3Comp

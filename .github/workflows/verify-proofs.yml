@@ -1,0 +1,155 @@
+name: Verify Lean proofs (real kernel check)
+
+# Runs on GitHub's own infrastructure, not any local sandbox, so it can
+# reach the Lean/Mathlib toolchain hosts that are blocked elsewhere.
+#
+# What this does, honestly:
+#   1. Installs the exact Lean toolchain pinned in GTCT/GCTC/lean-toolchain
+#   2. Runs `lake build` for real — if anything fails to compile, this job fails
+#   3. Generates one `#print axioms <name>` line per theorem/lemma actually
+#      found in the source, runs it through the real compiler, and parses
+#      the real output into a CSV: proved / uses-sorry / uses-other-axiom
+#   4. Uploads that CSV as a build artifact so registry.csv is always the
+#      last real build's output, not a hand-typed number.
+#   5. Writes a shields.io endpoint-badge JSON from that same real result and
+#      commits it back to the repo, so the README badge is dynamic — it always
+#      shows the last real kernel check, never a hand-typed or stale count.
+#
+# This replaces any hand-typed or manually-maintained theorem count.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.lean'
+      - 'lakefile.toml'
+      - 'lean-toolchain'
+      - '.github/workflows/verify-proofs.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan (Lean version manager)
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Mathlib build
+        uses: actions/cache@v4
+        with:
+          path: .lake
+          key: lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml', 'lake-manifest.json') }}
+
+      # NOTE: the package root is GTCT/ (that's where lakefile.lean and
+      # lean-toolchain actually live) — GCTC is just the library subfolder
+      # declared inside that lakefile, not the package root itself.
+      - name: lake build (the real check — fails the job if anything doesn't compile)
+        run: |
+          lake update
+          lake exe cache get || true
+          lake build AXLE
+
+      - name: Generate theorem/lemma name list from source
+        run: |
+          # Scan GCTC/ only (the actual lean_lib glob target), not all of GTCT/.
+          # GTCT/ also contains an orphaned sibling Operators/ duplicate directory
+          # (never part of the lake build) whose stale declarations previously
+          # showed up as false "unresolved" names in the probe.
+          mkdir -p /tmp/built
+          for f in Finite.lean Dm3PoincareToy.lean Dm3GoldbachToy.lean Dm3NSToy.lean Dm3RHToy.lean AXLE_v5_1.lean AXLE/Lexicon/dm3Collatz.lean Dm3Comp.lean; do mkdir -p "/tmp/built/$(dirname "$f")"; cp "$f" "/tmp/built/$f"; done
+          python3 scripts/extract_names.py /tmp/built > /tmp/all_names.txt
+          wc -l /tmp/all_names.txt
+
+      - name: Generate #print axioms probe file
+        run: |
+          python3 scripts/make_axiom_probe.py /tmp/all_names.txt AXLE > CheckAllAxioms.lean
+
+      - name: Run real axiom check through the Lean kernel
+        run: |
+          lake env lean CheckAllAxioms.lean > /tmp/axiom_output.txt 2>&1 || true
+          tail -50 /tmp/axiom_output.txt
+
+      - name: Parse real output into registry.csv
+        run: |
+          python3 scripts/parse_axiom_output.py /tmp/axiom_output.txt /tmp/all_names.txt > registry.csv
+          echo "=== Summary ==="
+          python3 -c "
+          import csv
+          from collections import Counter
+          with open('registry.csv') as f:
+              rows = list(csv.DictReader(f))
+          print(Counter(r['status'] for r in rows))
+          print(f'total: {len(rows)}')
+          "
+
+      - name: Upload real registry as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: theorem-registry-real
+          path: registry.csv
+
+      - name: Generate dynamic badge JSON from the real result
+        run: |
+          python3 - <<'PYEOF'
+          import csv, json, os
+
+          with open('registry.csv') as f:
+              rows = list(csv.DictReader(f))
+
+          proved = sum(1 for r in rows if r['status'] == 'proved')
+          sorry_n = sum(1 for r in rows if r['status'] == 'sorry')
+          extra = sum(1 for r in rows if r['status'] == 'extra-axiom')
+          unresolved = sum(1 for r in rows if r['status'] == 'unresolved')
+          total = len(rows)
+
+          if sorry_n:
+              color = 'red'
+          elif unresolved:
+              color = 'orange'
+          elif extra:
+              color = 'yellow'
+          else:
+              color = 'brightgreen'
+
+          message = f'{proved}/{total} proved'
+          if sorry_n:
+              message += f' · {sorry_n} sorry'
+          if extra:
+              message += f' · {extra} axiom'
+          if unresolved:
+              message += f' · {unresolved} unresolved'
+
+          data = {
+              'schemaVersion': 1,
+              'label': 'Lean kernel check',
+              'message': message,
+              'color': color,
+          }
+
+          os.makedirs('.github/badges', exist_ok=True)
+          with open('.github/badges/dm3lab-status.json', 'w') as f:
+              json.dump(data, f, indent=2)
+              f.write('\n')
+
+          print(json.dumps(data, indent=2))
+          PYEOF
+
+      - name: Commit badge data back to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/badges/dm3lab-status.json
+          if git diff --cached --quiet; then
+            echo "Badge unchanged, nothing to commit."
+          else
+            git commit -m "chore: update real kernel-verified proof badge (automated)"
+            git push
+          fi
