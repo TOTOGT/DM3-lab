@@ -22,7 +22,7 @@ def IsHur (q : Fin 4 → ℚ) : Prop :=
   (∀ i, ∃ z : ℤ, q i = z) ∨ (∀ i, ∃ z : ℤ, q i = z + 1 / 2)
 
 /-- numerators u = 2x: entries all even or all odd, sum of squares 4; entries bounded by 2 so this is a finite set -/
-def U : Finset (Fin 4 → ℤ) :=
+noncomputable def U : Finset (Fin 4 → ℤ) :=
   (Fintype.piFinset fun _ : Fin 4 => Finset.Icc (-2 : ℤ) 2).filter
     (fun u => ((∀ i, u i % 2 = 0) ∨ (∀ i, u i % 2 = 1)) ∧ ∑ i, u i ^ 2 = 4)
 
