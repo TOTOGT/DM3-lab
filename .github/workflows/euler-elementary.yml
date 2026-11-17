@@ -192,12 +192,23 @@ jobs:
           grep -n "error" /tmp/s65.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n "depends on axioms" /tmp/s65.txt
 
+      - name: Stage66a (two-squares reductions for hr2)
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage66a.lean 2>&1 | tee /tmp/s66a.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s66a.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s66a.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/s66a.txt
+
       - name: Summary
         if: always()
         run: |
           {
             echo "## Elementary lemmas: compiler output"
             echo '```'
-            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt /tmp/s61a.txt /tmp/s62a.txt /tmp/s62b.txt /tmp/s63a.txt /tmp/s63b.txt /tmp/s64.txt /tmp/s65.txt 2>/dev/null || echo "no output"
+            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt /tmp/s61a.txt /tmp/s62a.txt /tmp/s62b.txt /tmp/s63a.txt /tmp/s63b.txt /tmp/s64.txt /tmp/s65.txt /tmp/s66a.txt 2>/dev/null || echo "no output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
