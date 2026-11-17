@@ -178,7 +178,8 @@ lemma prod_nq_dq (s : Finset ℕ) :
   rw [key nq hn, key dq hd]
   apply ratio_subsets
   rw [Finset.mem_powerset]
-  exact Finset.filter_subset _ _
+  intro q hq
+  exact (Finset.mem_filter.1 hq).2
 
 theorem Mq_pow5 (u : ℕ) (hu : 0 < u) : (Mq u) ^ 5 * 160225 ≤ 7962624 * u := by
   have hterm : ∀ q ∈ Sq u, (u.factorization q + 1) ^ 5 * dq q ≤ nq q * q ^ (u.factorization q) := by
@@ -200,7 +201,7 @@ theorem Mq_pow5 (u : ℕ) (hu : 0 < u) : (Mq u) ^ 5 * 160225 ≤ 7962624 * u := 
       ≤ (∏ q ∈ Sq u, nq q) * ∏ q ∈ Sq u, q ^ (u.factorization q) := by
     rw [hL, ← hR]; exact hprod
   have hu' : ∏ q ∈ u.primeFactors, q ^ (u.factorization q) = u := by
-    have h := Nat.factorization_prod_pow_eq_self hu
+    have h := Nat.prod_factorization_pow_eq_self hu.ne'
     rwa [Finsupp.prod, Nat.support_factorization] at h
   have hQ : ∏ q ∈ Sq u, q ^ (u.factorization q) ≤ u := by
     have hd := Finset.prod_dvd_prod_of_subset (Sq u) u.primeFactors
@@ -243,9 +244,7 @@ theorem Mq_le (u : ℕ) (hu : 0 < u) (n : ℕ) (hun : u ≤ n) :
     calc ((Mq u : ℝ)) ^ 5 ≤ (7962624 / 160225 : ℝ) * (u : ℝ) := hq
       _ ≤ (7962624 / 160225 : ℝ) * (n : ℝ) := mul_le_mul_of_nonneg_left huR (by norm_num)
       _ ≤ (11 / 5 : ℝ) ^ 5 * (n : ℝ) := mul_le_mul_of_nonneg_right (by norm_num) hnR.le
-  first
-    | exact (pow_le_pow_iff_left₀ hX hY (by norm_num)).1 hle
-    | exact (pow_le_pow_iff_left hX hY (by norm_num)).1 hle
+  exact (pow_le_pow_iff_left₀ hX hY (by norm_num)).1 hle
 
 theorem Mn_le (n : ℕ) : (Mn n : ℝ) ≤ (11 / 5) * (n : ℝ) ^ ((1 : ℝ) / 5) := by
   by_cases hn : n = 0
