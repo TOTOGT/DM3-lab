@@ -148,12 +148,23 @@ jobs:
           grep -n "error" /tmp/s62b.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n "depends on axioms" /tmp/s62b.txt
 
+      - name: Stage63a (final real arithmetic in u = n^(1/20))
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage63a.lean 2>&1 | tee /tmp/s63a.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s63a.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s63a.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/s63a.txt
+
       - name: Summary
         if: always()
         run: |
           {
             echo "## Elementary lemmas: compiler output"
             echo '```'
-            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt /tmp/s61a.txt /tmp/s62a.txt /tmp/s62b.txt 2>/dev/null || echo "no output"
+            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt /tmp/s61a.txt /tmp/s62a.txt /tmp/s62b.txt /tmp/s63a.txt 2>/dev/null || echo "no output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
