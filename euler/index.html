@@ -82,7 +82,7 @@ ol.log b{font-family:system-ui,sans-serif;font-size:.92rem}
 <tr>
   <td><code>AnalyticRange</code> itself (paper Prop. 6.1, <code>n &ge; 64<sup>4</sup></code>).</td>
   <td><span class="tag bad">not done</span></td>
-  <td>None. Paper&rsquo;s sections 2&ndash;5 not audited.</td>
+  <td>None in Lean. Sections 2&ndash;6 were checked only by numerical tests and hand reading (see the lemma ledger).</td>
   <td>Needs Ramanujan&ndash;Petersson via Jacquet&ndash;Langlands.</td>
 </tr>
 <tr>
@@ -96,7 +96,7 @@ ol.log b{font-family:system-ui,sans-serif;font-size:.92rem}
 </div>
 
 <h2>The result, verbatim</h2>
-<p>The Euler step of the Actions run, and the same file run overnight on a laptop, printed:</p>
+<p>The Euler step of the Actions run, and the same file run in the background on a laptop (kept awake with <code>caffeinate</code>, output saved to a file; it took about 11 minutes, not overnight), printed:</p>
 <pre><code>43
 some 313
 'Euler1747.euler_finite' depends on axioms: [propext,
@@ -123,7 +123,7 @@ some 313
 </ol>
 
 <h2>What we did not do</h2>
-<p>We did not audit the paper&rsquo;s analytic sections (2&ndash;5), so we cannot say whether Proposition 6.1 is correct. We did not reproduce the paper&rsquo;s own formalization, and this file is an independent partial attempt, not a check of theirs. A passing run only counts for the files it compiled, and only to the trust level of the axioms it printed.</p>
+<p>We tested the paper&rsquo;s analytic sections (2&ndash;6) numerically and by hand reading, instance by instance, but did not prove them in Lean, so we cannot say Proposition 6.1 is proved; Lemma 3.2 needs results (Jacquet&ndash;Langlands, Deligne) that are not in Mathlib. We did not reproduce the paper&rsquo;s own formalization, and this file is an independent partial attempt, not a check of theirs. A passing run only counts for the files it compiled, and only to the trust level of the axioms it printed.</p>
 
 <h2>The method, in five lines</h2>
 <ol>
