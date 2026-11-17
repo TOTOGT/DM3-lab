@@ -229,6 +229,47 @@ theorem Nmix_le (t : ℕ) : Nmix t ≤ 2 * (t + 1) := by
   have h2 := quarter_card t
   omega
 
+/-! ### Real cutoffs: N_mix(t) = N_mix(⌊t⌋) for t ≥ 0
+
+Lemma 4.2 applies Lemma 4.1 at the real cutoff t = n/p², so the integer version alone is not
+enough. UNTESTED in Lean when written. -/
+
+/-- the real-cutoff condition: x+y odd and x²+y² ≤ t, with t a real number -/
+def PR (t : ℝ) (p : ℤ × ℤ) : Prop := (p.1 + p.2) % 2 = 1 ∧ ((p.1 ^ 2 + p.2 ^ 2 : ℤ) : ℝ) ≤ t
+
+lemma PR_iff {t : ℝ} (ht : 0 ≤ t) (p : ℤ × ℤ) : PR t p ↔ P ⌊t⌋₊ p := by
+  obtain ⟨x, y⟩ := p
+  unfold PR P
+  dsimp only
+  constructor
+  · rintro ⟨ho, hn⟩
+    refine ⟨ho, ?_⟩
+    have h0 : (0 : ℤ) ≤ x ^ 2 + y ^ 2 := by positivity
+    obtain ⟨k, hk⟩ := Int.eq_ofNat_of_zero_le h0
+    rw [hk] at hn ⊢
+    have hk' : k ≤ ⌊t⌋₊ := Nat.le_floor (by exact_mod_cast hn)
+    exact_mod_cast hk'
+  · rintro ⟨ho, hn⟩
+    refine ⟨ho, ?_⟩
+    have h1 : ((x ^ 2 + y ^ 2 : ℤ) : ℝ) ≤ ((⌊t⌋₊ : ℤ) : ℝ) := by exact_mod_cast hn
+    have h2 : ((⌊t⌋₊ : ℤ) : ℝ) = (⌊t⌋₊ : ℝ) := by simp
+    linarith [Nat.floor_le ht]
+
+theorem NmixR_floor (t : ℝ) (ht : 0 ≤ t) : {p : ℤ × ℤ | PR t p}.ncard = Nmix ⌊t⌋₊ := by
+  have hset : {p : ℤ × ℤ | PR t p} = (↑(Nset ⌊t⌋₊) : Set (ℤ × ℤ)) := by
+    ext p
+    simp only [Set.mem_setOf_eq, Finset.mem_coe, mem_Nset]
+    exact PR_iff ht p
+  rw [hset, Set.ncard_coe_finset]
+  rfl
+
+/-- Lemma 4.1 for real t ≥ 0 -/
+theorem NmixR_le (t : ℝ) (ht : 0 ≤ t) : (({p : ℤ × ℤ | PR t p}.ncard : ℕ) : ℝ) ≤ 2 * (t + 1) := by
+  rw [NmixR_floor t ht]
+  have h : (Nmix ⌊t⌋₊ : ℝ) ≤ 2 * ((⌊t⌋₊ : ℝ) + 1) := by exact_mod_cast Nmix_le ⌊t⌋₊
+  linarith [Nat.floor_le ht]
+
 end Section4
 
 #print axioms Section4.Nmix_le
+#print axioms Section4.NmixR_le
