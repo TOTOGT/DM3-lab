@@ -58,23 +58,24 @@ theorem hur_div_approx (a b : Quaternion ℚ) (hb : b ≠ 0) :
   obtain ⟨c, hc, hlt⟩ := Section71.cover ![(a * b⁻¹).re, (a * b⁻¹).imI, (a * b⁻¹).imJ, (a * b⁻¹).imK]
   have hcv : (![c 0, c 1, c 2, c 3] : Fin 4 → ℚ) = c := by
     funext i; fin_cases i <;> rfl
+  obtain ⟨q, h0, h1, h2, h3⟩ : ∃ q : Quaternion ℚ,
+      q.re = c 0 ∧ q.imI = c 1 ∧ q.imJ = c 2 ∧ q.imK = c 3 :=
+    ⟨⟨c 0, c 1, c 2, c 3⟩, rfl, rfl, rfl, rfl⟩
   have hxb : a * b⁻¹ * b = a := by rw [mul_assoc, inv_mul_cancel₀ hb, mul_one]
-  refine ⟨⟨c 0, c 1, c 2, c 3⟩, ?_, ?_⟩
-  · show Section71.IsHur ![c 0, c 1, c 2, c 3]
-    rw [hcv]; exact hc
-  · have h1 : a - (⟨c 0, c 1, c 2, c 3⟩ : Quaternion ℚ) * b
-        = (a * b⁻¹ - ⟨c 0, c 1, c 2, c 3⟩) * b := by
-      rw [sub_mul, hxb]
+  refine ⟨q, ?_, ?_⟩
+  · rw [h0, h1, h2, h3, hcv]; exact hc
+  · have e1 : a - q * b = (a * b⁻¹ - q) * b := by rw [sub_mul, hxb]
     have hnb : 0 < Quaternion.normSq b :=
       lt_of_le_of_ne Quaternion.normSq_nonneg (fun h => hb (Quaternion.normSq_eq_zero.1 h.symm))
-    have h2 : Quaternion.normSq (a * b⁻¹ - (⟨c 0, c 1, c 2, c 3⟩ : Quaternion ℚ)) < 1 := by
+    have e2 : Quaternion.normSq (a * b⁻¹ - q) < 1 := by
       rw [Quaternion.normSq_def']
-      simp only [Quaternion.sub_re, Quaternion.sub_imI, Quaternion.sub_imJ, Quaternion.sub_imK]
+      simp only [QuaternionAlgebra.sub_re, QuaternionAlgebra.sub_imI, QuaternionAlgebra.sub_imJ,
+        QuaternionAlgebra.sub_imK, h0, h1, h2, h3]
       simp only [Fin.sum_univ_four, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
         Matrix.cons_val_two, Matrix.tail_cons, Matrix.cons_val_three] at hlt
       linarith [hlt]
-    rw [h1, map_mul]
-    nlinarith [h2, hnb]
+    rw [e1, map_mul]
+    nlinarith [e2, hnb]
 
 end Section71b
 
