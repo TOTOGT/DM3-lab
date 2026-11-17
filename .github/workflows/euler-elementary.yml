@@ -126,12 +126,23 @@ jobs:
           grep -n "error" /tmp/s61a.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n "depends on axioms" /tmp/s61a.txt
 
+      - name: Stage62a (M(n) bound, second bound of Lemma 5.1)
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage62a.lean 2>&1 | tee /tmp/s62a.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s62a.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s62a.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/s62a.txt
+
       - name: Summary
         if: always()
         run: |
           {
             echo "## Elementary lemmas: compiler output"
             echo '```'
-            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt /tmp/s61a.txt 2>/dev/null || echo "no output"
+            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt /tmp/s61a.txt /tmp/s62a.txt 2>/dev/null || echo "no output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
