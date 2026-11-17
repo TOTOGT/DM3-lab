@@ -504,6 +504,7 @@ lemma E1_empty {p n : ℕ} (hodd : p % 2 = 1) (hp : 0 < p) (hlt : n < p * p) :
   dsimp only at hpar hb
   generalize x 0 / (p : ℤ) = a at hpar hb
   generalize x 1 / (p : ℤ) = b at hpar hb
+  have hb0 : a ^ 2 + b ^ 2 ≤ 0 := by exact_mod_cast hb
   have s1 : a ^ 2 = 0 := by nlinarith [sq_nonneg a, sq_nonneg b]
   have s2 : b ^ 2 = 0 := by nlinarith [sq_nonneg a, sq_nonneg b]
   have ha : a = 0 := pow_eq_zero_iff (by norm_num) |>.1 s1
@@ -521,10 +522,10 @@ theorem bp_le_16 {p n M : ℕ} (hodd : p % 2 = 1) (hp : 0 < p)
 
 theorem bp_zero {p n : ℕ} (hodd : p % 2 = 1) (hp : 0 < p) (hlt : n < p * p) : bp p n = 0 := by
   have h1 := bp_le p n
-  have h2 := E2_card_le_E1 p n
-  rw [E1_empty hodd hp hlt] at h2
-  rw [E1_empty hodd hp hlt] at h1
-  simp at h1 h2
+  have hE1 : (E1 p n).card = 0 := by rw [E1_empty hodd hp hlt]; simp
+  have hE2 : (E2 p n).card = 0 := by
+    have := E2_card_le_E1 p n
+    omega
   omega
 
 /-- (4.1), conditional on `hr2` (two-square count) and `hR` (R >= 12 n). -/

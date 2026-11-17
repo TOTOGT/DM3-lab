@@ -1,6 +1,6 @@
 # Manual run for the elementary-lemma files (fast, no native_decide step).
 # Trigger: Actions > "Euler elementary lemmas (Lean)" > Run workflow.
-# Files: Section6Arithmetic.lean (Lemma 5.1 / Prop 6.1 arithmetic), Lemma41.lean (Lemma 4.1, integer and real cutoff), Lemma52.lean (estimate (5.2)), LocalFactors.lean (Lemma 5.1 maximization), Sufficiency23.lean ((2.3) sufficiency), Lemma42.lean (Lemma 4.2, conditional on the two-square count).
+# Files: Section6Arithmetic.lean (Lemma 5.1 / Prop 6.1 arithmetic), Lemma41.lean (Lemma 4.1, integer and real cutoff), Lemma52.lean (estimate (5.2)), LocalFactors.lean (Lemma 5.1 maximization), Sufficiency23.lean ((2.3) sufficiency), Lemma42.lean (Lemma 4.2, conditional on the two-square count), Lemma51.lean (Lemma 5.1 first bound, multiplicative assembly).
 # Both were written without a local Lean toolchain and had never been compiled when this was added.
 name: Euler elementary lemmas (Lean)
 
@@ -93,12 +93,23 @@ jobs:
           grep -n "error" /tmp/l42.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n "depends on axioms" /tmp/l42.txt
 
+      - name: Lemma51 (first bound)
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Lemma51.lean 2>&1 | tee /tmp/l51.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/l51.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/l51.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/l51.txt
+
       - name: Summary
         if: always()
         run: |
           {
             echo "## Elementary lemmas: compiler output"
             echo '```'
-            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt 2>/dev/null || echo "no output"
+            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt 2>/dev/null || echo "no output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
