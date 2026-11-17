@@ -8,13 +8,13 @@ With n = u^20 (so X = n^(1/4) = u^5, n^(1/5) = u^4, sqrt n = u^10, n^(-3/10) = u
 P = floor(2X) with 2u^5 - 1 <= P <= 2u^5, the paper's chain (6.1) + (6.2) becomes the inequality of
 `final_arith`.  The paper takes real P = 2X; using a natural P costs the factor 127/128 (P >= 127/64 u^5),
 absorbed in the constants 128/(15*127) and 8192/16129 below.  Python (Fraction) says the value at
-w = 4/9 is 0.64307 < 2/3 (slack 0.0236); this is a re-derivation, not the paper's 21235493/33177600.
+w = 4/9 is 0.6458 < 2/3 (slack 0.021) with E <= (49/50)/u^6; this is a re-derivation, not the paper's 21235493/33177600.
 -/
 
 namespace Section63
 
 theorem numeric_core (w : ℝ) (hw0 : 0 < w) (hw : w ≤ 4 / 9) :
-    21 / 50 + (23 / 24) * (4 / 15 * w + w ^ 6)
+    21 / 50 + (49 / 50) * (4 / 15 * w + w ^ 6)
       + (44 / 15) * (128 / (15 * 127) * w + 8192 / 16129 * w ^ 6 + 2 / 15 * w ^ 6 + w ^ 16)
     < 2 / 3 := by
   have h6 : w ^ 6 ≤ (4 / 9) ^ 6 := pow_le_pow_left₀ hw0.le hw 6
@@ -26,7 +26,7 @@ theorem numeric_core (w : ℝ) (hw0 : 0 < w) (hw : w ≤ 4 / 9) :
 
 theorem final_arith (u P E : ℝ) (hu : 0 < u) (hX : 64 ≤ u ^ 5)
     (hP1 : 2 * u ^ 5 - 1 ≤ P) (hP2 : P ≤ 2 * u ^ 5)
-    (hE0 : 0 ≤ E) (hE : E ≤ (23 / 24) / u ^ 6) :
+    (hE0 : 0 ≤ E) (hE : E ≤ (49 / 50) / u ^ 6) :
     21 / 50 + E * (2 * P / 15 + 1)
       + (4 / 3) * ((11 / 5) * u ^ 4)
           * (2 / (15 * P) + 2 / P ^ 2 + (2 * u ^ 10 / 15 + 1) / u ^ 20)
@@ -47,10 +47,10 @@ theorem final_arith (u P E : ℝ) (hu : 0 < u) (hX : 64 ≤ u ^ 5)
     linarith
   have hu5 : (0 : ℝ) < u ^ 5 := by positivity
   -- small-prime side
-  have hT1a : E * (2 * P / 15 + 1) ≤ ((23 / 24) / u ^ 6) * (4 * u ^ 5 / 15 + 1) :=
+  have hT1a : E * (2 * P / 15 + 1) ≤ ((49 / 50) / u ^ 6) * (4 * u ^ 5 / 15 + 1) :=
     mul_le_mul hE (by linarith) (by linarith) (by positivity)
-  have hT1b : ((23 / 24) / u ^ 6) * (4 * u ^ 5 / 15 + 1)
-      = (23 / 24) * (4 / 15 * (1 / u) + (1 / u) ^ 6) := by
+  have hT1b : ((49 / 50) / u ^ 6) * (4 * u ^ 5 / 15 + 1)
+      = (49 / 50) * (4 / 15 * (1 / u) + (1 / u) ^ 6) := by
     field_simp
     ring
   -- large-prime side
