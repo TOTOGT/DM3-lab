@@ -15,7 +15,7 @@ Method (the paper's mod-60 argument): such a prime is coprime to 60, hence lies 
 gives the bound; the count is periodic with period 60 and 8 hits per period.
 
 Previously only COMPUTED (checked up to 3,000,000 by script). This file is the proof.
-(5.3), the tail sum, is added at the end of this file (also untested when written). (5.4) is not done.
+(5.3), the tail sum, is added at the end of this file (also untested when written). (5.4) is added after it (also untested when written).
 -/
 
 namespace Section5
@@ -171,6 +171,10 @@ theorem tail_bound (P : ℕ) (hP : 1 ≤ P) :
       mul_nonneg (by linarith) (by linarith)
     rw [hsum, hB]
     push_cast
+    -- linarith treats `z / x^2` as one atom, so turn quotients into products with inverse atoms
+    have e1 : ∀ z : ℝ, z / ((K : ℝ) + 1) ^ 2 = z * (((K : ℝ) + 1) ^ 2)⁻¹ := fun z => by ring
+    have e0 : ∀ z : ℝ, z / (K : ℝ) ^ 2 = z * ((K : ℝ) ^ 2)⁻¹ := fun z => by ring
+    simp only [one_div, e1, e0] at ih h1 h3 ⊢
     nlinarith [ih, h1, h3]
 
 lemma prime_in_Pm {p : ℕ} (hp : p.Prime) (h4 : p % 4 = 3) (h3 : 3 < p) : Pm p := by
@@ -220,7 +224,80 @@ theorem prime_tail (P : ℕ) (hP : 3 ≤ P) (K : ℕ) :
     rw [this]
     simpa using hrhs
 
+/-! ### (5.4): 2 Σ_{p ≡ 3 (4)} 1/(p(p−1)) < 21/50
+
+UNTESTED when written, and it depends on `prime_tail` (5.3) compiling first.
+Split at 60: the nine primes ≤ 60 are summed exactly; for p > 60, 1/(p(p−1)) ≤ (60/59)/p²,
+and (5.3) at P = 60 bounds the rest. This is the paper's own split. -/
+
+def PT (K : ℕ) : Finset ℕ := (Finset.range (K + 1)).filter (fun p => p.Prime ∧ p % 4 = 3)
+
+lemma small_primes : ∀ p, p ≤ 60 → p.Prime → p % 4 = 3 →
+    p ∈ ({3, 7, 11, 19, 23, 31, 43, 47, 59} : Finset ℕ) := by decide
+
+lemma small_sum :
+    ∑ p ∈ ({3, 7, 11, 19, 23, 31, 43, 47, 59} : Finset ℕ), 1 / ((p : ℝ) * ((p : ℝ) - 1))
+      < 21 / 100 - (60 / 59) * (2 / (15 * 60) + 2 / 60 ^ 2) := by
+  norm_num [Finset.sum_insert]
+
+theorem five_four (K : ℕ) :
+    2 * ∑ p ∈ PT K, 1 / ((p : ℝ) * ((p : ℝ) - 1)) < 21 / 50 := by
+  have hsplit := Finset.sum_filter_add_sum_filter_not (PT K) (fun p => p ≤ 60)
+    (fun p => 1 / ((p : ℝ) * ((p : ℝ) - 1)))
+  -- primes up to 60
+  have hsmall : ∑ p ∈ (PT K).filter (fun p => p ≤ 60), 1 / ((p : ℝ) * ((p : ℝ) - 1))
+      ≤ ∑ p ∈ ({3, 7, 11, 19, 23, 31, 43, 47, 59} : Finset ℕ), 1 / ((p : ℝ) * ((p : ℝ) - 1)) := by
+    apply Finset.sum_le_sum_of_subset_of_nonneg
+    · intro p hp
+      simp only [PT, Finset.mem_filter] at hp
+      obtain ⟨⟨_, hpr, h4⟩, hle⟩ := hp
+      exact small_primes p hle hpr h4
+    · intro p hp _
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hp
+      rcases hp with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num
+  -- primes above 60
+  have hlarge : ∑ p ∈ (PT K).filter (fun p => ¬ p ≤ 60), 1 / ((p : ℝ) * ((p : ℝ) - 1))
+      ≤ (60 / 59) * (2 / (15 * 60) + 2 / 60 ^ 2) := by
+    have hsub : (PT K).filter (fun p => ¬ p ≤ 60)
+        ⊆ (Finset.Ioc 60 K).filter (fun p => p.Prime ∧ p % 4 = 3) := by
+      intro p hp
+      simp only [PT, Finset.mem_filter, Finset.mem_range] at hp
+      obtain ⟨⟨hr, hpr, h4⟩, hle⟩ := hp
+      exact Finset.mem_filter.2 ⟨Finset.mem_Ioc.2 ⟨by omega, by omega⟩, hpr, h4⟩
+    have hterm : ∀ p ∈ (PT K).filter (fun p => ¬ p ≤ 60),
+        1 / ((p : ℝ) * ((p : ℝ) - 1)) ≤ (60 / 59) * (1 / (p : ℝ) ^ 2) := by
+      intro p hp
+      simp only [PT, Finset.mem_filter] at hp
+      have hp61 : (61 : ℝ) ≤ p := by exact_mod_cast (show 61 ≤ p by omega)
+      have hpos : 0 < (p : ℝ) * ((p : ℝ) - 1) := by nlinarith
+      rw [div_le_iff₀ hpos]
+      have hp2 : (0 : ℝ) < (p : ℝ) ^ 2 := by positivity
+      have : (60 / 59 : ℝ) * (1 / (p : ℝ) ^ 2) * ((p : ℝ) * ((p : ℝ) - 1))
+          = (60 / 59) * (((p : ℝ) - 1) / p) := by
+        field_simp
+      rw [this]
+      have hq : (59 / 60 : ℝ) ≤ ((p : ℝ) - 1) / p := by
+        rw [le_div_iff₀ (by positivity)]
+        nlinarith
+      nlinarith
+    have h1 := Finset.sum_le_sum hterm
+    rw [← Finset.mul_sum] at h1
+    have h2 : ∑ p ∈ (PT K).filter (fun p => ¬ p ≤ 60), 1 / (p : ℝ) ^ 2
+        ≤ ∑ p ∈ (Finset.Ioc 60 K).filter (fun p => p.Prime ∧ p % 4 = 3), 1 / (p : ℝ) ^ 2 :=
+      Finset.sum_le_sum_of_subset_of_nonneg hsub (fun _ _ _ => by positivity)
+    have h3 := prime_tail 60 (by norm_num) K
+    norm_num at h3
+    have h4 : (60 / 59 : ℝ) * ∑ p ∈ (PT K).filter (fun p => ¬ p ≤ 60), 1 / (p : ℝ) ^ 2
+        ≤ (60 / 59) * (2 / (15 * 60) + 2 / 60 ^ 2) := by
+      apply mul_le_mul_of_nonneg_left _ (by norm_num)
+      norm_num
+      linarith
+    linarith
+  have := small_sum
+  linarith
+
 end Section5
 
 #print axioms Section5.prime_count_bound
 #print axioms Section5.prime_tail
+#print axioms Section5.five_four
