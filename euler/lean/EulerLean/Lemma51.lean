@@ -332,7 +332,9 @@ lemma Phi_pp {p : ℕ} (hp : p.Prime) {n : ℕ} (hn : 1 ≤ n) :
     intro q hq
     have hqp := S5_prime hq
     by_cases h : q = p
-    · have hd : q ∣ p ^ n := h ▸ dvd_pow_self p (by omega)
+    · have hd : q ∣ p ^ n := by
+        rw [h]
+        exact dvd_pow_self p (by omega : n ≠ 0)
       rw [if_pos hd, if_pos h]
     · have hd : ¬ q ∣ p ^ n := fun hd =>
         h ((Nat.prime_dvd_prime_iff_eq hqp hp).1 (hqp.dvd_of_dvd_pow hd))
@@ -343,17 +345,17 @@ lemma Phi_pp {p : ℕ} (hp : p.Prime) {n : ℕ} (hn : 1 ≤ n) :
 theorem Fq_le_Phi (m : ℕ) :
     0 < m → (∀ p : ℕ, p.Prime → p ∣ m → p % 4 = 3) → Fq m ≤ Phi m := by
   induction m using Nat.recOnPosPrimePosCoprime with
-  | hp p n hp hn =>
+  | prime_pow p n hp hn =>
     intro _ hmod
-    have h4 := hmod p hp (dvd_pow_self p (by omega))
+    have h4 := hmod p hp (dvd_pow_self p (by omega : n ≠ 0))
     rw [Phi_pp hp hn]
     exact Fq_pp_le hp h4 hn
-  | h0 => intro h; omega
-  | h1 =>
+  | zero => intro h; omega
+  | one =>
     intro _ _
     have : Fq 1 = 1 := by unfold Fq; rw [tau_one, sig_one]; norm_num
     rw [this, Phi_one]
-  | h a b ha hb hab iha ihb =>
+  | coprime a b ha hb hab iha ihb =>
     intro hm hmod
     rw [Fq_mul hab, Phi_mul hab]
     exact mul_le_mul (iha (by omega) (fun p hp hd => hmod p hp (dvd_mul_of_dvd_left hd b)))
@@ -384,9 +386,13 @@ theorem lemma51_first (m : ℕ) (hm : 0 < m)
     (hmod : ∀ p : ℕ, p.Prime → p ∣ m → p % 4 = 3) :
     ((tau m : ℝ) * (m : ℝ) / (sig m : ℝ)) ≤ (23 / 10) * (m : ℝ) ^ ((1 : ℝ) / 5) := by
   have hq := tau_sigma_pow5 m hm hmod
-  unfold Fq at hq
+  have hq' : ((Fq m : ℚ) : ℝ) ≤ ((183143120027364343 / 2849934139195392 : ℚ) : ℝ) :=
+    Rat.cast_le.2 hq
   have hR : ((tau m : ℝ)) ^ 5 * (m : ℝ) ^ 4 / ((sig m : ℝ)) ^ 5
-      ≤ (183143120027364343 / 2849934139195392 : ℝ) := by exact_mod_cast hq
+      ≤ (183143120027364343 / 2849934139195392 : ℝ) := by
+    unfold Fq at hq'
+    push_cast at hq'
+    exact hq'
   have hsig : (0 : ℝ) < (sig m : ℝ) := by
     have := sig_ge hm
     have : 0 < sig m := lt_of_lt_of_le hm this
