@@ -1,0 +1,37 @@
+# Fast manual run for the two-square count (Stage 66). Standalone: each file imports only Mathlib.
+# Trigger: Actions > "Euler stage 66 (Lean)" > Run workflow. No Stage65 / native_decide step, so it finishes in minutes.
+name: Euler stage 66 (Lean)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stage66:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Stage66d
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage66d.lean 2>&1 | tee /tmp/s66d.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s66d.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s66d.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/s66d.txt
