@@ -69,11 +69,14 @@ theorem hur_div_approx (a b : Quaternion ℚ) (hb : b ≠ 0) :
       lt_of_le_of_ne Quaternion.normSq_nonneg (fun h => hb (Quaternion.normSq_eq_zero.1 h.symm))
     have e2 : Quaternion.normSq (a * b⁻¹ - q) < 1 := by
       rw [Quaternion.normSq_def']
-      simp only [QuaternionAlgebra.sub_re, QuaternionAlgebra.sub_imI, QuaternionAlgebra.sub_imJ,
-        QuaternionAlgebra.sub_imK, h0, h1, h2, h3]
+      have r0 : (a * b⁻¹ - q).re = (a * b⁻¹).re - c 0 := by rw [← h0]; rfl
+      have r1 : (a * b⁻¹ - q).imI = (a * b⁻¹).imI - c 1 := by rw [← h1]; rfl
+      have r2 : (a * b⁻¹ - q).imJ = (a * b⁻¹).imJ - c 2 := by rw [← h2]; rfl
+      have r3 : (a * b⁻¹ - q).imK = (a * b⁻¹).imK - c 3 := by rw [← h3]; rfl
+      rw [r0, r1, r2, r3]
       simp only [Fin.sum_univ_four, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
         Matrix.cons_val_two, Matrix.tail_cons, Matrix.cons_val_three] at hlt
-      linarith [hlt]
+      nlinarith [hlt]
     rw [e1, map_mul]
     nlinarith [e2, hnb]
 
