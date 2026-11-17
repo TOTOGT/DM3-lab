@@ -30,7 +30,7 @@ open Classical
 /-- parity + norm condition defining the "mixed" pairs -/
 def P (t : ℕ) (p : ℤ × ℤ) : Prop := (p.1 + p.2) % 2 = 1 ∧ p.1 ^ 2 + p.2 ^ 2 ≤ (t : ℤ)
 
-def inBox (t : ℕ) : Finset (ℤ × ℤ) :=
+noncomputable def inBox (t : ℕ) : Finset (ℤ × ℤ) :=
   Finset.Icc (-(t : ℤ)) t ×ˢ Finset.Icc (-(t : ℤ)) t
 
 /-- the set counted by N_mix(t) (cut to a finite box, which loses nothing: see `mem_Nset`) -/
@@ -42,12 +42,12 @@ lemma bound_of_sq {x : ℤ} {t : ℕ} (h : x ^ 2 ≤ (t : ℤ)) : -(t : ℤ) ≤
   have ht : (0 : ℤ) ≤ t := Nat.cast_nonneg t
   constructor
   · by_contra hc
-    push_neg at hc
+    have hc := not_le.1 hc
     have h1 : (t : ℤ) + 1 ≤ -x := by omega
     have h2 := mul_self_le_mul_self (by omega : (0 : ℤ) ≤ (t : ℤ) + 1) h1
     nlinarith
   · by_contra hc
-    push_neg at hc
+    have hc := not_le.1 hc
     have h1 : (t : ℤ) + 1 ≤ x := by omega
     have h2 := mul_self_le_mul_self (by omega : (0 : ℤ) ≤ (t : ℤ) + 1) h1
     nlinarith
@@ -152,7 +152,7 @@ lemma quad_lt (p : ℤ × ℤ) : quad p < 4 := by
 
 lemma quad_zero (p : ℤ × ℤ) : quad p = 0 ↔ qA p := by
   unfold quad qA
-  split_ifs <;> simp_all <;> omega
+  split_ifs <;> simp_all
 
 lemma quad_rot (x y : ℤ) (hp : (x + y) % 2 = 1) :
     quad (-y, x) = (quad (x, y) + 1) % 4 ∧ quad (y, -x) = (quad (x, y) + 3) % 4 := by
