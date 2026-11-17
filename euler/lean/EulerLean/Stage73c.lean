@@ -406,12 +406,12 @@ theorem unit_inv (u : Quaternion ℚ) (hu : QH u) (hn : Quaternion.normSq u = 1)
   have o2 : (1 : Quaternion ℚ).imJ = 0 := by first | rfl | simp
   have o3 : (1 : Quaternion ℚ).imK = 0 := by first | rfl | simp
   refine ⟨star u, Section73a.QH_star hu, ?_, ?_⟩
-  · refine Quaternion.ext ?_ ?_ ?_ ?_
+  · first | refine Quaternion.ext _ _ ?_ ?_ ?_ ?_ | refine QuaternionAlgebra.ext ?_ ?_ ?_ ?_
     · rw [a0, s0, s1, s2, s3, o0]; nlinarith [hq]
     · rw [a1, s0, s1, s2, s3, o1]; ring
     · rw [a2, s0, s1, s2, s3, o2]; ring
     · rw [a3, s0, s1, s2, s3, o3]; ring
-  · refine Quaternion.ext ?_ ?_ ?_ ?_
+  · first | refine Quaternion.ext _ _ ?_ ?_ ?_ ?_ | refine QuaternionAlgebra.ext ?_ ?_ ?_ ?_
     · rw [b0, s0, s1, s2, s3, o0]; nlinarith [hq]
     · rw [b1, s0, s1, s2, s3, o1]; ring
     · rw [b2, s0, s1, s2, s3, o2]; ring
