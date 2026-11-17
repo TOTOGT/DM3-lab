@@ -299,6 +299,8 @@ Let g generate the right ideal q H + p H.  Then N(g) divides N(p) = p^2.
 
 NOT PROVED HERE: the divisor lemma itself, principal right ideals as a statement about a bundled ring, the count 24(p+1). -/
 
+open Section71d
+
 namespace Section73a
 
 theorem QH_star {x : Quaternion ℚ} (hx : QH x) : QH (star x) := by
