@@ -115,12 +115,23 @@ jobs:
           grep -n "error" /tmp/bridge.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n "depends on axioms" /tmp/bridge.txt
 
+      - name: Stage61a (small-prime sum, Prop 3.1 as hypothesis)
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage61a.lean 2>&1 | tee /tmp/s61a.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s61a.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s61a.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/s61a.txt
+
       - name: Summary
         if: always()
         run: |
           {
             echo "## Elementary lemmas: compiler output"
             echo '```'
-            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt 2>/dev/null || echo "no output"
+            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt /tmp/s61a.txt 2>/dev/null || echo "no output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
