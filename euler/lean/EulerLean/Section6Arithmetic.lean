@@ -68,10 +68,11 @@ theorem final_sum_lt : (21235493 / 33177600 : ℚ) < 2 / 3 := by norm_num
 
 /-! ### (5.4): the partial sum behind 2 * sum 1/(p(p-1)) < 21/50
 
-Only a finite part plus a tail bound of MY OWN shape (120/59 times a two-term
-expression) is checked; I have not matched it to the paper's argument for (5.4),
-and the tail estimate itself is NOT proved here. Treat this theorem as a
-sanity check of the number 21/50, not as a formalization of (5.4). -/
+The finite part is the sum over p in {3,7,11,19,23,31,43,47,59}; the tail term (120/59)(2/(15*60) + 2/60^2) is the
+paper's own remainder estimate in its proof of (5.4): p/(p-1) <= 60/59 for p > 60, with (5.3) at P = 60. I originally
+described this shape as my own; reading the paper's proof again, it matches. What this theorem checks is the
+arithmetic of that final inequality only. The tail estimate itself is (5.3), proved separately in Lemma52.lean
+(untested when this comment was written). Not a formalization of (5.4) as a statement about primes. -/
 
 theorem partial_sum_5_4 :
     (2 / (3 * 2) + 2 / (7 * 6) + 2 / (11 * 10) + 2 / (19 * 18) + 2 / (23 * 22)
