@@ -9,21 +9,21 @@ Status words: **LEAN-KERNEL** (Lean, standard axioms only) | **LEAN-NATIVE** (Le
 
 | # | Statement | Status | Evidence / file | Next step and feasibility |
 |---|---|---|---|---|
-| Thm 1.1 | every n = 2 mod 4 is a + b, a,b in A | LEAN conditional | Euler1747.lean: assembly from Prop 6.1 as a hypothesis (`AnalyticRange`) | Cannot be unconditional until Prop 3.1 is proved (see 3.1) |
+| Thm 1.1 | every n = 2 mod 4 is a + b, a,b in A | LEAN conditional | Euler1747.lean: assembly from Prop 6.1 as a hypothesis (`AnalyticRange`) | Unconditional once `AnalyticRange` (Prop 6.1) is proved; Prop 3.1 supplies one input to that proof |
 | Lemma 2.1 | reduce to n = 2m, m odd, all primes of m = 3 mod 4 | LEAN-KERNEL (inside Euler1747.lean, standard axioms + native_decide ax only because of the finite part) | `euler_1747_of_analytic_range` | done |
 | (2.1) | R(n) = 24 sigma(m) (Jacobi) | COMPUTED (n < 6000, all tested m) | audit_prop31.py asserts it | LEAN: hard, many sessions. Plan in JACOBI_PLAN.md (Hurwitz route; step A written, untested) |
 | (2.2) | \|Rmix\| = (2/3) R | LEAN-KERNEL | FourSquaresMixed.lean, axioms propext, Classical.choice, Quot.sound | done |
 | (2.3) sufficiency | sum_p b_p < (2/3)R implies a representation | READ | follows from p nonresidue argument | LEAN: feasible (a few hundred lines) |
 | Prop 3.1 | b_p/R <= 2/(p(p-1)) + [p>3] tau sqrt m / (3 sigma) | COMPUTED: 3,059 (m,p) cases, 0 violations, one equality case (m=7, p=3) | audit_prop31.py | LEAN: needs Hurwitz order + finite quotient + Lemma 3.2. Not feasible near-term |
-| Lemma 3.2 | \|\|T_m\|\| <= tau(m) sqrt m on {1,chi}^perp | COMPUTED: 22 instances (p=7,11,19; m up to 45), 0 violations, worst ratio 0.957; earlier p=3 partial run | audit_lemma32.py | LEAN: NOT possible with current Mathlib (needs Jacquet-Langlands and Deligne). READ-level only for (3.5) and "exactly {1,chi}" |
+| Lemma 3.2 | \|\|T_m\|\| <= tau(m) sqrt m on {1,chi}^perp | COMPUTED: 22 instances (p=7,11,19; m up to 45), 0 violations, worst ratio 0.957; earlier p=3 partial run | audit_lemma32.py | General Lean proof OPEN: the full spectral bound needs Jacquet-Langlands and weight-two Ramanujan-Petersson (Deligne), neither in Mathlib. The two exceptional modes (T_m 1 = sigma(m) 1, T_m chi = (m/p) sigma(m) chi) are a finite-group statement that could be formalized separately. Hecke identification (3.5) and "exactly {1,chi}" are READ only. Another assistant reports seven exact checks at p=7; not reproduced or merged with our 22 |
 | Lemma 4.1 | Nmix(t) <= 2(t+1) | COMPUTED: integer t in [0,4000], 0 violations, max ratio 1.0 | audit_lemma4.py | LEAN: feasible (elementary lattice count) |
 | Lemma 4.2 | (1/R) sum_{p>P} b_p <= (4/3) M(n) [ ... ] | COMPUTED: 1,164 tests, 0 violations, worst lhs/rhs 0.442 | audit_lemma4.py | LEAN: feasible once the two-square count r2 <= 4M is available |
 | Lemma 5.1 | tau m / sigma <= (23/10) m^(1/5); M(n) <= (11/5) n^(1/5) | COMPUTED: C1^5, C2^5 exact match with the paper's fractions | audit_numbers.py | LEAN: feasible (finite check over primes < 32 plus a monotonicity lemma) |
 | Lemma 5.2 (5.2) | count of p in P3, 3<p<=t, <= 2t/15 + 1 | COMPUTED up to 3e6 | audit_numbers.py | LEAN: feasible (mod 60 periodicity) |
 | (5.3) | sum_{p>P} 1/p^2 <= 2/(15P) + 2/P^2 | COMPUTED, no violation | audit_numbers.py | LEAN: feasible, partial summation is the work |
 | (5.4) | 2 sum 1/(p(p-1)) < 21/50 | COMPUTED: partial sum 0.41707 | audit_numbers.py | LEAN: feasible, same technique |
-| Prop 6.1 | n = 2m >= 64^4 implies n in A + A | COMPUTED: (6.1)+(6.2) = 21235493/33177600 < 2/3, exact match; real-valued bound 0.6337 at X=64, decreasing in X | audit_numbers.py | LEAN conditional on Prop 3.1 and (2.1) is feasible and is the useful next target (see 3) |
-| Lemma 7.1 | eps_j = 1 iff 4j+1 in A | COMPUTED (independent sieve, 43 candidates ending 313) | Euler1747.lean `cands` | LEAN-NATIVE equivalent exists |
+| Prop 6.1 | n = 2m >= 64^4 implies n in A + A | COMPUTED: the rational upper bound from (6.1) and (6.2) is 21235493/33177600 < 2/3 (the paper replaces X-dependent terms by bounds valid for X >= 64); exact match; real-valued bound 0.6337 at X=64. The final arithmetic compiled in Section6Arithmetic.lean (GitHub, standard axioms) | audit_numbers.py | LEAN conditional on Prop 3.1 and (2.1) is feasible and is the useful next target (see 3) |
+| Lemma 7.1 | eps_j = 1 iff 4j+1 in A | PARTLY LEAN: `goodB_iff` (Bool test = membership in A) is proved; the count 43 and last element 313 come from #eval and an independent sieve, not from a theorem | Euler1747.lean `goodB_iff`, `cands` | euler_finite only needs candidates in A, not list completeness |
 | Prop 7.2 | every n = 2 mod 4, n < 64^4, is a+b with min <= 313 | LEAN-NATIVE | `euler_finite`, run on GitHub (10m49s) and on a Mac. Axiom list includes the native_decide axiom | a kernel-only version would need a faster certified checker |
 
 ## 2. Branch map: every place the proof splits into cases
