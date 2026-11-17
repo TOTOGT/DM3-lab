@@ -104,12 +104,23 @@ jobs:
           grep -n "error" /tmp/l51.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n "depends on axioms" /tmp/l51.txt
 
+      - name: Bridge (finite algebra, hquad as hypothesis)
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Bridge.lean 2>&1 | tee /tmp/bridge.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/bridge.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/bridge.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/bridge.txt
+
       - name: Summary
         if: always()
         run: |
           {
             echo "## Elementary lemmas: compiler output"
             echo '```'
-            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt 2>/dev/null || echo "no output"
+            cat /tmp/s6.txt /tmp/l41.txt /tmp/l52.txt /tmp/lf.txt /tmp/s23.txt /tmp/l42.txt /tmp/l51.txt /tmp/bridge.txt 2>/dev/null || echo "no output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
