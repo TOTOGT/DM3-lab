@@ -1,0 +1,252 @@
+import Mathlib
+
+/-! # Stage71b: Hurwitz division with remainder over the rational quaternions (UNTESTED when written; no compiler run yet)
+
+WHAT THIS FILE PROVES, if it compiles.  For rational quaternions a and b, b not zero, there is a quaternion q whose
+four coordinates form a Hurwitz point (all integers, or all in Z + 1/2) with  N(a - q b) < N(b),  N = Quaternion.normSq.
+
+Hand derivation.  x = a b^-1 satisfies x b = a, so a - q b = (x - q) b.  The norm is multiplicative, so
+N(a - q b) = N(x - q) N(b).  By the covering lemma (Stage71a, copied below) choose q Hurwitz with N(x - q) < 1.  N(b) > 0
+since b is not zero.  Hence N(a - q b) < N(b).
+
+DOES NOT PROVE: that the set of Hurwitz points is closed under addition and multiplication (it is a ring: that is a
+separate lemma), so this is NOT yet "the Hurwitz order is Euclidean"; it is the approximation statement that Euclidean
+division needs.  It does not prove unique factorization or Jacobi's count and does not discharge HJac.  The covering lemma
+is copied from Stage71a (compiled clean in euler-stage66 run #9) with `push_neg` replaced by `push Not`. -/
+
+open Finset
+
+namespace Section71
+
+/-- the Hurwitz lattice inside Q^4: all coordinates integers, or all in Z + 1/2 -/
+def IsHur (q : Fin 4 → ℚ) : Prop :=
+  (∀ i, ∃ z : ℤ, q i = z) ∨ (∀ i, ∃ z : ℤ, q i = z + 1 / 2)
+
+theorem cover (x : Fin 4 → ℚ) : ∃ q : Fin 4 → ℚ, IsHur q ∧ ∑ i, (x i - q i) ^ 2 < 1 := by
+  by_cases hall : ∀ i, |x i - round (x i)| = 1 / 2
+  · refine ⟨x, Or.inr ?_, by simp⟩
+    intro i
+    have h := hall i
+    rcases abs_eq (by norm_num : (0 : ℚ) ≤ 1 / 2) |>.1 h with h1 | h1
+    · exact ⟨round (x i), by linarith⟩
+    · exact ⟨round (x i) - 1, by push_cast; linarith⟩
+  · push Not at hall
+    obtain ⟨i0, hi0⟩ := hall
+    have hle : ∀ i, (x i - round (x i)) ^ 2 ≤ 1 / 4 := by
+      intro i
+      have := abs_le.1 (abs_sub_round (x i))
+      nlinarith [this.1, this.2]
+    have hlt : (x i0 - round (x i0)) ^ 2 < 1 / 4 := by
+      have h1 := abs_sub_round (x i0)
+      have h2 : |x i0 - round (x i0)| < 1 / 2 := lt_of_le_of_ne h1 hi0
+      have := abs_lt.1 h2
+      nlinarith [this.1, this.2]
+    refine ⟨fun i => ((round (x i) : ℤ) : ℚ), Or.inl (fun i => ⟨round (x i), rfl⟩), ?_⟩
+    calc ∑ i, (x i - ((round (x i) : ℤ) : ℚ)) ^ 2
+        < ∑ _i : Fin 4, (1 / 4 : ℚ) :=
+          Finset.sum_lt_sum (fun i _ => hle i) ⟨i0, Finset.mem_univ _, hlt⟩
+      _ = 1 := by rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]; norm_num
+
+end Section71
+
+
+namespace Section71b
+
+theorem hur_div_approx (a b : Quaternion ℚ) (hb : b ≠ 0) :
+    ∃ q : Quaternion ℚ, Section71.IsHur ![q.re, q.imI, q.imJ, q.imK] ∧
+      Quaternion.normSq (a - q * b) < Quaternion.normSq b := by
+  obtain ⟨c, hc, hlt⟩ := Section71.cover ![(a * b⁻¹).re, (a * b⁻¹).imI, (a * b⁻¹).imJ, (a * b⁻¹).imK]
+  have hcv : (![c 0, c 1, c 2, c 3] : Fin 4 → ℚ) = c := by
+    funext i; fin_cases i <;> rfl
+  obtain ⟨q, h0, h1, h2, h3⟩ : ∃ q : Quaternion ℚ,
+      q.re = c 0 ∧ q.imI = c 1 ∧ q.imJ = c 2 ∧ q.imK = c 3 :=
+    ⟨⟨c 0, c 1, c 2, c 3⟩, rfl, rfl, rfl, rfl⟩
+  have hxb : a * b⁻¹ * b = a := by rw [mul_assoc, inv_mul_cancel₀ hb, mul_one]
+  refine ⟨q, ?_, ?_⟩
+  · rw [h0, h1, h2, h3, hcv]; exact hc
+  · have e1 : a - q * b = (a * b⁻¹ - q) * b := by rw [sub_mul, hxb]
+    have hnb : 0 < Quaternion.normSq b :=
+      lt_of_le_of_ne Quaternion.normSq_nonneg (fun h => hb (Quaternion.normSq_eq_zero.1 h.symm))
+    have e2 : Quaternion.normSq (a * b⁻¹ - q) < 1 := by
+      rw [Quaternion.normSq_def']
+      have r0 : (a * b⁻¹ - q).re = (a * b⁻¹).re - c 0 := by rw [← h0]; rfl
+      have r1 : (a * b⁻¹ - q).imI = (a * b⁻¹).imI - c 1 := by rw [← h1]; rfl
+      have r2 : (a * b⁻¹ - q).imJ = (a * b⁻¹).imJ - c 2 := by rw [← h2]; rfl
+      have r3 : (a * b⁻¹ - q).imK = (a * b⁻¹).imK - c 3 := by rw [← h3]; rfl
+      rw [r0, r1, r2, r3]
+      simp only [Fin.sum_univ_four, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
+        Matrix.cons_val_two, Matrix.tail_cons, Matrix.cons_val_three] at hlt
+      nlinarith [hlt]
+    rw [e1, map_mul]
+    nlinarith [e2, hnb]
+
+end Section71b
+
+#print axioms Section71.cover
+#print axioms Section71b.hur_div_approx
+
+
+/-! # Stage71c: the Hurwitz lattice is closed under quaternion multiplication (UNTESTED when written; no compiler run yet)
+
+WHAT THIS FILE PROVES, if it compiles.  Write a quaternion over Q as four rationals (a,b,c,d).  Call the quadruple
+Hurwitz (`H a b c d`) if all four are integers, or all four lie in Z + 1/2.  Then, for the Hamilton product
+  (a,b,c,d)(e,f,g,h) = (ae-bf-cg-dh,  af+be+ch-dg,  ag-bh+ce+df,  ah+bg-cf+de),
+the product of two Hurwitz quadruples is Hurwitz (`H_mul`).  Also: `H_add`, `H_neg`, `H_one`.
+
+Hand derivation (done before the Lean).  Integer x integer is trivial.  Mixed case: x integer (p,q,r,s), y = (u,v,w,t)+1/2.
+Each product component is an integer plus (+-p +-q +-r +-s)/2, and +-p +-q +-r +-s has the parity of S = p+q+r+s whatever
+the signs, so all four components share the class of S/2: all integers if S is even, all in Z+1/2 if S is odd.
+Half x half: the products (p+1/2)(u+1/2) contribute integer + (p+u)/2 + 1/4, the four signed 1/4's sum to -1/2 (real part)
+or +1/2 (the three imaginary parts), and the signed halves have the parity of T = p+q+r+s+u+v+w+t; again all four
+components land in the same class.
+
+NOT PROVED HERE: (1) that these four formulas are the multiplication of Mathlib's `Quaternion Q` (they are the Hamilton
+product written out; the identification is not proved in this file), (2) the Hurwitz order as a bundled Subring,
+(3) Euclidean division inside the ring, (4) unique factorization, (5) Jacobi's count, so HJac is NOT discharged. -/
+
+namespace Section71c
+
+/-- all four coordinates integers, or all four in Z + 1/2 -/
+def H (a b c d : ℚ) : Prop :=
+  (∃ p q r s : ℤ, a = p ∧ b = q ∧ c = r ∧ d = s) ∨
+  (∃ p q r s : ℤ, a = p + 1 / 2 ∧ b = q + 1 / 2 ∧ c = r + 1 / 2 ∧ d = s + 1 / 2)
+
+theorem H_one : H 1 0 0 0 := by
+  left
+  exact ⟨1, 0, 0, 0, by norm_num, by norm_num, by norm_num, by norm_num⟩
+
+theorem H_neg {a b c d : ℚ} (h : H a b c d) : H (-a) (-b) (-c) (-d) := by
+  rcases h with ⟨p, q, r, s, rfl, rfl, rfl, rfl⟩ | ⟨p, q, r, s, rfl, rfl, rfl, rfl⟩
+  · left
+    refine ⟨-p, -q, -r, -s, ?_, ?_, ?_, ?_⟩ <;> push_cast <;> ring
+  · right
+    refine ⟨-p - 1, -q - 1, -r - 1, -s - 1, ?_, ?_, ?_, ?_⟩ <;> push_cast <;> ring
+
+theorem H_add {a b c d e f g h : ℚ} (hx : H a b c d) (hy : H e f g h) :
+    H (a + e) (b + f) (c + g) (d + h) := by
+  rcases hx with ⟨p, q, r, s, rfl, rfl, rfl, rfl⟩ | ⟨p, q, r, s, rfl, rfl, rfl, rfl⟩ <;>
+  rcases hy with ⟨u, v, w, t, rfl, rfl, rfl, rfl⟩ | ⟨u, v, w, t, rfl, rfl, rfl, rfl⟩
+  · left
+    refine ⟨p + u, q + v, r + w, s + t, ?_, ?_, ?_, ?_⟩ <;> push_cast <;> ring
+  · right
+    refine ⟨p + u, q + v, r + w, s + t, ?_, ?_, ?_, ?_⟩ <;> push_cast <;> ring
+  · right
+    refine ⟨p + u, q + v, r + w, s + t, ?_, ?_, ?_, ?_⟩ <;> push_cast <;> ring
+  · left
+    refine ⟨p + u + 1, q + v + 1, r + w + 1, s + t + 1, ?_, ?_, ?_, ?_⟩ <;> push_cast <;> ring
+
+theorem H_mul {a b c d e f g h : ℚ} (hx : H a b c d) (hy : H e f g h) :
+    H (a * e - b * f - c * g - d * h) (a * f + b * e + c * h - d * g)
+      (a * g - b * h + c * e + d * f) (a * h + b * g - c * f + d * e) := by
+  rcases hx with ⟨p, q, r, s, rfl, rfl, rfl, rfl⟩ | ⟨p, q, r, s, rfl, rfl, rfl, rfl⟩ <;>
+  rcases hy with ⟨u, v, w, t, rfl, rfl, rfl, rfl⟩ | ⟨u, v, w, t, rfl, rfl, rfl, rfl⟩
+  · -- integer x integer
+    left
+    refine ⟨p * u - q * v - r * w - s * t, p * v + q * u + r * t - s * w,
+      p * w - q * t + r * u + s * v, p * t + q * w - r * v + s * u, ?_, ?_, ?_, ?_⟩ <;>
+      push_cast <;> ring
+  · -- integer x half : parity of S = p+q+r+s
+    obtain ⟨m, hm | hm⟩ := Int.even_or_odd' (p + q + r + s)
+    · have hS : (p : ℚ) + q + r + s = 2 * m := by exact_mod_cast hm
+      left
+      refine ⟨p * u - q * v - r * w - s * t + m - (q + r + s),
+        p * v + q * u + r * t - s * w + m - s,
+        p * w - q * t + r * u + s * v + m - q,
+        p * t + q * w - r * v + s * u + m - r, ?_, ?_, ?_, ?_⟩ <;>
+        push_cast <;> linear_combination (1 / 2 : ℚ) * hS
+    · have hS : (p : ℚ) + q + r + s = 2 * m + 1 := by exact_mod_cast hm
+      right
+      refine ⟨p * u - q * v - r * w - s * t + m - (q + r + s),
+        p * v + q * u + r * t - s * w + m - s,
+        p * w - q * t + r * u + s * v + m - q,
+        p * t + q * w - r * v + s * u + m - r, ?_, ?_, ?_, ?_⟩ <;>
+        push_cast <;> linear_combination (1 / 2 : ℚ) * hS
+  · -- half x integer : parity of S' = u+v+w+t
+    obtain ⟨m, hm | hm⟩ := Int.even_or_odd' (u + v + w + t)
+    · have hS : (u : ℚ) + v + w + t = 2 * m := by exact_mod_cast hm
+      left
+      refine ⟨p * u - q * v - r * w - s * t + m - (v + w + t),
+        p * v + q * u + r * t - s * w + m - w,
+        p * w - q * t + r * u + s * v + m - t,
+        p * t + q * w - r * v + s * u + m - v, ?_, ?_, ?_, ?_⟩ <;>
+        push_cast <;> linear_combination (1 / 2 : ℚ) * hS
+    · have hS : (u : ℚ) + v + w + t = 2 * m + 1 := by exact_mod_cast hm
+      right
+      refine ⟨p * u - q * v - r * w - s * t + m - (v + w + t),
+        p * v + q * u + r * t - s * w + m - w,
+        p * w - q * t + r * u + s * v + m - t,
+        p * t + q * w - r * v + s * u + m - v, ?_, ?_, ?_, ?_⟩ <;>
+        push_cast <;> linear_combination (1 / 2 : ℚ) * hS
+  · -- half x half : parity of T = p+q+r+s+u+v+w+t
+    obtain ⟨m, hm | hm⟩ := Int.even_or_odd' (p + q + r + s + u + v + w + t)
+    · have hT : (p : ℚ) + q + r + s + u + v + w + t = 2 * m := by exact_mod_cast hm
+      right
+      refine ⟨p * u - q * v - r * w - s * t + m - (q + v + r + w + s + t) - 1,
+        p * v + q * u + r * t - s * w + m - (s + w),
+        p * w - q * t + r * u + s * v + m - (q + t),
+        p * t + q * w - r * v + s * u + m - (r + v), ?_, ?_, ?_, ?_⟩ <;>
+        push_cast <;> linear_combination (1 / 2 : ℚ) * hT
+    · have hT : (p : ℚ) + q + r + s + u + v + w + t = 2 * m + 1 := by exact_mod_cast hm
+      left
+      refine ⟨p * u - q * v - r * w - s * t + m - (q + v + r + w + s + t),
+        p * v + q * u + r * t - s * w + m + 1 - (s + w),
+        p * w - q * t + r * u + s * v + m + 1 - (q + t),
+        p * t + q * w - r * v + s * u + m + 1 - (r + v), ?_, ?_, ?_, ?_⟩ <;>
+        push_cast <;> linear_combination (1 / 2 : ℚ) * hT
+
+end Section71c
+
+#print axioms Section71c.H_mul
+#print axioms Section71c.H_add
+
+/-! # Stage71d: Euclidean division in the Hurwitz order (UNTESTED when written; no compiler run yet)
+
+This file is Stage71b + Stage71c concatenated (both compiled clean: runs #12, #13) followed by Section71d, which is new.
+
+WHAT SECTION71D PROVES, if it compiles.  With `QH x` meaning the four coordinates of a rational quaternion x are a Hurwitz
+quadruple (Section71c.H): for QH a, QH b, b not zero, there is q with QH q, QH (a - q b) and N(a - q b) < N(b).
+Proof: Stage71b gives q Hurwitz with N(a - q b) < N(b); the product q b is Hurwitz by Stage71c (H_mul, identified with Mathlib's
+product through Quaternion.mul_re etc.), a is Hurwitz, so a - q b = a + (-(q b)) is Hurwitz by H_add, H_neg.
+
+NOT PROVED: a bundled Subring/EuclideanDomain instance, unique factorization of primitive elements, Jacobi's count, HJac.
+Hurwitz order is non-commutative: this is LEFT-quotient division (a = q b + r, r small), which is what the factorization step uses. -/
+
+namespace Section71d
+
+def QH (x : Quaternion ℚ) : Prop := Section71c.H x.re x.imI x.imJ x.imK
+
+theorem isHur_to_QH (x : Quaternion ℚ) (h : Section71.IsHur ![x.re, x.imI, x.imJ, x.imK]) : QH x := by
+  rcases h with h | h
+  · obtain ⟨p, hp⟩ := h 0
+    obtain ⟨q, hq⟩ := h 1
+    obtain ⟨r, hr⟩ := h 2
+    obtain ⟨s, hs⟩ := h 3
+    left
+    exact ⟨p, q, r, s, by simpa using hp, by simpa using hq, by simpa using hr, by simpa using hs⟩
+  · obtain ⟨p, hp⟩ := h 0
+    obtain ⟨q, hq⟩ := h 1
+    obtain ⟨r, hr⟩ := h 2
+    obtain ⟨s, hs⟩ := h 3
+    right
+    exact ⟨p, q, r, s, by simpa using hp, by simpa using hq, by simpa using hr, by simpa using hs⟩
+
+theorem QH_mul {x y : Quaternion ℚ} (hx : QH x) (hy : QH y) : QH (x * y) := by
+  have h := Section71c.H_mul hx hy
+  unfold QH
+  rw [Quaternion.mul_re, Quaternion.mul_imI, Quaternion.mul_imJ, Quaternion.mul_imK]
+  exact h
+
+theorem QH_sub {x y : Quaternion ℚ} (hx : QH x) (hy : QH y) : QH (x - y) := by
+  have h := Section71c.H_add hx (Section71c.H_neg hy)
+  simp only [← sub_eq_add_neg] at h
+  exact h
+
+theorem hurwitz_euclid (a b : Quaternion ℚ) (ha : QH a) (hb : QH b) (hb0 : b ≠ 0) :
+    ∃ q : Quaternion ℚ, QH q ∧ QH (a - q * b) ∧ Quaternion.normSq (a - q * b) < Quaternion.normSq b := by
+  obtain ⟨q, hq, hlt⟩ := Section71b.hur_div_approx a b hb0
+  have hqH : QH q := isHur_to_QH q hq
+  exact ⟨q, hqH, QH_sub ha (QH_mul hqH hb), hlt⟩
+
+end Section71d
+
+#print axioms Section71d.hurwitz_euclid
