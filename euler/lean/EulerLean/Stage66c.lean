@@ -147,9 +147,7 @@ theorem two_le {u : ℕ} (hu : 2 ∣ u) : (S u).card ≤ (S (u / 2)).card := by
     exact Prod.ext (by linarith) (by linarith)
 
 theorem S1_card : (S 1).card = 4 := by
-  first
-  | decide
-  | rfl
+  decide
 
 end TwoSq
 
@@ -462,7 +460,7 @@ theorem closed_form {q : ℕ} (hq : q.Prime) (hq1 : q % 4 = 1) {x y : ℤ}
       simpa using h
     | succ e ih =>
       obtain ⟨h0, h1⟩ := ih
-      refine ⟨by rw [h1]; ring, ?_⟩
+      refine ⟨by rw [h1], ?_⟩
       have hs := split_dvd hq hq1 hxy (q ^ e * v)
       have e1 : q ^ (e + 1 + 1) * v = q * (q * (q ^ e * v)) := by ring
       have e2 : q ^ (e + 1) * v = q * (q ^ e * v) := by ring
