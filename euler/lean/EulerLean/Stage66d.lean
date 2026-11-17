@@ -575,7 +575,7 @@ lemma inert_empty {p u : ℕ} (hp : p.Prime) (h3 : p % 4 = 3) (hpu : p ∣ u) (h
 
 theorem card_le_four_Mq : ∀ u : ℕ, 0 < u → (S u).card ≤ 4 * Mq' u := by
   intro u
-  refine Nat.recOnPrimePow (P := fun u => 0 < u → (S u).card ≤ 4 * Mq' u) ?_ ?_ ?_ u
+  refine Nat.recOnPrimePow ?_ ?_ ?_ u
   · intro h
     exact absurd h (lt_irrefl 0)
   · intro _
