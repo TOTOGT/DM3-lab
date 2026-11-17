@@ -176,16 +176,16 @@ lemma Eset_eq_image {p n : ℕ} (hp : p.Prime) (h3 : p % 4 = 3) (hpn : p ^ 2 ∣
     · rw [mem_Rmix]
       refine ⟨?_, ?_, ?_⟩
       · have : (p : ℤ) * y 0 + (p : ℤ) * y 1 = (p : ℤ) * (y 0 + y 1) := by ring
-        simp only
+        show ((p : ℤ) * y 0 + (p : ℤ) * y 1) % 2 = 1
         rw [this]
         have hodd : Odd (y 0 + y 1) := Int.odd_iff.2 hm.1
         exact Int.odd_iff.1 (Odd.mul hpodd hodd)
       · have : (p : ℤ) * y 2 + (p : ℤ) * y 3 = (p : ℤ) * (y 2 + y 3) := by ring
-        simp only
+        show ((p : ℤ) * y 2 + (p : ℤ) * y 3) % 2 = 1
         rw [this]
         have hodd : Odd (y 2 + y 3) := Int.odd_iff.2 hm.2.1
         exact Int.odd_iff.1 (Odd.mul hpodd hodd)
-      · simp only
+      · show ((p : ℤ) * y 0) ^ 2 + ((p : ℤ) * y 1) ^ 2 + ((p : ℤ) * y 2) ^ 2 + ((p : ℤ) * y 3) ^ 2 = (n : ℤ)
         have e : ((p : ℤ) * y 0) ^ 2 + ((p : ℤ) * y 1) ^ 2 + ((p : ℤ) * y 2) ^ 2 + ((p : ℤ) * y 3) ^ 2
             = (p : ℤ) ^ 2 * (y 0 ^ 2 + y 1 ^ 2 + y 2 ^ 2 + y 3 ^ 2) := by ring
         rw [e, hm.2.2, hk]; push_cast; ring
@@ -247,7 +247,7 @@ theorem h31_dvd {m p : ℕ} (hm : m % 2 = 1) (hp : p.Prime) (h3 : p % 4 = 3) (hp
   by_cases h2 : p ^ 2 ∣ 2 * m
   · have hcop : Nat.Coprime (p ^ 2) 2 :=
       Nat.Coprime.pow_left 2 ((Nat.coprime_primes hp Nat.prime_two).2 (by omega))
-    have hpm' : p ^ 2 ∣ m := Nat.Coprime.dvd_of_dvd_mul_left hcop (by rwa [mul_comm] at h2)
+    have hpm' : p ^ 2 ∣ m := Nat.Coprime.dvd_of_dvd_mul_left hcop h2
     obtain ⟨m', hm'⟩ := hpm'
     have hm'0 : 0 < m' := by
       rcases Nat.eq_zero_or_pos m' with h | h
