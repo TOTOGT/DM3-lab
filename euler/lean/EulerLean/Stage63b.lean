@@ -1668,7 +1668,7 @@ theorem final_arith (u P E : ℝ) (hu : 0 < u) (hX : 64 ≤ u ^ 5)
   have hT1b : ((49 / 50) / u ^ 6) * (4 * u ^ 5 / 15 + 1)
       = (49 / 50) * (4 / 15 * (1 / u) + (1 / u) ^ 6) := by
     field_simp
-    ring
+    try ring
   -- large-prime side
   have e2 : 2 / (15 * P) ≤ (128 / (15 * 127)) / u ^ 5 := by
     rw [div_le_div_iff₀ (by positivity) hu5]
@@ -1690,7 +1690,7 @@ theorem final_arith (u P E : ℝ) (hu : 0 < u) (hX : 64 ≤ u ^ 5)
       _ = (44 / 15) * (128 / (15 * 127) * (1 / u) + 8192 / 16129 * (1 / u) ^ 6
           + 2 / 15 * (1 / u) ^ 6 + (1 / u) ^ 16) := by
           field_simp
-          ring
+          try ring
   have hnum := numeric_core (1 / u) hw0 hw
   linarith [hT1a, hT1b, hB, hnum]
 
