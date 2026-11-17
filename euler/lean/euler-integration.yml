@@ -1,0 +1,37 @@
+# Integration run: Stage67 = Stage66d + Stage65 + Stage66e + the Hr2 wiring. Takes about as long as the elementary workflow (native_decide in Stage65). Standalone: imports only Mathlib.
+# Trigger: Actions > "Euler integration (Lean)" > Run workflow.
+name: Euler integration (Lean)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Stage67
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage67.lean 2>&1 | tee /tmp/s67.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s67.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s67.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/s67.txt
