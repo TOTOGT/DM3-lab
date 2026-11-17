@@ -166,6 +166,17 @@ some 313
 <li>Say what the run did not cover before anyone else has to ask.</li>
 </ol>
 
+<h2>Who did what</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Role</th><th>Who</th><th>Scope and limits</th></tr></thead>
+<tbody>
+<tr><td>Lean files, audit scripts, this page, ledger</td><td>Claude (Cowork). Configured model <code>claude-sonnet-5-5</code>; the model serving a given turn can differ and is not visible to the session. 16 Nov 2026, last clock reading 20:56 EST (01:56 UTC, 17 Nov).</td><td>Wrote and ran the checks described above. Lean runs were made by the author on a Mac and in GitHub Actions; the session itself has no Lean toolchain.</td></tr>
+<tr><td>Independent review of this page</td><td>OpenAI Codex, GPT-6 family, exact version and reasoning setting unavailable in its session. About 8 p.m. EST, 16 Nov 2026 (01:00 UTC, 17 Nov), time approximate.</td><td>Reviewed the live page against the preprint. Did not inspect the linked CI logs or rebuild the Lean files. Its corrections to Theorem 1.1, Lemma 3.2, Proposition 6.1, Lemma 7.1 and the opening statement were checked against <code>Euler1747.lean</code> and applied. Its report of seven exact checks at p = 7 was not reproduced and is not merged with our 22 tests.</td></tr>
+</tbody>
+</table>
+</div>
+
 <p class="foot">Runs: <a href="https://github.com/TOTOGT/DM3-lab/actions/runs/43995462433">DM3-lab Euler #2</a> (commit <code>dab90e0</code>, green, 12m32s; FourSquaresMixed, HurwitzStepA and Euler1747) and the earlier <a href="https://github.com/TOTOGT/geometry/actions/runs/43986441418">geometry Euler #1</a> (commit <code>779663f</code>, first copy of these files). Source: <code>euler/lean/</code> in TOTOGT/DM3-lab. <code>Section6Arithmetic.lean</code> is in the repo but not yet in either run, and has not been compiled. Paper checked against: Howe, Huffman, Kohlmeyer, Kruer, hexagon:2611.00370v1. Lean v4.32.0, Mathlib v4.32.0 pin.</p>
 </main>
 </body>
