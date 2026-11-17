@@ -286,12 +286,10 @@ theorem five_four (K : ℕ) :
         ≤ ∑ p ∈ (Finset.Ioc 60 K).filter (fun p => p.Prime ∧ p % 4 = 3), 1 / (p : ℝ) ^ 2 :=
       Finset.sum_le_sum_of_subset_of_nonneg hsub (fun _ _ _ => by positivity)
     have h3 := prime_tail 60 (by norm_num) K
-    norm_num at h3
+    push_cast at h3
     have h4 : (60 / 59 : ℝ) * ∑ p ∈ (PT K).filter (fun p => ¬ p ≤ 60), 1 / (p : ℝ) ^ 2
-        ≤ (60 / 59) * (2 / (15 * 60) + 2 / 60 ^ 2) := by
-      apply mul_le_mul_of_nonneg_left _ (by norm_num)
-      norm_num
-      linarith
+        ≤ (60 / 59) * (2 / (15 * 60) + 2 / 60 ^ 2) :=
+      mul_le_mul_of_nonneg_left (le_trans h2 h3) (by norm_num)
     linarith
   have := small_sum
   linarith

@@ -42,16 +42,16 @@ lemma dvd_of_sq_add {q : ℕ} (hq : q.Prime) (h3 : q % 4 = 3) (x y : ℤ)
     have hxy : (x : ZMod q) ^ 2 = -(y : ZMod q) ^ 2 := by linear_combination h0
     exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' hy hxy h3
 
-def Rmix (n : ℕ) : Finset (Fin 4 → ℤ) :=
+noncomputable def Rmix (n : ℕ) : Finset (Fin 4 → ℤ) :=
   (Fintype.piFinset fun _ => Finset.Icc (-(n : ℤ)) n).filter
     (fun x => (x 0 + x 1) % 2 = 1 ∧ (x 2 + x 3) % 2 = 1 ∧
       x 0 ^ 2 + x 1 ^ 2 + x 2 ^ 2 + x 3 ^ 2 = (n : ℤ))
 
-def Eset (p n : ℕ) : Finset (Fin 4 → ℤ) :=
+noncomputable def Eset (p n : ℕ) : Finset (Fin 4 → ℤ) :=
   (Rmix n).filter (fun x => ((p : ℤ) ∣ x 0 ∧ (p : ℤ) ∣ x 1) ∨ ((p : ℤ) ∣ x 2 ∧ (p : ℤ) ∣ x 3))
 
 /-- b_p(n) -/
-def bp (p n : ℕ) : ℕ := (Eset p n).card
+noncomputable def bp (p n : ℕ) : ℕ := (Eset p n).card
 
 /-- a pair of opposite parity, with no prime ≡ 3 mod 4 dividing both coordinates, gives a good number -/
 lemma good_of_pair {x y : ℤ} {n : ℕ} (hodd : (x + y) % 2 = 1) (hle : x ^ 2 + y ^ 2 ≤ (n : ℤ))
@@ -102,7 +102,7 @@ theorem sufficiency (n : ℕ)
     by_contra hnot
     apply hne
     rw [Finset.mem_biUnion] at hnot
-    push_neg at hnot
+    simp only [not_exists, not_and] at hnot
     have hx' := (Finset.mem_filter.1 hx).2
     obtain ⟨ho1, ho2, hsum⟩ := hx'
     have hno1 : ∀ q : ℕ, q.Prime → q % 4 = 3 → q ≤ n → ¬ ((q : ℤ) ∣ x 0 ∧ (q : ℤ) ∣ x 1) := by
