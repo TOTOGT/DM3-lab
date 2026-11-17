@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Euler 1747: a verification, step by step</title>
+<style>
+:root{
+  --bg:#fbfaf6; --fg:#1d1f1c; --muted:#5b605a; --rule:#d9d6cb; --card:#f1efe6;
+  --ok:#1f6f3a; --warn:#9a5b00; --bad:#a3262a; --code-bg:#ecebe2; --link:#1d5fa8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181a; --fg:#e8e6df; --muted:#a2a79f; --rule:#34383a; --card:#1f2325;
+    --ok:#6fcf8e; --warn:#e3a84a; --bad:#ee7b7e; --code-bg:#23282a; --link:#7db4ee; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181a; --fg:#e8e6df; --muted:#a2a79f; --rule:#34383a; --card:#1f2325;
+  --ok:#6fcf8e; --warn:#e3a84a; --bad:#ee7b7e; --code-bg:#23282a; --link:#7db4ee; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:17px/1.6 Georgia,"Iowan Old Style","Times New Roman",serif;
+  padding-inline:max(16px,env(safe-area-inset-left));}
+main{max-width:46rem;margin:0 auto;padding-block:2rem 4rem}
+h1{font-size:1.9rem;line-height:1.2;margin:.2rem 0 .6rem;text-wrap:balance}
+h2{font-size:1.25rem;margin:2.4rem 0 .6rem;text-wrap:balance;border-top:1px solid var(--rule);padding-top:1.2rem}
+p{margin:.7rem 0}
+.kicker{font:600 .78rem/1 system-ui,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.1rem;color:var(--fg)}
+a{color:var(--link)}
+code,pre{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86rem}
+code{background:var(--code-bg);padding:.05rem .3rem;border-radius:3px}
+pre{background:var(--code-bg);padding:.8rem 1rem;border-radius:6px;overflow-x:auto;margin:.8rem 0}
+pre code{background:none;padding:0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:34rem;font:.9rem/1.45 system-ui,sans-serif}
+th,td{text-align:left;vertical-align:top;padding:.55rem .6rem;border-bottom:1px solid var(--rule)}
+th{font-weight:600;color:var(--muted);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
+.tag{font:600 .74rem/1 system-ui,sans-serif;padding:.2rem .45rem;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.note{background:var(--card);border-left:3px solid var(--warn);padding:.7rem 1rem;margin:1rem 0;border-radius:0 6px 6px 0}
+.note.ok{border-left-color:var(--ok);color:var(--fg)}
+ol.log{padding-left:1.2rem;margin:.6rem 0}
+ol.log li{margin:.8rem 0}
+ol.log b{font-family:system-ui,sans-serif;font-size:.92rem}
+.foot{color:var(--muted);font-size:.9rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">DM3-lab &middot; Worked example &middot; Lean verification &middot; 16 Nov 2026</p>
+<h1>Euler&rsquo;s 1747 conjecture: what a green check does and does not say</h1>
+<p class="lede">A new paper claims that every integer <code>n &equiv; 2 (mod 4)</code> is a sum of two positive integers whose prime factors are all <code>&equiv; 1 (mod 4)</code>. We tried to check it in Lean. This page records what was run, what each run showed, the mistakes we made and caught on the way, and the one place where a clean-looking result is not what it seems.</p>
+
+<div class="note"><strong>Short version.</strong> The finite range (every such <code>n &lt; 64<sup>4</sup></code>) is checked by computation, and the full conjecture is <em>reduced</em> to one hypothesis, the paper&rsquo;s Proposition 6.1, which we did <em>not</em> prove. Our file is not the paper&rsquo;s formalization and is not a proof of Euler&rsquo;s conjecture.</div>
+
+<h2>The claim, and where it stands</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Statement</th><th>Status</th><th>Evidence</th><th>What it rests on</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>euler_finite</code>: every <code>n &equiv; 2 mod 4</code>, <code>n &lt; 64<sup>4</sup> = 16,777,216</code>, is a sum of two good numbers with the smaller &le; 313.</td>
+  <td><span class="tag ok">compiler-checked</span></td>
+  <td>4,194,304 cases. GitHub run #1: Euler step 10 min 49 s. Same output on the author&rsquo;s Mac.</td>
+  <td>Standard axioms plus <code>native_decide</code>&rsquo;s extra axiom. Trusts the compiled evaluation, not only the kernel.</td>
+</tr>
+<tr>
+  <td><code>mixed_count</code>: <code>3&middot;|Rmix| = 2&middot;|R|</code> for <code>n &equiv; 2 mod 4</code> (paper&rsquo;s eq. 2.2).</td>
+  <td><span class="tag ok">kernel-checked</span></td>
+  <td>Compiled on the Mac and in GitHub Actions.</td>
+  <td><code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code> only.</td>
+</tr>
+<tr>
+  <td><code>euler_1747_of_analytic_range</code>: the conjecture, <em>if</em> <code>AnalyticRange</code> holds.</td>
+  <td><span class="tag warn">conditional</span></td>
+  <td>Same four axioms as <code>euler_finite</code>.</td>
+  <td>A hypothesis <code>H&nbsp;:&nbsp;AnalyticRange</code> (the paper&rsquo;s Prop. 6.1). Not proved here.</td>
+</tr>
+<tr>
+  <td><code>AnalyticRange</code> itself (paper Prop. 6.1, <code>n &ge; 64<sup>4</sup></code>).</td>
+  <td><span class="tag bad">not done</span></td>
+  <td>None. Paper&rsquo;s sections 2&ndash;5 not audited.</td>
+  <td>Needs Ramanujan&ndash;Petersson via Jacquet&ndash;Langlands.</td>
+</tr>
+<tr>
+  <td>Jacobi&rsquo;s four-square count <code>|R n| = 24&sigma;(m)</code> for <code>n = 2m</code>, <code>m</code> odd.</td>
+  <td><span class="tag bad">not done</span></td>
+  <td>Searched Mathlib (checkout dated 2026-07-13): only Lagrange&rsquo;s existence theorem; no count, no Hurwitz quaternions. Theta and Eisenstein q-expansions exist.</td>
+  <td>Separate, larger job.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2>The result, verbatim</h2>
+<p>The Euler step of the Actions run, and the same file run overnight on a laptop, printed:</p>
+<pre><code>43
+some 313
+'Euler1747.euler_finite' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ Euler1747.allOk_true._native.native_decide.ax_1_1]
+'Euler1747.euler_1747_of_analytic_range' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ Euler1747.allOk_true._native.native_decide.ax_1_1]</code></pre>
+<p><code>43</code> and <code>313</code> match the paper&rsquo;s list of possible smaller summands (43 entries, largest 313), computed independently by our own sieve.</p>
+
+<h2>The trap in the second line</h2>
+<p>The conditional theorem prints the <em>same clean axiom list</em> as the finite one. That does not mean the conjecture is proved. <code>AnalyticRange</code> enters as a hypothesis argument <code>H</code>, and <code>#print axioms</code> lists axioms, not hypotheses. Reading the theorem&rsquo;s statement, not its name or its axiom list, is what shows it is conditional.</p>
+
+<h2>Mistakes caught along the way</h2>
+<ol class="log">
+<li><b>A green run that tested nothing.</b> An existing CI workflow (&ldquo;Verify Lean proofs&rdquo;, run #981) went green on the commit that added the Euler files. It cannot have compiled them: <code>EulerLean/</code> was not a build target. Only the separate manual workflow checks these files.</li>
+<li><b>Wrong tactic cases.</b> The first compile failed with <code>Invalid alternative name h0</code>: the induction principle&rsquo;s cases are <code>zero | one | prime | mul</code> in the current Mathlib. Fixed against the compiler&rsquo;s message.</li>
+<li><b>Two errors in the four-square file.</b> <code>Finset.Icc</code> on the integers picked a noncomputable instance, so <code>R</code> had to be marked <code>noncomputable</code> and its <code>#eval</code> dropped. A <code>simp</code> left <code>x 3 + x 2</code> against <code>x 2 + x 3</code>; <code>omega</code> closed it.</li>
+<li><b>A wrong performance guess.</b> We guessed the 4-million-case proof would take hours. A timing test on the first 20,000 cases took 471 ms, which put the lower bound near 99 s. The real run took about 11 minutes, because later cases need many more trial divisions. Measure before predicting.</li>
+<li><b>A monitor that watched the wrong word.</b> The workflow was written to warn if <code>Lean.ofReduceBool</code> appeared. In this Lean version <code>native_decide</code> shows up as <code>&hellip;native_decide.ax_1_1</code>, so the warning never fired. The check was fixed to match both names.</li>
+<li><b>Terminal output pasted as commands.</b> A block of expected output was pasted into a shell, producing harmless <code>command not found</code> errors. Output and commands should not look alike.</li>
+</ol>
+
+<h2>What we did not do</h2>
+<p>We did not audit the paper&rsquo;s analytic sections (2&ndash;5), so we cannot say whether Proposition 6.1 is correct. We did not reproduce the paper&rsquo;s own formalization, and this file is an independent partial attempt, not a check of theirs. A passing run only counts for the files it compiled, and only to the trust level of the axioms it printed.</p>
+
+<h2>The method, in five lines</h2>
+<ol>
+<li>Derive the math by hand first; write the Lean second; mark it untested in the same sentence as the claim.</li>
+<li>Run it against a real kernel, and fix against what the compiler says, not what we expect.</li>
+<li>Print the axioms for every theorem and read each theorem&rsquo;s <em>statement</em>, not its name.</li>
+<li>Label the trust level in words: kernel-checked, compiler-checked, or conditional.</li>
+<li>Say what the run did not cover before anyone else has to ask.</li>
+</ol>
+
+<p class="foot">Run: <a href="https://github.com/TOTOGT/geometry/actions/runs/43986441418">Euler (Lean kernel check) #1</a>, commit <code>779663f</code>. Source: <code>euler/lean/</code> in TOTOGT/DM3-lab. The run linked above was made from a first copy of these files in TOTOGT/geometry; a DM3-lab run has not been made yet. Paper checked against: Howe, Huffman, Kohlmeyer, Kruer, hexagon:2611.00370v1. Lean v4.32.0, Mathlib v4.32.0 pin.</p>
+</main>
+</body>
+</html>

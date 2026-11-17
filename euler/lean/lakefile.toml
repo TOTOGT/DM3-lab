@@ -1,0 +1,7 @@
+name = "dm3euler"
+defaultTargets = []
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0"

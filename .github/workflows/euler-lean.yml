@@ -1,0 +1,73 @@
+# Manual run for euler/lean/EulerLean/*.lean (DM3-lab). Not on push. Trigger: Actions > "Euler (Lean kernel check)" > Run workflow.
+# Reports #print axioms per file. Fails on `sorry`, errors, or a missing axioms line.
+# Euler1747.lean uses native_decide, so Lean.ofReduceBool is EXPECTED there and is flagged, not hidden.
+name: Euler (Lean kernel check)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  euler:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: FourSquaresMixed
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/FourSquaresMixed.lean 2>&1 | tee /tmp/fsm.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/fsm.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/fsm.txt && { echo "::error::error in output"; exit 1; } || true
+
+      - name: HurwitzStepA
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/HurwitzStepA.lean 2>&1 | tee /tmp/hsa.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/hsa.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/hsa.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/hsa.txt
+
+      - name: "Euler1747 (native_decide, compiler-trusting)"
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Euler1747.lean 2>&1 | tee /tmp/e1747.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/e1747.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/e1747.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n "depends on axioms" /tmp/e1747.txt
+          if grep -q "native_decide\|ofReduceBool" /tmp/e1747.txt; then
+            echo "::warning::Euler1747 relies on the native_decide axiom (compiler-trusting, not kernel-only)"
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## EulerLean axiom report"
+            echo '```'
+            grep -h -A2 "depends on axioms\|does not depend" /tmp/fsm.txt /tmp/hsa.txt /tmp/e1747.txt 2>/dev/null || echo "no axiom lines found"
+            echo '```'
+            echo "Euler1747: AnalyticRange (paper Prop 6.1) is a hypothesis, not proved."
+          } >> "$GITHUB_STEP_SUMMARY"
