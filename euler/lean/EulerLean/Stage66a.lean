@@ -64,11 +64,11 @@ lemma inert_dvd {p u : ℕ} (hp : p.Prime) (h3 : p % 4 = 3) (hpu : p ∣ u) {z :
 theorem inert_le {p u : ℕ} (hp : p.Prime) (h3 : p % 4 = 3) (hpu : p ∣ u) :
     (S u).card ≤ (S (u / p ^ 2)).card := by
   have hp0 : (p : ℤ) ≠ 0 := by exact_mod_cast hp.ne_zero
-  have hp2 : (0 : ℤ) < (p : ℤ) ^ 2 := by positivity
+  have hp2 : (0 : ℤ) < (p : ℤ) ^ 2 := pow_pos (by exact_mod_cast hp.pos) 2
   by_cases hsq : p ^ 2 ∣ u
   · obtain ⟨t, ht⟩ := hsq
     have hdiv : u / p ^ 2 = t := by
-      rw [ht]; exact Nat.mul_div_cancel_left t (by positivity)
+      rw [ht]; exact Nat.mul_div_cancel_left t (pow_pos hp.pos 2)
     rw [hdiv]
     have hu : (u : ℤ) = (p : ℤ) ^ 2 * t := by rw [ht]; push_cast; ring
     refine Finset.card_le_card_of_injOn (fun z : ℤ × ℤ => (z.1 / p, z.2 / p)) ?_ ?_
