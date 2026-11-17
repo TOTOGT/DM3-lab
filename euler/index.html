@@ -46,6 +46,15 @@ ol.log{padding-left:1.2rem;margin:.6rem 0}
 ol.log li{margin:.8rem 0}
 ol.log b{font-family:system-ui,sans-serif;font-size:.92rem}
 .foot{color:var(--muted);font-size:.9rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem}
+
+@media (max-width:40rem){
+  table.lemmas{min-width:0}
+  table.lemmas thead{display:none}
+  table.lemmas,table.lemmas tbody,table.lemmas tr,table.lemmas td{display:block;width:100%}
+  table.lemmas tr{border:1px solid var(--rule);border-radius:6px;padding:.4rem .2rem;margin:.7rem 0;background:var(--card)}
+  table.lemmas td{border-bottom:0;padding:.3rem .6rem}
+  table.lemmas td[data-label]::before{content:attr(data-label);display:block;font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+}
 </style>
 </head>
 <body>
@@ -97,23 +106,23 @@ ol.log b{font-family:system-ui,sans-serif;font-size:.92rem}
 
 <h2 id="lemmas">Lemma by lemma</h2>
 <p>Every numbered statement in the paper, with what we actually did to it. &ldquo;Computed&rdquo; means a script tested instances, which is not a proof. Only the green rows are Lean results. The full list with every case split is in <a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">LEMMA_LEDGER.md</a>.</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="lemmas">
 <thead><tr><th>Item</th><th>Statement</th><th>Status</th><th>Evidence and what is missing</th></tr></thead>
 <tbody>
-<tr><td><b>Thm 1.1</b></td><td>every n &equiv; 2 mod 4 is a + b, both prime factors &equiv; 1 mod 4</td><td><span class="tag warn">conditional (Lean)</span></td><td>Assembly in <code>Euler1747.lean</code> with Prop 6.1 as hypothesis <code>AnalyticRange</code>. Unconditional only once Prop 3.1 is proved.</td></tr>
-<tr><td><b>Lemma 2.1</b></td><td>reduce to n = 2m, m odd, all primes of m &equiv; 3 mod 4</td><td><span class="tag ok">Lean</span></td><td>Inside <code>euler_1747_of_analytic_range</code>. Standard axioms plus the native_decide axiom, only because of the finite part.</td></tr>
-<tr><td><b>(2.1)</b></td><td>R(n) = 24&sigma;(m) (Jacobi)</td><td><span class="tag warn">computed</span></td><td>All tested m with n &lt; 6000. Lean proof planned via Hurwitz quaternions; Step A written and compiles (standard axioms), Steps B and C not started.</td></tr>
-<tr><td><b>(2.2)</b></td><td>|Rmix| = (2/3)|R|</td><td><span class="tag ok">Lean, kernel</span></td><td><code>FourSquaresMixed.lean</code>: <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code> only.</td></tr>
-<tr><td><b>(2.3)</b></td><td>sum of b<sub>p</sub> &lt; (2/3)R gives a representation</td><td><span class="tag warn">hand-read</span></td><td>Followed by hand. Formalizing it is feasible and not done.</td></tr>
-<tr><td><b>Prop 3.1</b></td><td>b<sub>p</sub>/R &le; 2/(p(p&minus;1)) + [p&gt;3]&middot;&tau;&radic;m/(3&sigma;)</td><td><span class="tag warn">computed</span></td><td>3,059 (m,p) cases, 0 violations, one equality case (m=7, p=3). Not in Lean; needs Lemma 3.2.</td></tr>
-<tr><td><b>Lemma 3.2</b></td><td>&Vert;T<sub>m</sub>&Vert; &le; &tau;(m)&radic;m on {1, &chi;}<sup>&perp;</sup></td><td><span class="tag bad">not formalizable now</span></td><td>22 instances tested, 0 violations (worst ratio 0.957). The proof needs Jacquet&ndash;Langlands and Deligne, which are not in Mathlib. The identification step is hand-read and unverified by us.</td></tr>
-<tr><td><b>Lemma 4.1</b></td><td>N<sub>mix</sub>(t) &le; 2(t+1)</td><td><span class="tag warn">computed</span></td><td>Integer t in [0, 4000], 0 violations. Lean feasible, not done.</td></tr>
-<tr><td><b>Lemma 4.2</b></td><td>tail bound on sum over p &gt; P of b<sub>p</sub></td><td><span class="tag warn">computed</span></td><td>1,164 tests, 0 violations. Lean feasible, not done.</td></tr>
-<tr><td><b>Lemma 5.1</b></td><td>&tau;m/&sigma; &le; (23/10)m<sup>1/5</sup>; M(n) &le; (11/5)n<sup>1/5</sup></td><td><span class="tag warn">computed + Lean written, untested</span></td><td>The fifth-power constants match the paper's fractions exactly. <code>Section6Arithmetic.lean</code> states them over &#8474; but has not been compiled. The maximisation over exponents is not formalized.</td></tr>
-<tr><td><b>Lemma 5.2, (5.3), (5.4)</b></td><td>prime counts mod 60; tail sums; 2&sum;1/(p(p&minus;1)) &lt; 21/50</td><td><span class="tag warn">computed</span></td><td>Checked up to 3&times;10<sup>6</sup>; no violation. Lean feasible, not done.</td></tr>
-<tr><td><b>Prop 6.1</b></td><td>n = 2m &ge; 64<sup>4</sup> gives n in A + A</td><td><span class="tag warn">computed</span></td><td>(6.1)+(6.2) = 21235493/33177600 &lt; 2/3, exact match. The final inequality is in the untested Lean file. Whole proposition rests on Prop 3.1.</td></tr>
-<tr><td><b>Lemma 7.1</b></td><td>&epsilon;<sub>j</sub> = 1 iff 4j+1 in A</td><td><span class="tag ok">compiler-checked</span></td><td>Independent sieve reproduces the 43 candidates ending in 313.</td></tr>
-<tr><td><b>Prop 7.2</b></td><td>every n &equiv; 2 mod 4, n &lt; 64<sup>4</sup>, is a + b with min &le; 313</td><td><span class="tag ok">compiler-checked</span></td><td><code>euler_finite</code>, via <code>native_decide</code> (trusts the compiler). Run on GitHub (10m49s) and on a Mac.</td></tr>
+<tr><td><b>Thm 1.1</b></td><td data-label="Statement">every n &equiv; 2 mod 4 is a + b, both prime factors &equiv; 1 mod 4</td><td data-label="Status"><span class="tag warn">conditional (Lean)</span></td><td data-label="Evidence and what is missing">Assembly in <code>Euler1747.lean</code> with Prop 6.1 as hypothesis <code>AnalyticRange</code>. Unconditional only once Prop 3.1 is proved.</td></tr>
+<tr><td><b>Lemma 2.1</b></td><td data-label="Statement">reduce to n = 2m, m odd, all primes of m &equiv; 3 mod 4</td><td data-label="Status"><span class="tag ok">Lean</span></td><td data-label="Evidence and what is missing">Inside <code>euler_1747_of_analytic_range</code>. Standard axioms plus the native_decide axiom, only because of the finite part.</td></tr>
+<tr><td><b>(2.1)</b></td><td data-label="Statement">R(n) = 24&sigma;(m) (Jacobi)</td><td data-label="Status"><span class="tag warn">computed</span></td><td data-label="Evidence and what is missing">All tested m with n &lt; 6000. Lean proof planned via Hurwitz quaternions; Step A written and compiles (standard axioms), Steps B and C not started.</td></tr>
+<tr><td><b>(2.2)</b></td><td data-label="Statement">|Rmix| = (2/3)|R|</td><td data-label="Status"><span class="tag ok">Lean, kernel</span></td><td data-label="Evidence and what is missing"><code>FourSquaresMixed.lean</code>: <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code> only.</td></tr>
+<tr><td><b>(2.3)</b></td><td data-label="Statement">sum of b<sub>p</sub> &lt; (2/3)R gives a representation</td><td data-label="Status"><span class="tag warn">hand-read</span></td><td data-label="Evidence and what is missing">Followed by hand. Formalizing it is feasible and not done.</td></tr>
+<tr><td><b>Prop 3.1</b></td><td data-label="Statement">b<sub>p</sub>/R &le; 2/(p(p&minus;1)) + [p&gt;3]&middot;&tau;&radic;m/(3&sigma;)</td><td data-label="Status"><span class="tag warn">computed</span></td><td data-label="Evidence and what is missing">3,059 (m,p) cases, 0 violations, one equality case (m=7, p=3). Not in Lean; needs Lemma 3.2.</td></tr>
+<tr><td><b>Lemma 3.2</b></td><td data-label="Statement">&Vert;T<sub>m</sub>&Vert; &le; &tau;(m)&radic;m on {1, &chi;}<sup>&perp;</sup></td><td data-label="Status"><span class="tag bad">not formalizable now</span></td><td data-label="Evidence and what is missing">22 instances tested, 0 violations (worst ratio 0.957). The proof needs Jacquet&ndash;Langlands and Deligne, which are not in Mathlib. The identification step is hand-read and unverified by us.</td></tr>
+<tr><td><b>Lemma 4.1</b></td><td data-label="Statement">N<sub>mix</sub>(t) &le; 2(t+1)</td><td data-label="Status"><span class="tag warn">computed</span></td><td data-label="Evidence and what is missing">Integer t in [0, 4000], 0 violations. Lean feasible, not done.</td></tr>
+<tr><td><b>Lemma 4.2</b></td><td data-label="Statement">tail bound on sum over p &gt; P of b<sub>p</sub></td><td data-label="Status"><span class="tag warn">computed</span></td><td data-label="Evidence and what is missing">1,164 tests, 0 violations. Lean feasible, not done.</td></tr>
+<tr><td><b>Lemma 5.1</b></td><td data-label="Statement">&tau;m/&sigma; &le; (23/10)m<sup>1/5</sup>; M(n) &le; (11/5)n<sup>1/5</sup></td><td data-label="Status"><span class="tag warn">computed + Lean written, untested</span></td><td data-label="Evidence and what is missing">The fifth-power constants match the paper's fractions exactly. <code>Section6Arithmetic.lean</code> states them over &#8474; but has not been compiled. The maximisation over exponents is not formalized.</td></tr>
+<tr><td><b>Lemma 5.2, (5.3), (5.4)</b></td><td data-label="Statement">prime counts mod 60; tail sums; 2&sum;1/(p(p&minus;1)) &lt; 21/50</td><td data-label="Status"><span class="tag warn">computed</span></td><td data-label="Evidence and what is missing">Checked up to 3&times;10<sup>6</sup>; no violation. Lean feasible, not done.</td></tr>
+<tr><td><b>Prop 6.1</b></td><td data-label="Statement">n = 2m &ge; 64<sup>4</sup> gives n in A + A</td><td data-label="Status"><span class="tag warn">computed</span></td><td data-label="Evidence and what is missing">(6.1)+(6.2) = 21235493/33177600 &lt; 2/3, exact match. The final inequality is in the untested Lean file. Whole proposition rests on Prop 3.1.</td></tr>
+<tr><td><b>Lemma 7.1</b></td><td data-label="Statement">&epsilon;<sub>j</sub> = 1 iff 4j+1 in A</td><td data-label="Status"><span class="tag ok">compiler-checked</span></td><td data-label="Evidence and what is missing">Independent sieve reproduces the 43 candidates ending in 313.</td></tr>
+<tr><td><b>Prop 7.2</b></td><td data-label="Statement">every n &equiv; 2 mod 4, n &lt; 64<sup>4</sup>, is a + b with min &le; 313</td><td data-label="Status"><span class="tag ok">compiler-checked</span></td><td data-label="Evidence and what is missing"><code>euler_finite</code>, via <code>native_decide</code> (trusts the compiler). Run on GitHub (10m49s) and on a Mac.</td></tr>
 </tbody>
 </table></div>
 <p>The real boundary: Lemma 3.2 (hence Prop 3.1) cannot be formalized with current Mathlib. Formalizing sections 4&ndash;6 would reduce the conjecture to Prop 3.1 plus Jacobi&rsquo;s count, but would not remove that dependency.</p>
@@ -157,7 +166,7 @@ some 313
 <li>Say what the run did not cover before anyone else has to ask.</li>
 </ol>
 
-<p class="foot">Run: <a href="https://github.com/TOTOGT/geometry/actions/runs/43986441418">Euler (Lean kernel check) #1</a>, commit <code>779663f</code>. Source: <code>euler/lean/</code> in TOTOGT/DM3-lab. The run linked above was made from a first copy of these files in TOTOGT/geometry; a DM3-lab run has not been made yet. Paper checked against: Howe, Huffman, Kohlmeyer, Kruer, hexagon:2611.00370v1. Lean v4.32.0, Mathlib v4.32.0 pin.</p>
+<p class="foot">Runs: <a href="https://github.com/TOTOGT/DM3-lab/actions/runs/43995462433">DM3-lab Euler #2</a> (commit <code>dab90e0</code>, green, 12m32s; FourSquaresMixed, HurwitzStepA and Euler1747) and the earlier <a href="https://github.com/TOTOGT/geometry/actions/runs/43986441418">geometry Euler #1</a> (commit <code>779663f</code>, first copy of these files). Source: <code>euler/lean/</code> in TOTOGT/DM3-lab. <code>Section6Arithmetic.lean</code> is in the repo but not yet in either run, and has not been compiled. Paper checked against: Howe, Huffman, Kohlmeyer, Kruer, hexagon:2611.00370v1. Lean v4.32.0, Mathlib v4.32.0 pin.</p>
 </main>
 </body>
 </html>
