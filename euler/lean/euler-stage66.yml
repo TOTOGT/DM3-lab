@@ -112,3 +112,25 @@ jobs:
           grep -n "sorry" /tmp/s71d.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/s71d.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n -A4 "depends on axioms" /tmp/s71d.txt
+
+      - name: HurwitzStepA
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/HurwitzStepA.lean 2>&1 | tee /tmp/sstepa.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/sstepa.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/sstepa.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A4 "depends on axioms" /tmp/sstepa.txt
+
+      - name: Stage72a
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage72a.lean 2>&1 | tee /tmp/s72a.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s72a.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s72a.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A4 "depends on axioms" /tmp/s72a.txt
