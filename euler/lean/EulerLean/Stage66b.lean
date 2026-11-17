@@ -12,7 +12,7 @@ Section42.R2 or Mn. Nothing here is hr2. -/
 
 namespace TwoSq
 
-def S (u : ℕ) : Finset (ℤ × ℤ) :=
+noncomputable def S (u : ℕ) : Finset (ℤ × ℤ) :=
   ((Finset.Icc (-(u : ℤ)) u) ×ˢ (Finset.Icc (-(u : ℤ)) u)).filter
     (fun q => q.1 ^ 2 + q.2 ^ 2 = (u : ℤ))
 
