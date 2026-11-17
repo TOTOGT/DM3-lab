@@ -1,5 +1,5 @@
 /-
-  HurwitzStepA.lean   (draft written 2026-11-16 by Claude; UNTESTED, not compiled)
+  HurwitzStepA.lean   (draft written 2026-11-16 by Claude; first compile in GitHub Actions gave 2 omega errors from unreduced lambdas; patched, NOT re-run)
 
   Step A of EulerLean/JACOBI_PLAN.md.
 
@@ -71,12 +71,15 @@ theorem hurwitz_eq_image (n : ℕ) (hn : n % 2 = 0) :
     · funext i
       exact (hx i).symm
   · rintro ⟨x, hx, rfl⟩
-    refine ⟨Or.inl (fun i => by omega), ?_⟩
     have hsum : ∑ i, (2 * x i) ^ 2 = 4 * ∑ i, x i ^ 2 := by
       rw [Finset.mul_sum]
       exact Finset.sum_congr rfl (fun i _ => by ring)
     have hx' : ∑ i, x i ^ 2 = (n : ℤ) := hx
-    omega
+    refine ⟨Or.inl (fun i => ?_), ?_⟩
+    · show 2 * x i % 2 = 0
+      omega
+    · show ∑ i, (2 * x i) ^ 2 = 4 * (n : ℤ)
+      rw [hsum, hx']
 
 /-- Step A: for even `n`, as many Hurwitz numerators of norm `n` as integer 4-tuples of norm `n`. -/
 theorem hurwitz_ncard_eq_lipschitz (n : ℕ) (hn : n % 2 = 0) :
