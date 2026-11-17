@@ -709,11 +709,11 @@ theorem units_QH_count :
         rw [hs, ← Quaternion.normSq_def']
         exact hn
     · rintro ⟨hx, hs⟩
-      let u : Quaternion ℚ := (⟨x 0, x 1, x 2, x 3⟩ : QuaternionAlgebra ℚ (-1) (-1))
-      have e0 : u.re = x 0 := rfl
-      have e1 : u.imI = x 1 := rfl
-      have e2 : u.imJ = x 2 := rfl
-      have e3 : u.imK = x 3 := rfl
+      obtain ⟨u, e0, e1, e2, e3⟩ : ∃ u : Quaternion ℚ,
+          u.re = x 0 ∧ u.imI = x 1 ∧ u.imJ = x 2 ∧ u.imK = x 3 := by
+        first
+        | exact ⟨⟨x 0, x 1, x 2, x 3⟩, rfl, rfl, rfl, rfl⟩
+        | exact ⟨QuaternionAlgebra.mk (x 0) (x 1) (x 2) (x 3), rfl, rfl, rfl, rfl⟩
       refine ⟨u, ⟨?_, ?_⟩, ?_⟩
       · unfold QH Section71c.H
         unfold Section72a.IsHur at hx
@@ -733,7 +733,7 @@ theorem units_QH_count :
       · rw [Quaternion.normSq_def', e0, e1, e2, e3, ← Fin.sum_univ_four (fun i => x i ^ 2)]
         exact hs
       · funext i
-        fin_cases i <;> rfl
+        fin_cases i <;> simp [f, e0, e1, e2, e3]
   rw [← Set.ncard_image_of_injective _ f_inj, himg]
   exact Section72a.units_count
 
