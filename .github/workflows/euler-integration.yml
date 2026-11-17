@@ -34,4 +34,4 @@ jobs:
           [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
           grep -n "sorry" /tmp/s67.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/s67.txt && { echo "::error::error in output"; exit 1; } || true
-          grep -n "depends on axioms" /tmp/s67.txt
+          grep -n -A4 "depends on axioms" /tmp/s67.txt
