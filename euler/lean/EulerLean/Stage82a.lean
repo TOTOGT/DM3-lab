@@ -2606,7 +2606,7 @@ theorem bound3 (m : ℕ) (hm2 : m % 2 = 1) (hm3 : ¬ 3 ∣ m) (X : Finset (Fin 4
       | exact (ZMod.intCast_zmod_eq_zero_iff_dvd z 3).mpr (by exact_mod_cast hz)
       | exact (ZMod.intCast_eq_zero_iff_dvd z 3).mpr (by exact_mod_cast hz)
       | exact (ZMod.intCast_cast_eq_zero_iff z 3).mpr (by exact_mod_cast hz)
-    rw [Finset.mem_union, Finset.mem_filter, Finset.mem_filter]
+    rw [Finset.mem_coe, Finset.mem_union, Finset.mem_filter, Finset.mem_filter]
     rcases hdiv with ⟨a, b⟩ | ⟨a, b⟩
     · left
       refine ⟨hqS, ?_⟩
