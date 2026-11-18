@@ -299,3 +299,14 @@ jobs:
           grep -n "sorry" /tmp/s79a.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/s79a.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n -A4 "depends on axioms" /tmp/s79a.txt
+
+      - name: Stage80a
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage80a.lean 2>&1 | tee /tmp/s80a.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s80a.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s80a.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A4 "depends on axioms" /tmp/s80a.txt
