@@ -1047,7 +1047,7 @@ theorem gen_exists (h2 : (2 : ZMod p) ≠ 0) (xs ys : ZMod p) (hxy : xs ^ 2 + ys
     rw [ha, ham]
     simp
   · exfalso
-    have hpp : 0 < p ^ 2 := by positivity
+    have hpp : 0 < p ^ 2 := pow_pos (Fact.out : p.Prime).pos 2
     have hb1 : b = 1 := by
       rw [ham] at hab
       exact Nat.eq_of_mul_eq_mul_left hpp (by rw [hab, mul_one])
