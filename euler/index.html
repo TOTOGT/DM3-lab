@@ -37,9 +37,15 @@
   <td>A hypothesis <code>H&nbsp;:&nbsp;AnalyticRange</code> (the paper&rsquo;s Prop. 6.1). Not proved here.</td>
 </tr>
 <tr>
+  <td><code>Section83.euler_1747_of_H31gt3</code>: the conjecture, <em>if</em> <code>H31gt3</code> holds.</td>
+  <td><span class="tag warn">conditional</span></td>
+  <td>Standard three axioms plus the <code>native_decide</code> axiom for the finite range n &lt; 64<sup>4</sup>.</td>
+  <td>One hypothesis, <code>H31gt3</code> (Prop 3.1 for primes p &gt; 3, p &nmid; m). Not proved. <code>HJac</code> and the p&nbsp;=&nbsp;3 case are proved in Lean.</td>
+</tr>
+<tr>
   <td><code>AnalyticRange</code> itself (paper Prop. 6.1, <code>n &ge; 64<sup>4</sup></code>).</td>
   <td><span class="tag bad">not done</span></td>
-  <td>None in Lean. Sections 2&ndash;6 were checked only by numerical tests and hand reading (see the <a href="#lemmas">lemma table</a>).</td>
+  <td>Not proved in Lean as stated. The chain has since been reduced further (next row). Several elementary pieces of Sections 2&ndash;6 are kernel-checked; see the <a href="#lemmas">lemma table</a>.</td>
   <td>Needs Ramanujan&ndash;Petersson via Jacquet&ndash;Langlands.</td>
 </tr>
 <tr>
@@ -57,7 +63,7 @@
 <div class="scroll"><table class="lemmas">
 <thead><tr><th>Item</th><th>Statement</th><th>Status</th><th>Evidence and what is missing</th></tr></thead>
 <tbody>
-<tr><td><b>Thm 1.1</b></td><td data-label="Statement">every n &equiv; 2 mod 4 is a + b, both prime factors &equiv; 1 mod 4</td><td data-label="Status"><span class="tag warn">conditional (Lean)</span></td><td data-label="Evidence and what is missing">Assembly in <code>Euler1747.lean</code> with Prop 6.1 as hypothesis <code>AnalyticRange</code>. Unconditional once <code>AnalyticRange</code> (Prop 6.1) is proved. Prop 3.1 supplies one input to the proof of that hypothesis; it is not the hypothesis itself.</td></tr>
+<tr><td><b>Thm 1.1</b></td><td data-label="Statement">every n &equiv; 2 mod 4 is a + b, both prime factors &equiv; 1 mod 4</td><td data-label="Status"><span class="tag warn">conditional (Lean)</span></td><td data-label="Evidence and what is missing">Conditional on <code>H31gt3</code> (<code>Section83.euler_1747_of_H31gt3</code>). Everything else in the chain, including <code>HJac</code> and the p&nbsp;=&nbsp;3 case of Prop 3.1, is kernel-checked; the finite range n &lt; 64<sup>4</sup> also uses the <code>native_decide</code> axiom. Not proved.</td></tr>
 <tr><td><b>Lemma 2.1</b></td><td data-label="Statement">reduce to n = 2m, m odd, all primes of m &equiv; 3 mod 4</td><td data-label="Status"><span class="tag ok">Lean</span></td><td data-label="Evidence and what is missing">Inside <code>euler_1747_of_analytic_range</code>. Standard axioms plus the native_decide axiom, only because of the finite part.</td></tr>
 <tr><td><b>(2.1)</b></td><td data-label="Statement">R(n) = 24&sigma;(m) (Jacobi)</td><td data-label="Status"><span class="tag ok">Lean, kernel</span></td><td data-label="Evidence and what is missing">Lean, standard axioms only: <code>Section80.hjac</code> (run #41). Previously also tested numerically for n &lt; 6000.</td></tr>
 <tr><td><b>(2.2)</b></td><td data-label="Statement">|Rmix| = (2/3)|R|</td><td data-label="Status"><span class="tag ok">Lean, kernel</span></td><td data-label="Evidence and what is missing"><code>FourSquaresMixed.lean</code>: <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code> only.</td></tr>
