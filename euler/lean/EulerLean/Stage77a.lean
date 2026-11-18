@@ -1374,7 +1374,7 @@ theorem Hn_finite (n : ℕ) : (Section75a.Hn n).Finite := by
     have k2 : a2 = b2 := congrFun hh 2
     have k3 : a3 = b3 := congrFun hh 3
     subst k0 k1 k2 k3
-    refine Quaternion.ext ?_ ?_ ?_ ?_ <;> linarith
+    refine Quaternion.ext _ _ ?_ ?_ ?_ ?_ <;> linarith
 
 end Section77a
 
