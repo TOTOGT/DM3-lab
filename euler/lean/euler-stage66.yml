@@ -200,3 +200,14 @@ jobs:
           grep -n "sorry" /tmp/s74a.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/s74a.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n -A4 "depends on axioms" /tmp/s74a.txt
+
+      - name: Stage74b
+        if: always()
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/Stage74b.lean 2>&1 | tee /tmp/s74b.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/s74b.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s74b.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A4 "depends on axioms" /tmp/s74b.txt
