@@ -1400,8 +1400,11 @@ theorem QH_int (a : ℤ) : QH ((a : ℚ) : Quaternion ℚ) := by
 
 theorem QH_smul_nat {z : Quaternion ℚ} (hz : QH z) : QH ((p : ℚ) • z) := by
   have : ((p : ℚ) • z) = (((p : ℤ) : ℚ) : Quaternion ℚ) * z := by
-    refine Quaternion.ext _ _ ?_ ?_ ?_ ?_ <;>
-      simp [Quaternion.mul_re, Quaternion.mul_imI, Quaternion.mul_imJ, Quaternion.mul_imK]
+    refine Quaternion.ext _ _ ?_ ?_ ?_ ?_
+    · rw [(Section73b.mul_comp _ z).1]; simp
+    · rw [(Section73b.mul_comp _ z).2.1]; simp
+    · rw [(Section73b.mul_comp _ z).2.2.1]; simp
+    · rw [(Section73b.mul_comp _ z).2.2.2]; simp
   rw [this]
   exact QH_mul (QH_int (p : ℤ)) hz
 
