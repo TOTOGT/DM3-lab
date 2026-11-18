@@ -38,7 +38,7 @@ theorem indep (k k' : Option F) (h : k ≠ k') :
       intro h0
       apply h
       congr 1
-      linear_combination h0
+      linear_combination -h0
 
 theorem key_unique (v w : F × F) (hind : v.1 * w.2 - v.2 * w.1 ≠ 0) (M : Matrix (Fin 2) (Fin 2) F)
     (hv : InKey v M) (hw : InKey w M) : M = 0 := by
@@ -90,7 +90,7 @@ theorem key_exists (M : Matrix (Fin 2) (Fin 2) F) (hdet : M.det = 0) (hM : M ≠
     · simp [kvF]
     · simp [kvF]
       field_simp
-      linear_combination -hdet
+      linear_combination hdet
 
 end Section76a
 
