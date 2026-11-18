@@ -1883,7 +1883,6 @@ theorem sg_hecke (p : ℕ) (hp : p.Prime) (m : ℕ) (hm : m ≠ 0) :
     rw [if_neg hv, add_zero]
     have hc1 : Nat.Coprime p v := (Nat.Prime.coprime_iff_not_dvd hp).2 hv
     rw [sg_mul hc1, sg_prime hp]
-    ring
   · obtain ⟨f, rfl⟩ : ∃ f, e = f + 1 := ⟨e - 1, by omega⟩
     have hdvd : p ∣ p ^ (f + 1) * v := dvd_mul_of_dvd_left (dvd_pow_self p (Nat.succ_ne_zero f)) v
     have hdiv : p ^ (f + 1) * v / p = p ^ f * v :=
