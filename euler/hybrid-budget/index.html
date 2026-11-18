@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Euler 1747: hybrid budget (conditional)</title>
+<style>
+body{font:16px/1.55 system-ui,sans-serif;max-width:46rem;margin:2rem auto;padding:0 1rem;color:#1a1a1a;background:#fff}
+@media (prefers-color-scheme:dark){body{color:#e8e8e8;background:#161616}a{color:#8ab4ff}}
+code{font-family:ui-monospace,monospace}
+</style>
+</head>
+<body>
+<p><a href="../">&larr; Euler 1747 verification page</a></p>
+<h1>Conditional hybrid budget</h1>
+<p><b>Status: conditional, not a Lean proof, and the conjecture is not proved.</b> Exact-rational arithmetic (Python <code>Fraction</code>) shows that, <em>if</em> a uniform spectral bound (H) holds for every prime p &le; P(n) = &lfloor;2n<sup>(1&minus;&beta;)/2</sup>&rfloor;, the aggregate inequality needed by <code>Sufficiency.sufficiency</code> holds for all n &ge; n<sub>0</sub>. For &beta; = 1/2, n<sub>0</sub> = 64<sup>4</sup> (this is the existing <code>H31gt3</code> hypothesis). For &beta; = 0.55, n<sub>0</sub> = 10<sup>11</sup>, which would also need a separate finite check of the interval (64<sup>4</sup>, 10<sup>11</sup>]. Hypothesis (H) is unproved for every &beta; below 1, and no Lean exists for the moving-cutoff assembly.</p>
+<ul>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/hybrid-budget/DERIVATION-hybrid-budget.md">Derivation</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/hybrid-budget/certify_budget.py">certify_budget.py</a> (standard library only)</li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/hybrid-budget/certificate-output.txt">certificate-output.txt</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">Lemma ledger</a></li>
+</ul>
+</body>
+</html>
