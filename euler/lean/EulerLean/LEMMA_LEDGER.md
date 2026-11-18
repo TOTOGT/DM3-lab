@@ -89,6 +89,14 @@ Which checked declaration discharges each hypothesis. Updated 2026-11-17. A row 
 |---|---|---|---|
 | Hr2 | card (R2 (2m) u) <= 4 * Mn (2m) for 1 <= u <= 2m | none | OPEN. Pieces kernel-checked in run #31 (51a2684, standard axioms only): TwoSq.inert_le, two_le, S1_card (Stage66a) and TwoSq.split_sum (Stage66b). Also kernel-checked, run #34 (4c2250c, standard axioms only): TwoSq.split_nodvd, split_dvd, closed_form (Stage66c). Written, UNTESTED (not compiled anywhere): Stage66d, with Mq' (the body of Section62.Mq restated), Mq'_step and card_le_four_Mq : 0 < u -> |S u| <= 4 * Mq' u. Not yet proved: the link Section42.R2 n u = S u for 1 <= u <= n, the lift to Mn, and the wiring into Hr2. None of the kernel-checked pieces mentions Mq, R2 or Mn |
 | H31 | Prop 3.1 for p <= Pn (2m) | none | OPEN. Needs Lemma 3.2: Jacquet-Langlands and weight-2 Ramanujan-Petersson, not in Mathlib. Bridge.pointwise_of_quadform (run #17) only takes the quadratic-form bound hquad as a hypothesis |
-| HJac | card (FourSq.R (2m)) = 24 * sig m for odd m | none | OPEN. Mathlib (2026-07-13 checkout) has Lagrange only. FourSq.mixed_count gives |Rmix| = (2/3)|R| but not |R| |
+| HJac | card (FourSq.R (2m)) = 24 * sig m for odd m | Section80.hjac | PROVED in Lean, run #41 (Stage80a): propext, Classical.choice, Quot.sound only. Route: Hurwitz order, right ideals Ik (Stage75b/76), key uniqueness/existence (76a/76b), finiteness of Hn (77a), per-key count ncard_Ik_Hn, count_pairs, recur (78a), sg_hecke and h_eq (79a), numerators<->quaternions and norm doubling (80a). Integration with Stage70 (Stage81, Section65.HJac) written, UNTESTED until run |
+| 74a-74c | Hurwitz order setup, reduction mod p (red, psi, det_red, red_ker) | Section74b etc. | Kernel-checked in earlier green runs (standard axioms); ledger detail not itemized here |
+| 75a, 75b | Hn finite sets, norm doubling (Section75a.double_card); Ik, Ik_ideal, Ik_not_pH, gen_exists | see names | Kernel-checked, run #34 and earlier (standard axioms) |
+| 76a, 76b | key_unique, key_exists; Ik_unique, Ik_existsUnique | Section76a/76b | Kernel-checked, runs #35 and #37 |
+| 77a | bnd, repr, Hn_finite | Section77a | Kernel-checked, run #37 |
+| 78a | ncard_Ik_Hn, count_pairs, zero_count, recur: (p+1)h(m) = h(pm) + [p|m] p h(m/p) | Section78a/b/c | Kernel-checked, run #41 |
+| 79a | sg_hecke, h_one, h_eq: h(m) = 24 sg m for odd m | Section79a/b | Kernel-checked, run #41 |
+| 80a | num_card, hjac | Section80 | Kernel-checked, run #41; axioms propext, Classical.choice, Quot.sound |
+| 81 | Section81.hjac : Section65.HJac; euler_1747_of_H31ndvd | Stage81 | Written, UNTESTED (pushed, run pending). Even if green, H31ndvd remains open |
 
 Trust note: even with all three discharged, the finite range (Euler1747.euler_finite) rests on native_decide, so the final theorem would still list the native_decide axiom unless the 4,194,304-case check is redone by a kernel-checked method.
