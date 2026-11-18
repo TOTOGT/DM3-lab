@@ -4,63 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Euler 1747: a verification, step by step</title>
-<style>
-:root{
-  --bg:#fbfaf6; --fg:#1d1f1c; --muted:#5b605a; --rule:#d9d6cb; --card:#f1efe6;
-  --ok:#1f6f3a; --warn:#9a5b00; --bad:#a3262a; --code-bg:#ecebe2; --link:#1d5fa8;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#16181a; --fg:#e8e6df; --muted:#a2a79f; --rule:#34383a; --card:#1f2325;
-    --ok:#6fcf8e; --warn:#e3a84a; --bad:#ee7b7e; --code-bg:#23282a; --link:#7db4ee; color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#16181a; --fg:#e8e6df; --muted:#a2a79f; --rule:#34383a; --card:#1f2325;
-  --ok:#6fcf8e; --warn:#e3a84a; --bad:#ee7b7e; --code-bg:#23282a; --link:#7db4ee; color-scheme:dark;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);
-  font:17px/1.6 Georgia,"Iowan Old Style","Times New Roman",serif;
-  padding-inline:max(16px,env(safe-area-inset-left));}
-main{max-width:46rem;margin:0 auto;padding-block:2rem 4rem}
-h1{font-size:1.9rem;line-height:1.2;margin:.2rem 0 .6rem;text-wrap:balance}
-h2{font-size:1.25rem;margin:2.4rem 0 .6rem;text-wrap:balance;border-top:1px solid var(--rule);padding-top:1.2rem}
-p{margin:.7rem 0}
-.kicker{font:600 .78rem/1 system-ui,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.lede{font-size:1.1rem;color:var(--fg)}
-a{color:var(--link)}
-code,pre{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86rem}
-code{background:var(--code-bg);padding:.05rem .3rem;border-radius:3px}
-pre{background:var(--code-bg);padding:.8rem 1rem;border-radius:6px;overflow-x:auto;margin:.8rem 0}
-pre code{background:none;padding:0}
-.scroll{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:34rem;font:.9rem/1.45 system-ui,sans-serif}
-th,td{text-align:left;vertical-align:top;padding:.55rem .6rem;border-bottom:1px solid var(--rule)}
-th{font-weight:600;color:var(--muted);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
-.tag{font:600 .74rem/1 system-ui,sans-serif;padding:.2rem .45rem;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
-.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-.note{background:var(--card);border-left:3px solid var(--warn);padding:.7rem 1rem;margin:1rem 0;border-radius:0 6px 6px 0}
-.note.ok{border-left-color:var(--ok);color:var(--fg)}
-ol.log{padding-left:1.2rem;margin:.6rem 0}
-ol.log li{margin:.8rem 0}
-ol.log b{font-family:system-ui,sans-serif;font-size:.92rem}
-.foot{color:var(--muted);font-size:.9rem;margin-top:3rem;border-top:1px solid var(--rule);padding-top:1rem}
-
-@media (max-width:40rem){
-  table.lemmas{min-width:0}
-  table.lemmas thead{display:none}
-  table.lemmas,table.lemmas tbody,table.lemmas tr,table.lemmas td{display:block;width:100%}
-  table.lemmas tr{border:1px solid var(--rule);border-radius:6px;padding:.4rem .2rem;margin:.7rem 0;background:var(--card)}
-  table.lemmas td{border-bottom:0;padding:.3rem .6rem}
-  table.lemmas td[data-label]::before{content:attr(data-label);display:block;font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-}
-</style>
+<link rel="stylesheet" href="brand.css">
 </head>
 <body>
+<nav><span class="dm3-brand nav-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgn)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span><a href="./">Euler 1747</a><a href="./hybrid-budget/">Hybrid budget</a><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">Ledger</a></nav><header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">DM3-lab &middot; Worked example &middot; Lean verification &middot; 16 Nov 2026</div><h1>Euler&rsquo;s 1747 conjecture: what a green check does and does not say</h1><div class="gold-rule"></div></header>
 <main>
-<p class="kicker">DM3-lab &middot; Worked example &middot; Lean verification &middot; 16 Nov 2026</p>
-<h1>Euler&rsquo;s 1747 conjecture: what a green check does and does not say</h1>
 <p class="lede">A new paper claims that every positive integer <code>n &equiv; 2 (mod 4)</code> is a sum of two positive integers whose prime factors are all <code>&equiv; 1 (mod 4)</code>. The number 1 counts as such a summand (it has no prime factors), which is how the first case, 2 = 1 + 1, is covered. We tried to check it in Lean. This page records what was run, what each run showed, the mistakes we made and caught on the way, and the one place where a clean-looking result is not what it seems.</p>
 
 <div class="note"><strong>Short version.</strong> The finite range (every such <code>n &lt; 64<sup>4</sup></code>) is checked by computation, and the full conjecture is <em>reduced</em> (Stage 70) to two hypotheses, <code>HJac</code> (Jacobi&rsquo;s count) and <code>H31ndvd</code> (the paper&rsquo;s Prop 3.1 input). <code>HJac</code> is proved in Lean (runs #41, #42). The case p&nbsp;=&nbsp;3 of <code>H31ndvd</code> is now proved too (<code>Section82b.bound3</code>, <code>Section83.bp3</code>: b<sub>3</sub>(2m) &le; 8&sigma;(m)). What remains is a single hypothesis, <code>H31gt3</code>: Prop 3.1 for primes p&nbsp;&gt;&nbsp;3 that do not divide m. The theorem <code>Section83.euler_1747_of_H31gt3</code> (Stage83, dev run #5, no <code>sorry</code>) takes only that hypothesis; its axioms are the three standard ones plus the <code>native_decide</code> axiom for the finite range. <code>H31gt3</code> is not proved, so the conjecture is not proved. Our file is not the paper&rsquo;s formalization and is not a proof of Euler&rsquo;s conjecture.</div>
@@ -179,5 +127,6 @@ some 313
 
 <p class="foot">Runs: <a href="https://github.com/TOTOGT/DM3-lab/actions/runs/44387318243">Euler dev #5</a> (commit <code>c92956f</code>, Stage 83, green), Stage 81 chain run #42 (green), Stage 80a run #41, and earlier: <a href="https://github.com/TOTOGT/DM3-lab/actions/runs/43995462433">DM3-lab Euler #2</a> (commit <code>dab90e0</code>, green, 12m32s; FourSquaresMixed, HurwitzStepA and Euler1747) and the earlier <a href="https://github.com/TOTOGT/geometry/actions/runs/43986441418">geometry Euler #1</a> (commit <code>779663f</code>, first copy of these files). Source: <code>euler/lean/</code> in TOTOGT/DM3-lab. <code>Section6Arithmetic.lean</code> and <code>Lemma41.lean</code> are checked by the separate <a href="https://github.com/TOTOGT/DM3-lab/actions/runs/44001591472">elementary-lemmas run #4</a> (commit <code>4be3101</code>, green, 2m6s), together with <code>Lemma52.lean</code>. <code>LocalFactors.lean</code> (Lemma 5.1 maximization) compiled in <a href="https://github.com/TOTOGT/DM3-lab/actions/runs/44002016792">run #5</a> (green). <code>Sufficiency23.lean</code> and the (5.3), (5.4) parts of <code>Lemma52.lean</code> are in <a href="https://github.com/TOTOGT/DM3-lab/actions/runs/44003431019">run #9</a> (green, 2m20s). Paper checked against: Howe, Huffman, Kohlmeyer, Kruer, hexagon:2611.00370v1. Lean v4.32.0, Mathlib v4.32.0 pin.</p>
 </main>
+<script src="brand.js"></script>
 </body>
 </html>
