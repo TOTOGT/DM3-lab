@@ -6019,7 +6019,9 @@ theorem h31ndvd_of (h : H31gt3) : Section70.H31ndvd := by
     rw [if_neg (lt_irrefl 3), add_zero, div_le_iff₀ (by linarith)]
     norm_num
     linarith
-  · exact h m hm hmod hn64 p hp h3 hpm hple (by omega)
+  · have hgt : 3 < p := by omega
+    rw [if_pos hgt]
+    exact h m hm hmod hn64 p hp h3 hpm hple hgt
 
 theorem euler_1747_of_H31gt3 (h : H31gt3) (n : ℕ) (hn4 : n % 4 = 2) :
     ∃ a b : ℕ, Euler1747.EulerGood a ∧ Euler1747.EulerGood b ∧ a + b = n :=
