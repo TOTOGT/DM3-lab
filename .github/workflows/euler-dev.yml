@@ -1,4 +1,4 @@
-# Dev run: only the newest stage file (Stage82a), no earlier steps. Standalone: each file imports only Mathlib.
+# Dev run: only the newest stage file (Stage83), no earlier steps. Standalone: each file imports only Mathlib.
 # Trigger: Actions > "Euler stage 66 (Lean)" > Run workflow. No Stage65 / native_decide step, so it finishes in minutes.
 name: Euler dev (Lean)
 
@@ -26,12 +26,12 @@ jobs:
           lake update
           lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
 
-      - name: Stage82a
+      - name: Stage83
         run: |
           set -uxo pipefail
-          lake env lean EulerLean/Stage82a.lean 2>&1 | tee /tmp/s82a.txt
+          lake env lean EulerLean/Stage83.lean 2>&1 | tee /tmp/s83.txt
           rc=${PIPESTATUS[0]}
           [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
-          grep -n "sorry" /tmp/s82a.txt && { echo "::error::sorry"; exit 1; } || true
-          grep -n "error" /tmp/s82a.txt && { echo "::error::error in output"; exit 1; } || true
-          grep -n -A4 "depends on axioms" /tmp/s82a.txt
+          grep -n "sorry" /tmp/s83.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/s83.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A4 "depends on axioms" /tmp/s83.txt
