@@ -1,0 +1,3 @@
+# Lake build output and downloaded packages (contain nested git repos)
+.lake/
+**/.lake/
