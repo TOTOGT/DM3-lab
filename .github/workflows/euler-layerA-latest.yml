@@ -1,0 +1,90 @@
+# Compiles only the NEWEST Layer A stage file (each StageA*.lean already contains every earlier stage).
+# Runs on every push that touches a StageA*.lean file, and on demand: Actions > this workflow > Run workflow.
+# Fails on: a Lean error, any 'sorry', no axiom report at all, or any axiom outside propext / Classical.choice / Quot.sound.
+name: Euler layer A (latest stage)
+
+on:
+  push:
+    paths:
+      - 'euler/lean/EulerLean/StageA*.lean'
+      - '.github/workflows/euler-layerA-latest.yml'
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'Stage file name, e.g. StageA4b.lean (empty = newest added)'
+        required: false
+        default: ''
+
+jobs:
+  latest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Pick the stage file
+        id: pick
+        env:
+          INPUT_STAGE: ${{ inputs.stage }}
+        run: |
+          set -eu
+          if [ -n "$INPUT_STAGE" ]; then
+            f="$INPUT_STAGE"
+          else
+            f=$(git -C "$GITHUB_WORKSPACE" log --diff-filter=A --format= --name-only -- 'euler/lean/EulerLean/StageA*.lean' | sed -n '1p' | sed 's#.*/##')
+          fi
+          test -n "$f" && test -f "EulerLean/$f"
+          echo "file=$f" >> "$GITHUB_OUTPUT"
+          echo "Stage file: $f"
+
+      - name: Compile and gate
+        env:
+          STAGE: ${{ steps.pick.outputs.file }}
+        run: |
+          set -uxo pipefail
+          lake env lean "EulerLean/$STAGE" 2>&1 | tee /tmp/out.txt
+          rc=${PIPESTATUS[0]}
+          python3 - "$STAGE" "$rc" <<'PY'
+          import re, sys, os
+          stage, rc = sys.argv[1], int(sys.argv[2])
+          text = open('/tmp/out.txt', encoding='utf-8', errors='replace').read()
+          ok = {'propext', 'Classical.choice', 'Quot.sound'}
+          reports, bad = [], []
+          for line in text.splitlines():
+              m = re.search(r"'([^']+)' depends on axioms: \[(.*)\]", line)
+              if m:
+                  reports.append((m.group(1), m.group(2)))
+                  if not {a.strip() for a in m.group(2).split(',')} <= ok:
+                      bad.append(line.strip())
+              m2 = re.search(r"'([^']+)' does not depend on any axioms", line)
+              if m2:
+                  reports.append((m2.group(1), 'none'))
+          errors = [l for l in text.splitlines() if ': error' in l]
+          sorry = [l for l in text.splitlines() if 'sorry' in l]
+          warns = sum(1 for l in text.splitlines() if ': warning:' in l)
+          out = ['### Euler layer A: ' + stage, f'lean exit code: {rc}', f'warnings: {warns}',
+                 f'axiom reports: {len(reports)}; non-standard: {len(bad)}; errors: {len(errors)}; sorry lines: {len(sorry)}', '']
+          out += ['| declaration | axioms |', '|---|---|'] + [f'| `{n}` | {a} |' for n, a in reports if n.startswith(('SectionA4', 'SectionA5', 'SectionA6'))]
+          out += [''] + ['```'] + errors[:40] + bad + ['```']
+          open(os.environ['GITHUB_STEP_SUMMARY'], 'a').write('\n'.join(out) + '\n')
+          fail = rc != 0 or errors or sorry or bad or not reports
+          if fail:
+              print('::error::gate failed (exit %d, errors %d, sorry %d, non-standard %d, reports %d)' % (rc, len(errors), len(sorry), len(bad), len(reports)))
+              sys.exit(1)
+          PY
