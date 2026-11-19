@@ -1380,7 +1380,7 @@ theorem zc_sumsq (u : HurU) :
   exact_mod_cast h
 
 /-- the explicit finite set of doubled coordinates -/
-noncomputable noncomputable def Tset : Finset (ℤ × ℤ × ℤ × ℤ) :=
+noncomputable def Tset : Finset (ℤ × ℤ × ℤ × ℤ) :=
   ((Finset.Icc (-2 : ℤ) 2) ×ˢ (Finset.Icc (-2 : ℤ) 2) ×ˢ (Finset.Icc (-2 : ℤ) 2) ×ˢ
       (Finset.Icc (-2 : ℤ) 2)).filter
     (fun z => z.1 ^ 2 + z.2.1 ^ 2 + z.2.2.1 ^ 2 + z.2.2.2 ^ 2 = 4 ∧ (z.1 - z.2.1) % 2 = 0 ∧
