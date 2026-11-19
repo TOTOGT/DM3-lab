@@ -63,7 +63,7 @@ jobs:
           set -uxo pipefail
           lake env lean EulerLean/StageA3a.lean 2>&1 | tee /tmp/a3a.txt
           rc=${PIPESTATUS[0]}
-          { echo "### StageA3a (lean exit code $rc)"; echo "warnings: $(grep -c 'warning:' /tmp/a3a.txt)"; echo '```'; grep "depends on axioms" /tmp/a3a.txt | grep SectionA3a; echo '```'; echo "errors:"; echo '```'; grep -A8 "error" /tmp/a3a.txt | head -120; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          { echo "### StageA3a (lean exit code $rc)"; echo "warnings: $(grep -c 'warning:' /tmp/a3a.txt)"; echo '```'; (grep "depends on axioms" /tmp/a3a.txt | grep SectionA3a || true); echo '```'; echo "errors:"; echo '```'; (grep -A8 "error" /tmp/a3a.txt || true) | head -120; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
           grep -n "sorry" /tmp/a3a.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/a3a.txt && { echo "::error::error in output"; exit 1; } || true
