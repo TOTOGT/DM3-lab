@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Euler 1747: explore the open step</title>
+<link rel="stylesheet" href="../brand.css">
+<style>
+.lede2{color:var(--muted);max-width:44rem}
+.fig{border:1px solid var(--hair-lo);border-radius:12px;background:var(--panel);padding:1rem 1rem .6rem;margin:1rem 0 .4rem;position:relative}
+.fig svg{display:block;width:100%;height:auto}
+#dagfig{overflow-x:auto}
+#dagfig svg{min-width:620px}
+.cap{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;color:var(--faint);margin:.3rem 0 1.6rem;line-height:1.5}
+.ctrl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:.2rem 0 .6rem;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.ctrl button{font:inherit;color:var(--cream);background:transparent;border:1px solid var(--hair);border-radius:999px;padding:.25rem .7rem;cursor:pointer}
+.ctrl button[aria-pressed="true"]{background:var(--gold);color:#04060d;border-color:var(--gold)}
+.ctrl .lab{margin-right:.3rem;color:var(--faint)}
+.tip{position:absolute;pointer-events:none;background:rgba(8,13,26,0.96);border:1px solid var(--hair);border-radius:6px;padding:.35rem .55rem;font-family:var(--mono);font-size:.7rem;color:var(--cream);white-space:nowrap;transform:translate(-50%,-115%);z-index:5}
+.tip[hidden]{display:none}
+.detail{border-left:2px solid var(--gold);padding:.6rem .9rem;margin:.6rem 0 1.4rem;background:rgba(201,168,76,0.05);border-radius:0 8px 8px 0;min-height:4.2rem}
+.detail h3{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;color:var(--gold);margin-bottom:.25rem;font-weight:normal;text-transform:uppercase}
+.detail p{font-size:.95rem;color:var(--cream);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin:.2rem 0 .4rem}
+.legend span::before{content:'';display:inline-block;width:.7rem;height:.7rem;border-radius:3px;margin-right:.35rem;vertical-align:-.08rem;background:var(--c)}
+.node{cursor:pointer}
+.node rect{transition:stroke-width .15s}
+.node:hover rect,.node.sel rect{stroke-width:2.4}
+.node:focus{outline:none}
+.node:focus-visible rect{stroke:var(--gold-hi);stroke-width:2.6}
+.ax text{fill:rgba(236,233,224,0.5);font-family:'Courier New',monospace;font-size:11px}
+.ax line,.ax path{stroke:rgba(255,255,255,0.12)}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.6rem;margin:.6rem 0 0}
+.stat div{border:1px solid var(--hair-lo);border-radius:8px;padding:.5rem .7rem}
+.stat b{display:block;font-family:var(--mono);font-size:1.05rem;color:var(--gold);font-weight:normal;font-variant-numeric:tabular-nums}
+.stat small{font-family:var(--mono);font-size:.66rem;color:var(--faint);letter-spacing:.05em}
+</style>
+</head>
+<body>
+<nav><span class="dm3-brand nav-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgn)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span><a href="../">Euler 1747</a><a href="./">Explore</a><a href="../hybrid-budget/">Hybrid budget</a><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">Ledger</a></nav>
+<header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">Euler 1747 &middot; the open step, visualised</div><h1>One inequality stands between the reduction and a proof</h1><div class="gold-rule"></div></header>
+<main>
+<div class="status"><strong>Evidence and structure, not a proof.</strong> Everything below is either already checked in Lean (marked green), hand-derived, or a finite numerical test. The open step, <code>H31gt3</code>, rests on a classical spectral theorem whose fit to the paper's normalizations still needs a specialist's confirmation. The conjecture is not proved here.</div>
+
+<div class="section-title">1 &middot; Where the question sits</div>
+<p class="lede2">Each box is one step of the argument. Click a box to see what it says and how it was checked. Arrows point from what is used to what it proves.</p>
+<div class="legend"><span style="--c:#3fae7a">Lean, kernel-checked</span><span style="--c:#c9a84c">hand-derived or numerical</span><span style="--c:#8b7bf0">classical theorem, needs matching</span><span style="--c:#e48a8a">open hypothesis</span></div>
+<div class="fig" id="dagfig"><svg id="dag" viewBox="0 0 760 760" role="img" aria-label="Dependency diagram of the Euler 1747 argument"></svg></div>
+<div class="detail" id="detail" aria-live="polite"><h3>Click a box</h3><p>The red box is the one open hypothesis. Everything feeding it from below is what a referee is asked to confirm.</p></div>
+
+<div class="section-title">2 &middot; How close is the bound?</div>
+<p class="lede2">The open step needs, for every admissible pair (m, p), a number <em>R</em> to stay at or below 1. <em>R</em> is the one-vector ratio: the measured excess of returns to O<sub>p</sub>, divided by what the spectral bound allows. Each dot is one pair, computed exactly from Hurwitz quaternions of norm m.</p>
+<div class="ctrl" id="rctl"><span class="lab">prime p</span></div>
+<div class="fig"><svg id="rchart" viewBox="0 0 760 360" role="img" aria-label="Scatter of R against m"></svg><div class="tip" id="rtip" hidden></div></div>
+<div class="stat" id="rstat"></div>
+<p class="cap">Odd m &lt; 9000 with every prime factor &equiv; 3 (mod 4), p &#8740; m. Filled dots satisfy the prime cutoff p<sup>4</sup> &le; 32m; hollow dots do not. Every tested pair has 2m &lt; 18,000, far below 2m &ge; 64<sup>4</sup> where the bound is used. Exact verdict: R &gt; 1 iff N &gt; 0 and N<sup>2</sup> &gt; K<sup>2</sup>m (integers). Script: onevec.py.</p>
+
+<div class="section-title">3 &middot; Where the eigenvalues sit</div>
+<p class="lede2">The spectral input says: on functions orthogonal to 1 and &chi;<sub>p</sub>, every eigenvalue of the Hecke operator T<sub>&ell;</sub> lies in [&minus;2&radic;&ell;, 2&radic;&ell;]. Each row is one prime &ell;, scaled so the allowed band is [&minus;1, 1]. Diamonds are the two excluded eigenvalues, &ell;+1 and (&ell;/p)(&ell;+1).</p>
+<div class="ctrl" id="ectl"><span class="lab">level p</span></div>
+<div class="fig"><svg id="echart" viewBox="0 0 760 380" role="img" aria-label="Eigenvalues of Hecke operators scaled by 2 sqrt l"></svg><div class="tip" id="etip" hidden></div></div>
+<p class="cap">Operators built on Y<sub>p</sub> = &Gamma;<sub>p</sub>\PGL<sub>2</sub>(F<sub>p</sub>), |Y<sub>p</sub>| = 28, 110, 570. All dots stay inside the band (largest 0.96 of the bound at p = 19). A finite check of a classical theorem, not a proof of it.</p>
+
+<div class="section-title">4 &middot; The tail without the M(n) loss</div>
+<p class="lede2">A possible Deligne-free route bounds the large primes all at once instead of one by one. The prime-by-prime bound carries a factor M(n). Here is the actual tail sum over p above the Lean cutoff, against that bound.</p>
+<div class="ctrl" id="tctl"><span class="lab">show</span></div>
+<div class="fig"><svg id="tchart" viewBox="0 0 760 340" role="img" aria-label="Tail sum against m"></svg><div class="tip" id="ttip" hidden></div></div>
+<p class="cap">3,037 values 1001 &le; m &lt; 20000, cutoff P = &lfloor;2n<sup>1/4</sup>&rfloor; (Lean <code>Pn</code>), tail over primes p &equiv; 3 (mod 4) with P &lt; p &le; &radic;n, including p | m. Weak evidence: M(n) is only 8&ndash;16 here. Script: tail.py.</p>
+
+<p class="foot">dm&sup3; &middot; DM3-lab &middot; data and scripts in <a href="https://github.com/TOTOGT/DM3-lab/tree/main/euler/explore/data">euler/explore/data</a>; referee brief on the <a href="../">main page</a>.</p>
+</main>
+<script src="../brand.js"></script>
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function txt(parent,x,y,s,attrs){const t=el('text',Object.assign({x,y},attrs||{}),parent);t.textContent=s;return t}
+const C={lean:'#3fae7a',hand:'#c9a84c',cite:'#8b7bf0',open:'#e48a8a',cream:'#ece9e0',faint:'rgba(236,233,224,0.36)',cyan:'#56c8d8',violet:'#8b7bf0',gold:'#c9a84c',rose:'#e48a8a'};
+function tipAt(tip,svg,evt,html){const r=svg.parentNode.getBoundingClientRect();tip.innerHTML=html;tip.hidden=false;tip.style.left=(evt.clientX-r.left)+'px';tip.style.top=(evt.clientY-r.top)+'px'}
+
+/* ---------- 1. dependency diagram ---------- */
+const nodes=[
+ {id:'thm',x:280,y:12,w:200,h:46,k:'open2',t:['Euler 1747','every n ≡ 2 mod 4'],d:'Every positive integer n ≡ 2 (mod 4) is a sum of two positive integers whose prime factors are all ≡ 1 (mod 4). In Lean it is proved conditionally: Section83.euler_1747_of_H31gt3 takes H31gt3 as its only hypothesis. Axioms: the three standard ones plus native_decide for the finite range.'},
+ {id:'fin',x:20,y:110,w:180,h:46,k:'lean',t:['Finite range','n < 64⁴'],d:'Checked by computation inside Lean (native_decide). This trusts the compiled evaluation, not only the kernel, and the trust note stays on every final statement.'},
+ {id:'red',x:290,y:110,w:180,h:46,k:'lean',t:['Reduction','Stages 70–83'],d:'Section83.euler_1747_of_H31gt3: everything above 64⁴ reduces to H31gt3. Includes Lemmas 4.1, 4.2, 5.1, 5.2, (5.3), (5.4) and the final inequality 21235493/33177600 < 2/3, all kernel-checked with standard axioms.'},
+ {id:'easy',x:560,y:110,w:180,h:46,k:'lean',t:['HJac · Hr2 · p | m · p = 3','proved inputs'],d:'Jacobi’s count R(2m) = 24σ(m) via Hurwitz quaternions (Section80.hjac, run #41); the two-square bound Section65.hr2; the case p | m; the case p = 3 (Section83.bp3: b₃(2m) ≤ 8σ(m)). All kernel-checked.'},
+ {id:'h31',x:270,y:212,w:220,h:50,k:'open',t:['H31gt3 (Prop 3.1, p > 3)','b_p/(24σ) ≤ 2/(p(p−1)) + τ√m/(3σ)'],d:'The one open hypothesis. For odd m with all prime factors ≡ 3 mod 4, 2m ≥ 64⁴, and primes 3 < p ≤ ⌊2(2m)^¼⌋ with p ∤ m. Not proved in Lean. Tested numerically with zero violations, far below the range where it is used.'},
+ {id:'brg',x:280,y:318,w:200,h:50,k:'lean',t:['Bridge','one-vector ⇒ pointwise (3.8)'],d:'EulerBridge.pointwise_of_quadform (Bridge.lean): the quadratic-form bound ⟨h,Th⟩ ≤ B‖h‖² implies (T 1_O)(y₀) ≤ σμ + B(1−μ). Kernel-checked (elementary run #17; layer A run #1). The bound itself enters as a hypothesis.'},
+ {id:'f8',x:30,y:318,w:220,h:50,k:'hand',t:['Factor 8 · constancy','O_p = image of Γ_p·T'],d:'b_p ≤ 8 (T_m 1_O)(Γ_p). O_p comes from a nonsplit torus T = {c + dI} of order p+1; |Γ_p ∩ T| = 2 gives the 8; constancy (3.7) follows because T is a group. Hand-derived and checked numerically; Lean layer A is in progress.'},
+ {id:'one',x:270,y:420,w:220,h:50,k:'cite',t:['Lemma 3.2 / one-vector','|⟨h,T_m h⟩| ≤ τ(m)√m ‖h‖²'],d:'The spectral estimate. It follows from the operator-norm bound on W = {1, χ_p}^⊥ by ordinary Cauchy–Schwarz. The paper cites Jacquet–Langlands §16 with Deligne; the referee condition asks that this be matched to the paper’s normalizations.'},
+ {id:'c3',x:295,y:520,w:170,h:50,k:'hand',t:['Composite degree','prime ⇒ τ(m)√m'],d:'Hecke relations T_ℓ·T_ℓ = T_{ℓ²} + ℓI, T_aT_b = T_ab (coprime), self-adjointness, and the Chebyshev upgrade. Written at paper level (brief C3), not refereed; checked numerically to 10⁻¹².'},
+ {id:'rp',x:290,y:615,w:180,h:50,k:'cite',t:['Prime bound','|λ_ℓ| ≤ 2√ℓ on W'],d:'Weight-two Ramanujan–Petersson. Classical routes: Jacquet–Langlands §16 + Deligne; Codogni–Lido (isogeny graphs, H = scalars); Eichler–Shimura–Igusa via Weil 1948. Matched to Y_p at statement level; needs specialist confirmation (C1, C2).'},
+ {id:'cl',x:215,y:705,w:330,h:40,k:'cite',t:['Codogni–Lido · LPS · Eichler–Shimura–Igusa · Weil 1948'],d:'Citation candidates for the prime bound. Codogni–Lido: arbitrary level H, characteristic 2 allowed, uses Deligne. LPS and Davidoff–Sarnak–Valette: closest classical sources, but for ℓ, q ≡ 1 (mod 4) only.'}
+];
+const edges=[['fin','thm'],['red','thm'],['easy','red'],['h31','red'],['brg','h31'],['f8','h31'],['one','brg'],['c3','one'],['rp','c3'],['cl','rp']];
+const svg=document.getElementById('dag');
+const defs=el('defs',{},svg);
+const mk=el('marker',{id:'arr',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'},defs);
+el('path',{d:'M0,0L10,5L0,10z',fill:'rgba(236,233,224,0.45)'},mk);
+const byId={};nodes.forEach(n=>byId[n.id]=n);
+edges.forEach(([a,b])=>{const s=byId[a],t=byId[b];
+  const x1=s.x+s.w/2,y1=s.y,x2=t.x+t.w/2,y2=t.y+t.h;
+  const my=(y1+y2)/2;
+  el('path',{d:`M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2+3}`,fill:'none',stroke:'rgba(236,233,224,0.28)','stroke-width':1.3,'marker-end':'url(#arr)'},svg)});
+const detail=document.getElementById('detail');
+let selG=null;
+nodes.forEach(n=>{
+  const col=n.k==='lean'?C.lean:n.k==='hand'?C.hand:n.k==='cite'?C.cite:C.open;
+  const g=el('g',{class:'node',tabindex:0,role:'button','aria-label':n.t.join(', ')},svg);
+  el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:9,fill:n.k==='open2'?'rgba(201,168,76,0.08)':'rgba(8,13,26,0.92)',stroke:col,'stroke-width':1.4,'stroke-dasharray':n.k==='open2'?'5 4':''},g);
+  txt(g,n.x+n.w/2,n.y+(n.t.length>1?20:25),n.t[0],{'text-anchor':'middle',fill:C.cream,'font-family':'Georgia,serif','font-size':13.5});
+  if(n.t[1])txt(g,n.x+n.w/2,n.y+37,n.t[1],{'text-anchor':'middle',fill:'rgba(236,233,224,0.6)','font-family':"'Courier New',monospace",'font-size':10.5});
+  const show=()=>{if(selG)selG.classList.remove('sel');g.classList.add('sel');selG=g;detail.innerHTML='<h3>'+n.t[0]+'</h3><p>'+n.d+'</p>'};
+  g.addEventListener('click',show);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show()}});
+});
+txt(svg,492,40,'holds if H31gt3 holds',{'text-anchor':'start',fill:C.faint,'font-family':"'Courier New',monospace",'font-size':10});
+
+/* ---------- shared scatter helpers ---------- */
+function axes(g,X,Y,xt,yt,W,H,L,T,xlab,ylab){
+  const ax=el('g',{class:'ax'},g);
+  xt.forEach(v=>{const x=X(v);el('line',{x1:x,x2:x,y1:T,y2:T+H},ax);txt(ax,x,T+H+16,String(v),{'text-anchor':'middle'})});
+  yt.forEach(v=>{const y=Y(v);el('line',{x1:L,x2:L+W,y1:y,y2:y},ax);txt(ax,L-8,y+4,String(v),{'text-anchor':'end'})});
+  txt(ax,L+W,T+H+32,xlab,{'text-anchor':'end'});txt(ax,L,T-10,ylab,{'text-anchor':'start'});
+}
+function buttons(ctl,vals,cur,fmt,on){
+  const bs=[];vals.forEach(v=>{const b=document.createElement('button');b.type='button';b.textContent=fmt(v);b.setAttribute('aria-pressed',String(v===cur));
+    b.onclick=()=>{bs.forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');on(v)};ctl.appendChild(b);bs.push(b)});
+}
+
+/* ---------- 2. R chart ---------- */
+const rsvg=document.getElementById('rchart'),rtip=document.getElementById('rtip'),rstat=document.getElementById('rstat');
+const RP=[7,11,19,23];const Rdata={};
+Promise.all(RP.map(p=>fetch('data/R_'+p+'.csv').then(r=>r.ok?r.text():'').catch(()=>''))).then(txts=>{
+  txts.forEach((s,i)=>{Rdata[RP[i]]=s.trim().split('\n').slice(1).filter(Boolean).map(l=>{const a=l.split(',');return {m:+a[1],A:+a[2],sig:+a[3],tau:+a[4],R:+a[5],cut:a[6]==='1'}})});
+  buttons(document.getElementById('rctl'),RP,7,p=>'p = '+p,drawR);drawR(7);
+});
+function drawR(p){
+  rsvg.innerHTML='';const L=56,T=26,W=680,H=280;const d=Rdata[p]||[];
+  const X=m=>L+m/9000*W,Y=r=>T+(1.15-r)/2.3*H;
+  const g=el('g',{},rsvg);
+  el('rect',{x:L,y:Y(1),width:W,height:Y(-1)-Y(1),fill:'rgba(201,168,76,0.05)'},g);
+  axes(g,X,Y,[0,2000,4000,6000,8000],[-1,-0.5,0,0.5,1],W,H,L,T,'m','R');
+  el('line',{x1:L,x2:L+W,y1:Y(1),y2:Y(1),stroke:C.gold,'stroke-width':1.5,'stroke-dasharray':'6 4'},g);
+  txt(g,L+W-4,Y(1)-6,'bound R = 1',{'text-anchor':'end',fill:C.gold,'font-family':"'Courier New',monospace",'font-size':11});
+  if(!d.length){txt(g,L+W/2,T+H/2,'data loading or not yet published',{'text-anchor':'middle',fill:C.faint,'font-size':13});return}
+  let best=d[0];d.forEach(r=>{if(r.R>best.R)best=r});
+  d.forEach(r=>{const c=el('circle',{cx:X(r.m),cy:Y(r.R),r:r===best?5:2.4,fill:r.cut?C.cyan:'none',stroke:r===best?C.gold:(r.cut?'none':C.violet),'stroke-width':r===best?2:1,'fill-opacity':r.cut?0.75:1},g);
+    c.addEventListener('mousemove',e=>tipAt(rtip,rsvg,e,'m = '+r.m+' &middot; R = '+r.R.toFixed(4)+'<br>A = '+r.A+' &middot; σ(m) = '+r.sig+' &middot; τ(m) = '+r.tau+(r.cut?'':'<br>outside prime cutoff')));
+    c.addEventListener('mouseleave',()=>rtip.hidden=true);});
+  const ncut=d.filter(r=>r.cut).length,viol=d.filter(r=>r.R>1).length;
+  rstat.innerHTML=`<div><b>${d.length}</b><small>pairs tested at p = ${p}</small></div><div><b>${ncut}</b><small>meet p⁴ ≤ 32m</small></div><div><b>${best.R.toFixed(4)}</b><small>largest R (m = ${best.m})</small></div><div><b>${viol}</b><small>violations (R > 1)</small></div>`;
+}
+
+/* ---------- 3. eigenvalue strips ---------- */
+const esvg=document.getElementById('echart'),etip=document.getElementById('etip');let E=null;
+fetch('data/eig.json').then(r=>r.json()).then(j=>{E=j;buttons(document.getElementById('ectl'),[7,11,19],7,p=>'p = '+p,drawE);drawE(7)});
+function drawE(p){
+  esvg.innerHTML='';const D=E[p];const ls=Object.keys(D).map(Number).sort((a,b)=>a-b);
+  const L=70,T=24,W=660,rowH=40,H=rowH*ls.length;esvg.setAttribute('viewBox',`0 0 760 ${T+H+44}`);
+  const lo=-1.9,hi=1.9;const X=v=>L+(v-lo)/(hi-lo)*W;const g=el('g',{},esvg);
+  el('rect',{x:X(-1),y:T,width:X(1)-X(-1),height:H,fill:'rgba(63,174,122,0.08)'},g);
+  [-1,1].forEach(v=>el('line',{x1:X(v),x2:X(v),y1:T,y2:T+H,stroke:C.lean,'stroke-width':1.2,'stroke-dasharray':'5 4'},g));
+  const ax=el('g',{class:'ax'},g);[-1.5,-1,-0.5,0,0.5,1,1.5].forEach(v=>{txt(ax,X(v),T+H+16,String(v),{'text-anchor':'middle'})});
+  txt(ax,L+W,T+H+34,'eigenvalue / (2√ℓ)',{'text-anchor':'end'});
+  ls.forEach((l,i)=>{const yc=T+i*rowH+rowH/2,b=D[l].bound;
+    txt(g,L-10,yc+4,'ℓ = '+l,{'text-anchor':'end',fill:'rgba(236,233,224,0.6)','font-family':"'Courier New',monospace",'font-size':11});
+    el('line',{x1:L,x2:L+W,y1:yc,y2:yc,stroke:'rgba(255,255,255,0.05)'},g);
+    const seen={};D[l].W.forEach(v=>{const s=v/b;const key=s.toFixed(3);seen[key]=(seen[key]||0)+1;const jit=((seen[key]-1)%5-2)*3;
+      const c=el('circle',{cx:X(s),cy:yc+jit,r:2.6,fill:C.cyan,'fill-opacity':0.7},g);
+      c.addEventListener('mousemove',e=>tipAt(etip,esvg,e,'ℓ = '+l+' &middot; λ = '+v.toFixed(3)+'<br>λ/(2√ℓ) = '+s.toFixed(3)));c.addEventListener('mouseleave',()=>etip.hidden=true)});
+    D[l].exc.forEach(v=>{const s=Math.max(lo+0.02,Math.min(hi-0.02,v/b));const pth=el('path',{d:`M${X(s)},${yc-6}L${X(s)+6},${yc}L${X(s)},${yc+6}L${X(s)-6},${yc}z`,fill:C.rose},g);
+      pth.addEventListener('mousemove',e=>tipAt(etip,esvg,e,'excluded eigenvalue '+v+'<br>(on span{1, χ_p})'));pth.addEventListener('mouseleave',()=>etip.hidden=true)});
+  });
+}
+
+/* ---------- 4. tail chart ---------- */
+const tsvg=document.getElementById('tchart'),ttip=document.getElementById('ttip');let TD=null;
+fetch('data/tail.json').then(r=>r.json()).then(j=>{TD=j;buttons(document.getElementById('tctl'),['scaled','ratio'],'scaled',v=>v==='scaled'?'tail · P / n':'tail ÷ M-based bound',drawT);drawT('scaled')});
+function drawT(mode){
+  tsvg.innerHTML='';const L=56,T=26,W=680,H=260;const g=el('g',{},tsvg);
+  const ymax=mode==='scaled'?7:1.1;const X=m=>L+(m-1000)/19000*W,Y=v=>T+(1-v/ymax)*H;
+  axes(g,X,Y,[1000,5000,10000,15000,20000],mode==='scaled'?[0,1,2,3,4,5,6,7]:[0,0.25,0.5,0.75,1],W,H,L,T,'m',mode==='scaled'?'tail · P / n':'tail ÷ (16 M(n) Σ(n/p²+1))');
+  if(mode==='ratio'){el('line',{x1:L,x2:L+W,y1:Y(1),y2:Y(1),stroke:C.gold,'stroke-dasharray':'6 4'},g);txt(g,L+W-4,Y(1)-6,'prime-by-prime bound',{'text-anchor':'end',fill:C.gold,'font-family':"'Courier New',monospace",'font-size':11})}
+  TD.forEach(r=>{const v=mode==='scaled'?r[3]:r[4];const c=el('circle',{cx:X(r[0]),cy:Y(v),r:2.2,fill:mode==='scaled'?C.cyan:C.violet,'fill-opacity':0.7},g);
+    c.addEventListener('mousemove',e=>tipAt(ttip,tsvg,e,'m = '+r[0]+' &middot; P = '+r[1]+'<br>tail = '+r[2]+' &middot; M(n) = '+r[5]+'<br>value = '+v));c.addEventListener('mouseleave',()=>ttip.hidden=true)});
+}
+})();
+</script>
+</body>
+</html>

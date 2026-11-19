@@ -1,7 +1,9 @@
 import Mathlib
 
 /-!
-UNTESTED. Not compiled anywhere. Finite algebra only:
+COMPILED: elementary run #17 (commit 89f925e, 2026-11-17) and again in 'Euler layer A (Lean)' run #1
+(2026-11-19), no errors, no sorry;
+axioms propext, Classical.choice, Quot.sound only (one deprecation warning: push_neg). Finite algebra only:
 the one-vector quadratic-form bound  <h,Th> <= B ||h||^2,  h = f - mu*1,
 implies the pointwise bound (3.8):  (T f)(y0) <= sigma*mu + B*(1-mu).
 The quadratic-form bound itself is an explicit HYPOTHESIS (hquad); nothing here
