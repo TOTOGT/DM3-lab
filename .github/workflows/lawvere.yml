@@ -25,3 +25,12 @@ jobs:
           grep -n "sorry" /tmp/law.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/law.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n -A2 "depends on axioms\|does not depend" /tmp/law.txt
+      - name: CechCircle.lean
+        run: |
+          set -uxo pipefail
+          lean lawvere/CechCircle.lean 2>&1 | tee /tmp/cech.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/cech.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/cech.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A2 "depends on axioms\|does not depend" /tmp/cech.txt
