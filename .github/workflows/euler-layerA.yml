@@ -87,3 +87,13 @@ jobs:
           [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
           if grep -q "sorry" /tmp/a3a3.txt; then echo "::error::sorry"; exit 1; fi
           if grep -q ": error" /tmp/a3a3.txt; then echo "::error::error in output"; exit 1; fi
+
+      - name: StageA3b
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/StageA3b.lean 2>&1 | tee /tmp/a3b.txt
+          rc=${PIPESTATUS[0]}
+          { echo "### StageA3b (lean exit code $rc)"; echo "warnings: $(grep -c 'warning:' /tmp/a3b.txt || true)"; echo '```'; (grep "depends on axioms" /tmp/a3b.txt | grep SectionA3b || true); echo '```'; echo "errors:"; echo '```'; (grep -A12 ": error" /tmp/a3b.txt || true) | head -200; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          if grep -q "sorry" /tmp/a3b.txt; then echo "::error::sorry"; exit 1; fi
+          if grep -q ": error" /tmp/a3b.txt; then echo "::error::error in output"; exit 1; fi
