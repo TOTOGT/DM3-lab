@@ -1380,7 +1380,7 @@ theorem zc_sumsq (u : HurU) :
   exact_mod_cast h
 
 /-- the explicit finite set of doubled coordinates -/
-def Tset : Finset (ℤ × ℤ × ℤ × ℤ) :=
+noncomputable noncomputable def Tset : Finset (ℤ × ℤ × ℤ × ℤ) :=
   ((Finset.Icc (-2 : ℤ) 2) ×ˢ (Finset.Icc (-2 : ℤ) 2) ×ˢ (Finset.Icc (-2 : ℤ) 2) ×ˢ
       (Finset.Icc (-2 : ℤ) 2)).filter
     (fun z => z.1 ^ 2 + z.2.1 ^ 2 + z.2.2.1 ^ 2 + z.2.2.2 ^ 2 = 4 ∧ (z.1 - z.2.1) % 2 = 0 ∧
@@ -1415,7 +1415,7 @@ theorem mem_Tset (z : ℤ × ℤ × ℤ × ℤ) :
     have hd : d ^ 2 + a ^ 2 + b ^ 2 + c ^ 2 = 4 := by linarith
     exact ⟨⟨bnd2 h0, bnd2 hb, bnd2 hc, bnd2 hd⟩, h⟩
 
-def zT (u : HurU) : {z // z ∈ Tset} :=
+noncomputable def zT (u : HurU) : {z // z ∈ Tset} :=
   ⟨zc u, (mem_Tset _).2 ⟨zc_sumsq u, (zc_spec u).2.2.2.2.1, (zc_spec u).2.2.2.2.2.1,
     (zc_spec u).2.2.2.2.2.2⟩⟩
 
@@ -1424,18 +1424,19 @@ theorem zT_inj : Function.Injective zT := by
   have h' : zc u = zc v := congrArg Subtype.val h
   obtain ⟨a0, a1, a2, a3, -, -, -⟩ := zc_spec u
   obtain ⟨b0, b1, b2, b3, -, -, -⟩ := zc_spec v
-  have e0 := congrArg (Int.cast : ℤ → ℚ) (congrArg Prod.fst h')
-  have e1 := congrArg (Int.cast : ℤ → ℚ) (congrArg (fun z => z.2.1) h')
-  have e2 := congrArg (Int.cast : ℤ → ℚ) (congrArg (fun z => z.2.2.1) h')
-  have e3 := congrArg (Int.cast : ℤ → ℚ) (congrArg (fun z => z.2.2.2) h')
-  simp only at e0 e1 e2 e3
+  have e0 : (((zc u).1 : ℤ) : ℚ) = (((zc v).1 : ℤ) : ℚ) := by rw [h']
+  have e1 : (((zc u).2.1 : ℤ) : ℚ) = (((zc v).2.1 : ℤ) : ℚ) := by rw [h']
+  have e2 : (((zc u).2.2.1 : ℤ) : ℚ) = (((zc v).2.2.1 : ℤ) : ℚ) := by rw [h']
+  have e3 : (((zc u).2.2.2 : ℤ) : ℚ) = (((zc v).2.2.2 : ℤ) : ℚ) := by rw [h']
   rw [a0, b0] at e0
   rw [a1, b1] at e1
   rw [a2, b2] at e2
   rw [a3, b3] at e3
-  apply Subtype.ext
-  apply Units.ext
-  exact QuaternionAlgebra.ext (by linarith) (by linarith) (by linarith) (by linarith)
+  have g0 : (qv u).re = (qv v).re := by linarith
+  have g1 : (qv u).imI = (qv v).imI := by linarith
+  have g2 : (qv u).imJ = (qv v).imJ := by linarith
+  have g3 : (qv u).imK = (qv v).imK := by linarith
+  exact Subtype.ext (Units.ext (QuaternionAlgebra.ext g0 g1 g2 g3))
 
 theorem zT_surj : Function.Surjective zT := by
   rintro ⟨⟨z0, z1, z2, z3⟩, hz⟩
