@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mueller preprint: a machine-checked arithmetic audit</title>
+<link rel="stylesheet" href="../../euler/brand.css">
+</head>
+<body>
+<nav><span class="dm3-brand nav-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgn)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span><a href="../../euler/">Euler 1747</a><a href="https://github.com/TOTOGT/DM3-lab/tree/main/referee/mueller-2026-11">Files</a></nav>
+<header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">DM3-lab &middot; Referee brief &middot; Preliminary arithmetic audit &middot; 19 Nov 2026</div><h1>The Lorentz factor as the slope of an additional spatial coordinate: what the checks do and do not say</h1><div class="gold-rule"></div></header>
+<main>
+<p class="lede">A. Mueller, Zenodo 10.5281/zenodo.24280888 (16 Nov 2026), 62 pages. We checked whether the paper&rsquo;s displayed algebra follows from its stated premises and whether its quoted numbers recompute. The algebra held everywhere we tested; the physical inputs are imported from general relativity, as the paper itself says.</p>
+<div class="note"><strong>Scope.</strong> This is not a review of the physics, and not an endorsement or refutation. Main text and Appendix A were read in full. Appendix B (standard Schwarzschild orbit derivations) and the references were not reviewed line by line. Prepared with Claude (Anthropic) assisting.</div>
+
+<h2>What was machine-checked</h2>
+<div class="scroll"><table>
+<thead><tr><th>Check</th><th>Scope</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td><b>Lean 4 (Mathlib)</b>, 11 theorems</td><td>Eqs 14/26 (&gamma;&sup2; = 1 + (&part;<sub>x</sub>y)&sup2;), slope = &gamma;v/c, 18&ndash;21 (interval at dt = 0), 49/134, 88&ndash;89, 121 (N&prime;/N), 126 (Buchdahl 9/8), 137 (Sciama), 68&rarr;72, 140; Flamm slope 144&ndash;146</td><td><span class="tag ok">kernel-checked</span> Standard axioms only: <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code>.</td></tr>
+<tr><td><b>Symbolic</b> (sympy), 29 identities</td><td>Also eqs 63&ndash;68, 109/118, 120&ndash;125 (interior Schwarzschild, hydrostatic equilibrium, TOV gradient), 96</td><td><span class="tag ok">computed</span> All pass; two by exact-rational spot check where a root would not simplify.</td></tr>
+<tr><td><b>Numeric</b>, 21 recomputations</td><td>Appendix A and &sect;3 figures from public constants; Mercury&rsquo;s 42.98&Prime; per century</td><td><span class="tag ok">computed</span> All reproduce. A script testing instances is not a proof.</td></tr>
+</tbody></table></div>
+
+<h2>Observations for the author</h2>
+<ol class="log">
+<li><b>The &radic;2 in eq A32.</b> v<sub>cosmo</sub>/v<sub>kinematic</sub> = &radic;2 follows from the definitions: one uses &phi;&minus;1, the other (&phi;&minus;1)/2, so the ratio is &radic;2 for any small &phi;&minus;1 (tested at 10<sup>&minus;9</sup> and 10<sup>&minus;4</sup>). It is not independent evidence.</li>
+<li><b>Eq A23, units.</b> GM + 2R&sup3; adds m&sup3; s<sup>&minus;2</sup> to m&sup3;. It is valid once &tau;&#770; = 1 s is inserted, as the dimensional note says. Numerically v<sub>orbit</sub> equals &radic;(2GM/R) to about 10<sup>&minus;31</sup>, so A23 adds nothing beyond the escape speed.</li>
+<li><b>Appendix A numerology.</b> The paper discloses that &alpha;(2&minus;&alpha;) was chosen after 2&alpha; fit less well (recomputed: 0.39% against 0.025% off). With about one choice per body, agreement near 0.5% is expected by chance. Consider setting these apart from the geometric results.</li>
+<li><b>Dipole comparison.</b> 371.58 km/s against 369.82 km/s is 0.48%. The paper already notes this exceeds the stated uncertainty.</li>
+<li><b>&sect;2.5.1.</b> arccos(1/3) = 70.53&deg;, so &ldquo;below 70.5&deg;&rdquo; is slightly too tight.</li>
+<li><b>Prop. 1 (the derived lapse).</b> The ODE step is correct (Lean-checked). Its status is an equivalence given the imported static vacuum equations, which &sect;2.5 states. The abstract&rsquo;s &ldquo;not postulated&rdquo; holds only with that qualifier kept.</li>
+</ol>
+
+<h2>Status of the paper&rsquo;s claims</h2>
+<div class="scroll"><table>
+<thead><tr><th>Status</th><th>Items</th></tr></thead>
+<tbody>
+<tr><td><span class="tag ok">checked</span></td><td>Eqs 11&ndash;27, 44, 48&ndash;49, 88&ndash;97, 109, 117&ndash;126, 134, 137, 140; the Flamm and uniform-density embeddings; the critical-density statements.</td></tr>
+<tr><td><span class="tag warn">imported</span></td><td>Hamiltonian constraint &sup3;R = 16&pi;G&rho;/c&sup2;; static vacuum equations; Painlev&eacute;&ndash;Gullstrand form; Friedmann equation; Schwarzschild orbit results; 5D vacuum condition and warped-product reduction. The paper states these are imported.</td></tr>
+<tr><td><span class="tag warn">beyond Mathlib today</span></td><td>Gauss equation for a hypersurface of flat R<sup>4</sup> (eqs 108, 115); the principal-curvature argument (116&ndash;118, verified by hand); the embedding of the Schwarzschild slice in R<sup>4</sup>.</td></tr>
+<tr><td><span class="tag warn">assumed</span></td><td>G<sub>44</sub> = 1 normalisation; regularity forcing q = 0; the closure N = 1/&gamma;; Hypothesis M and &kappa;&prime;; the simultaneity assertions of &sect;1.1. All labelled as assumptions by the paper.</td></tr>
+<tr><td><span class="tag bad">not done here</span></td><td>Gauss&ndash;Codazzi details, the PG/LTB literature claims, the Misner&ndash;Sharp mass statement, Hypothesis M against the modified-inertia literature, the physical reading of Appendix A, and Appendix B. These need a specialist.</td></tr>
+</tbody></table></div>
+
+<h2>Reproduce it</h2>
+<ul class="files">
+<li><a href="MuellerCore.lean">MuellerCore.lean</a><small>Lean 4.32.0, Mathlib rev 81a5d257, <code>#print axioms</code> after each theorem</small></li>
+<li><a href="check_sympy.py">check_sympy.py</a><small>29 symbolic re-derivations</small></li>
+<li><a href="check_numbers.py">check_numbers.py</a><small>21 recomputations, standard library only; CODATA/IAU constants, Planck 2018 dipole 369.82 km/s</small></li>
+<li><a href="LEDGER.md">LEDGER.md</a><small>Full claims ledger and limits</small></li>
+</ul>
+<div class="note ok">The Lean files show that the displayed identities follow from their premises. They do not verify any physical claim, any imported general-relativity result, or Hypothesis M.</div>
+
+<p class="foot">Prepared 19 Nov 2026 by Claude (Cowork), configured model <code>claude-sonnet-5-5</code>; the serving model can differ. Not reviewed by a second system or a specialist.</p>
+</main>
+<script src="../../euler/brand.js"></script>
+</body>
+</html>
