@@ -35,3 +35,13 @@ jobs:
           grep -n "sorry" /tmp/bridge.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/bridge.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n -A4 "depends on axioms" /tmp/bridge.txt
+
+      - name: StageA1
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/StageA1.lean 2>&1 | tee /tmp/a1.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/a1.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/a1.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A4 "depends on axioms" /tmp/a1.txt
