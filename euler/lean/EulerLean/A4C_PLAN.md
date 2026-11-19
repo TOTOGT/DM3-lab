@@ -1,4 +1,4 @@
-# Plan: Hecke recurrence on Y_p, stages A4c and A4d (2026-11-19)
+# Plan: Hecke recurrence on Y_p, stages A4c and A4d (2026-11-19, corrected after A4c compiled)
 
 STATUS: plan only, hand-derived. No Lean written for A4c/A4d. Nothing here is proved in Lean beyond what is cited.
 
@@ -45,3 +45,17 @@ because rho(g_k * b) = rho(g_k) rho(b) and rho(l * y) = rho(l) rho(y) with rho(l
 1. The reindexing/well-definedness step in A4d (units acting on the left of Hn m): small but fiddly with `Quotient.out`.
 2. Fibre/sum interchange over `Option (ZMod l)` and `Hn`: use `Finset.sum_comm` over Finsets built from `Hn_finite`; mirrors count_pairs.
 3. Keeping `l` and `p` as different Fact primes through the namespaces: use `l` for Sections 75-78 imports and `p` for A4a/A4b.
+
+## Correction (after A4c compiled; supersedes the V_l discussion above)
+STATUS: A4c is DONE (StageA4c.lean, CI run 44634468552 green, standard axioms). The text above about V_l was wrong in one respect.
+
+- `V_l f (Gamma g) = sum_k f(Gamma rho(g_k) g)` (one generator per key) is NOT well defined on Y_p. TY_mk needs right-stability of the family: for gamma = rho(u) in Gamma there must be a permutation pi with rho(g_{pi k}) = delta * rho(g_k) * gamma and delta in Gamma. Replacing g_k by g_k u changes rho(g_k) on the right by rho(u), which is fine for gamma-stability only if the family contains BOTH g_k and g_k u. A single generator per key does not.
+- Fix: use the full family Hn l (all 24(l+1) elements, the A4b `aH` family at index l), i.e. U_l. Then the unit reindexing is exactly A4b's `aH_stable` (right multiplication by a unit permutes Hn l) and needs no new work.
+
+Corrected A4d statement, for primes l != p, p not dividing l*m:
+  U_m (U_l f) = 24 * ( U_{l m} f + l * U_{m/l} f )        (last term absent unless l | m)
+where U_n f (Gamma g) = sum over alpha in Hn n of f(Gamma rho(alpha) g)  (A4b `TY` with `aH`, unnormalised).
+
+Derivation. By TY_mk twice, (U_m (U_l f))(Gamma g) = sum_{b in Hn m} sum_{c in Hn l} Phi(c b) with Phi(x) = f(Gamma rho(x) g). Hn l = { g_k u : k a key, u a unit } with 24 u per key (gens_count), so the sum is sum_u sum_k sum_b Phi(g_k u b). Reindex b -> u b (left multiplication by a unit permutes Hn m): it equals 24 * sum_k sum_b Phi(g_k b). Now apply A4c `hecke_count`, and use rho(l y) = rho(y) (l is a scalar in PGL2).
+
+New work, in order: (1) Hn l = disjoint union over keys of g_k * units (Gens, `gens_count`, `Ik_existsUnique`-style uniqueness of the key); (2) left-unit reindexing of Hn m (a `lmul` analogue of A4b `rmul`); (3) rho multiplicative on the relevant pairs (`red_mul`, with two different reductions: mod l for the keys, mod p for rho); (4) `Hm` (subtype, Fintype) versus `Hn` (Set, Finset via Hn_finite): one bridging lemma; (5) assemble. Most likely a two-stage split: A4d = (1)(2) as an identity of finite sums over quaternions, A4e = (3)(4)(5) on Y_p.
