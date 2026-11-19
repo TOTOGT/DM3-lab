@@ -45,3 +45,15 @@ jobs:
           grep -n "sorry" /tmp/a1.txt && { echo "::error::sorry"; exit 1; } || true
           grep -n "error" /tmp/a1.txt && { echo "::error::error in output"; exit 1; } || true
           grep -n -A4 "depends on axioms" /tmp/a1.txt
+          { echo "### StageA1"; echo "warnings: $(grep -c 'warning:' /tmp/a1.txt)"; echo '```'; grep -A4 "depends on axioms" /tmp/a1.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: StageA2
+        run: |
+          set -uxo pipefail
+          lake env lean EulerLean/StageA2.lean 2>&1 | tee /tmp/a2.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/a2.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/a2.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A4 "depends on axioms" /tmp/a2.txt
+          { echo "### StageA2"; echo "warnings: $(grep -c 'warning:' /tmp/a2.txt)"; echo '```'; grep -A4 "depends on axioms" /tmp/a2.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
