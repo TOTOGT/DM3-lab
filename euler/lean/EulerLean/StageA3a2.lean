@@ -1221,7 +1221,10 @@ def negOne : HurU :=
     · have h := Section71c.H_neg Section71c.H_one
       have e : QH (((-1 : (Quaternion ℚ)ˣ)) : Quaternion ℚ) := by
         unfold QH
-        simpa using h
+        first
+          | exact h
+          | (simp only [Units.val_neg, Units.val_one]; exact h)
+          | simpa using h
       exact e
     · simp⟩
 
@@ -1244,8 +1247,10 @@ theorem rho_eq_one_iff (u : HurU) :
 theorem negOne_ne_one : (negOne : HurU) ≠ 1 := by
   intro h
   have := congrArg (fun w : HurU => ((w : (Quaternion ℚ)ˣ) : Quaternion ℚ).re) h
-  simp [negOne] at this
-  norm_num at this
+  have h2 : ((((negOne : HurU) : (Quaternion ℚ)ˣ) : Quaternion ℚ)).re = -1 := rfl
+  have h3 : ((((1 : HurU) : (Quaternion ℚ)ˣ) : Quaternion ℚ)).re = 1 := rfl
+  have h4 : (-1 : ℚ) = 1 := h2.symm.trans (this.trans h3)
+  norm_num at h4
 
 theorem card_ker : Nat.card (rho p h2 xs ys hxy).ker = 2 := by
   rw [Nat.card_eq_two_iff]
