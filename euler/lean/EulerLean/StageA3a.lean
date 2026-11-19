@@ -978,8 +978,9 @@ theorem three_le_p (h2 : (2 : ZMod p) ≠ 0) : (3 : ℤ) ≤ (p : ℤ) := by
   have h2le : 2 ≤ p := (Fact.out : p.Prime).two_le
   have hne : p ≠ 2 := by
     intro h
-    subst h
-    exact h2 (by decide)
+    have e : ((2 : ℕ) : ZMod p) = 0 :=
+      (congrArg (Nat.cast : ℕ → ZMod p) h).symm.trans (ZMod.natCast_self p)
+    exact h2 (by simpa using e)
   have : 3 ≤ p := by omega
   exact_mod_cast this
 
