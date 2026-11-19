@@ -62,11 +62,11 @@ theorem no_surj_nat (A : Type) (φ : A → (A → Nat)) : ¬ PointSurj φ := by
   intro n hn
   exact Nat.succ_ne_self n hn
 
-/-- Cantor in its usual form: no surjection `A → Set A` (sets as predicates). -/
+/-- Cantor in its usual form: no surjection `A → Set A` (sets as predicates).
+    Surjectivity is spelled out, since core Lean has no `Function.Surjective`. -/
 theorem cantor_set (A : Type) (φ : A → (A → Prop)) :
-    ¬ Function.Surjective φ := by
-  intro hs
-  exact cantor_prop A φ (fun g => hs g)
+    ¬ (∀ S : A → Prop, ∃ a : A, φ a = S) :=
+  cantor_prop A φ
 
 /-- Non-vacuity: for `B = Unit` a point-surjection exists, so `lawvere`'s
     hypothesis is satisfiable (and, consistently, `Unit` has fixed points). -/
