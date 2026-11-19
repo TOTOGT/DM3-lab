@@ -1,0 +1,27 @@
+# Lawvere fixed-point + Cantor (core Lean only, no Mathlib).
+# Trigger: Actions > "Lawvere (Lean)" > Run workflow.
+name: Lawvere (Lean)
+on:
+  workflow_dispatch:
+jobs:
+  lawvere:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan + toolchain
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.elan/bin:$PATH"
+          elan toolchain install "$(cat euler/lean/lean-toolchain)"
+          elan default "$(cat euler/lean/lean-toolchain)"
+      - name: Lawvere.lean
+        run: |
+          set -uxo pipefail
+          lean lawvere/Lawvere.lean 2>&1 | tee /tmp/law.txt
+          rc=${PIPESTATUS[0]}
+          [ "$rc" -eq 0 ] || { echo "::error::lean exited $rc"; exit 1; }
+          grep -n "sorry" /tmp/law.txt && { echo "::error::sorry"; exit 1; } || true
+          grep -n "error" /tmp/law.txt && { echo "::error::error in output"; exit 1; } || true
+          grep -n -A2 "depends on axioms\|does not depend" /tmp/law.txt
