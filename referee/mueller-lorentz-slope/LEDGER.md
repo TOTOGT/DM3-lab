@@ -1,6 +1,6 @@
 # Referee ledger: Mueller, "The Lorentz Factor as the Slope of an Additional Spatial Coordinate: Embedding, Painlevé–Gullstrand Flow, and the Issue Of Simultaneity"
 
-Zenodo preprint, v1, 16 November 2026 (A. Mueller, independent researcher). Prepared 20 Nov 2026 for Pablo Grossi. Internal. Nothing in this folder has been sent to the author or to anyone.
+Zenodo preprint, v1, 16 November 2026 (A. Mueller, independent researcher). Prepared 20 Nov 2026 (G6 LLC). Working ledger, unreviewed by a specialist or a second system. The author has not seen it. Nothing in this folder has been sent to the author or to anyone.
 
 ## Scope: what was read and what was not
 
@@ -43,7 +43,7 @@ The author's own scope statements are taken as stated: the Hamiltonian constrain
 | §3.1 ratios 10⁻⁵ and 3×10⁻⁴; H₀R = 0.6–1.8 km/s | §3.1 | checked | numbers |
 | Sciama identity G m_H/(c²R_H) = 1/2 | (137) | checked; follows from the definition of critical density | numbers, Lean |
 | g₀ = cH₀/2π = 1.1×10⁻¹⁰ m/s²; Table A3 ratios; v_orbit = 216.9 km/s | §3.5, A33 | checked | numbers |
-| Earth "kinematic velocity" | A31 | recomputed 372.2 km/s vs quoted 371.6 (0.16%); see finding 5 | numbers |
+| Earth "kinematic velocity" | A31 | recomputed with one choice of radius and mass; differs slightly from the quoted value; under reconciliation, not asserted | numbers |
 | Sun, Saturn, Moon ≈ 190, 130, 290 km/s; v_cosmo/v_kin = √2 | Appendix A | recomputed, agree | numbers |
 
 ## Ledger by status
@@ -52,20 +52,15 @@ The author's own scope statements are taken as stated: the Hamiltonian constrain
 
 **B. Imported from the literature, not checked here.** Gauss equation and the form of the extrinsic curvature of a hypersurface in flat ℝ⁴; Schwarzschild, Painlevé–Gullstrand, FLRW, TOV and Buchdahl results as quoted from the literature; the Cassini measurement; Milgrom's modified-inertia framework; the interpolation function of [39]; the baryonic Tully–Fisher relation; Eilers et al. rotation-curve data.
 
-**C. Checkable in principle but beyond current Mathlib.** Statements about the Levi-Civita connection, Riemann and Ricci tensors, the Einstein equations, the Gauss–Codazzi equations for an embedded hypersurface, geodesics on a pseudo-Riemannian manifold, and "equivalence to general relativity" as a theorem. To my knowledge (not searched) Mathlib has smooth manifolds and tangent bundles but not these. The coordinate-level steps above are the part that can be done today. A hand-built coordinate treatment of the Schwarzschild metric (Christoffel symbols, Ricci = 0) is possible but is not done here.
+**C. Checkable in principle but beyond current Mathlib.** Statements about the Levi-Civita connection, Riemann and Ricci tensors, the Einstein equations, the Gauss–Codazzi equations for an embedded hypersurface, geodesics on a pseudo-Riemannian manifold, and "equivalent to general relativity" as a theorem. Checked 20 Nov 2026 by searching the Mathlib source at the revision used for the Lean files here (commit 81a5d257, 13 July 2026): it has smooth manifolds, Riemannian manifolds (`IsRiemannianManifold`, path length), covariant derivatives on vector bundles, torsion of an affine connection, and metric-compatible connections. A text search found no definition of the Levi-Civita connection and none of Riemann or Ricci curvature, and nothing for Gauss–Codazzi or pseudo-Riemannian signature. Separate projects outside Mathlib do have Levi-Civita and Ricci curvature in Lean (see the how-to guide's further reading), so "beyond Mathlib" does not mean "not done anywhere". The coordinate-level steps above are the part that can be done today. A hand-built coordinate treatment of the Schwarzschild metric (Christoffel symbols, Ricci = 0) is possible but is not done here.
 
 **D. Assumptions or closures stated by the paper.** The Hamiltonian constraint (3)R = 16πGρ/c²; the static vacuum equations (114); the temporal closure N = 1/γ (derived in vacuum from the imported equations, a closure elsewhere); five-dimensional vacuum for G44 (§2.3.5); the definition of y by ∂_R y = βγ; Hypothesis M, the interpolation function and κ′.
 
 **E. Not claimed by the paper.** A derivation of general relativity from the fourth coordinate; that Hypothesis M explains Galactic rotation; any role for the fine-structure constant (Appendix A.6); the physical identification of the characteristic velocities with the CMB dipole or supernova flows; Buchdahl's theorem beyond uniform density; non-gradient potential and field equations for G44 (§4.6).
 
-## Findings for the author (draft only, not sent)
+## Findings
 
-1. **G44 = 1 follows from how y is defined.** §2.3.4 notes that the product G44(dy/dR)² is all that enters h_RR and that a rescaling of y absorbs G44. Since y is then defined by ∂_R y = βγ, G44 = 1 holds by that definition ("to all orders in rₛ/R"). The Cassini bound (51) then constrains the whole construction (the choice of this definition) rather than testing G44 independently. A sentence saying so would help.
-2. **Equations (46)–(47).** G44⁽ᵁ⁾ = 1 and G44⁽ˢ⁾dy² = 0 are presented together. The second follows from choosing the S frame so that dS² = dx². It would help to say explicitly that dy is frame-dependent in this construction and that (47) is a statement about that choice, not a result.
-3. **Proposition 1** is correct as a derivation from (114), which is imported. The paper says the redshift result holds within the construction given those equations; any wording in the abstract about the lapse not being postulated should carry the same qualifier (check the abstract wording against the PDF). The E = 1 restriction after (122) is stated clearly.
-4. **Hypothesis M against the paper's own number.** With the adopted baryonic mass (s = 1) the fitted scale is g₀/(cH₀) = 0.35 with χ²/dof = 5.2, a factor of about two above the candidate 1/2π. With κ′ = 1/2π the deep-limit flat speed for that mass is v = (GM g₀)^{1/4} ≈ 159 km/s (this ledger's own number, mass normalisation only, not a fit), while the quoted observed outer speeds are 198–227 km/s. Reporting the χ² at κ′ = 1/2π rather than only the free fit would show how much the factor of two matters. The paper's "consistent at the factor-of-two level, not a test" is a fair reading.
-5. **Appendix A, Earth.** The formula c√(GM/R³)(1 s) with Earth's GM and mean radius gives 372.2 km/s here, against 371.6 km/s in (A31). A 0.16% difference may come from the radius or density used. The agreement with the CMB dipole (369.82 km/s) is 0.64% and, as the appendix itself says, fixes the reference time to the same accuracy: the reference time that matches exactly is 0.9936 s. With 1 minute or 1 millisecond the value is 2×10⁴ or 0.37 km/s. This is a one-parameter fit by the paper's own account.
-6. **Statement of equivalence to GR.** The paper presents the construction as equivalent to GR in the vacuum and pressureless spherical cases. The checks here confirm the algebra of that equivalence in the listed cases, but the equivalence is by import of the constraint, not by derivation. The abstract could say so in one clause.
+Held back. Draft observations about the paper are not published here: they are unreviewed, one numerical point is still being reconciled with an earlier pass, and the author has not been contacted.
 
 ## What remains for a specialist
 

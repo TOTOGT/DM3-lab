@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checking a paper with Claude: a worked guide</title>
+<link rel="stylesheet" href="../../euler/brand.css">
+<style>.note.ok{color:var(--muted)}</style>
+</head>
+<body>
+<nav><span class="dm3-brand nav-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgn)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span><a href="#steps">Steps</a><a href="#mistakes">Mistakes</a><a href="#publish">Publishing</a><a href="#disclosure">Disclosures</a><a href="#sources">Sources</a><a href="#reading">Further reading</a><a href="../mueller-lorentz-slope/">Worked example</a><a href="https://totogt.github.io/DM3-lab/euler/">Euler 1747</a></nav>
+<header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">DM3-lab &middot; How-to &middot; Lean, sympy and numbers &middot; 20 Nov 2026</div><h1>How to check a paper&rsquo;s mathematics with Claude, including the mistakes we made</h1><div class="gold-rule"></div></header>
+<main>
+<p class="lede">This guide shows how we took a 62-page physics preprint and rechecked its mathematics with Claude, using Lean 4 with Mathlib, sympy and plain numerical recomputation. It is written for someone who wants to do the same thing with a paper of their own. About half of it is the mistakes we made along the way, because those are the most useful part.</p>
+
+<div class="note"><strong>Status.</strong> Written 20 Nov 2026 with Claude (configured model <code>claude-sonnet-5-5</code>; the model actually serving a turn can differ). It describes what happened in one working session and what we would do again. It makes no claim about how the model behaves in general, and it is not peer reviewed. The worked example is <a href="../mueller-lorentz-slope/">a referee package for one preprint</a> (Mueller, 2026; full citation under Sources); this guide is about the method, not about that paper.</div>
+
+<div class="note"><strong>Where this was done.</strong> In the DM3-lab, unpaid and for no client. The checks were made for the lab&rsquo;s own interest, and the lab&rsquo;s gravity work was compared with the paper in a separate note, which we are keeping because the comparison was useful to the lab: <a href="https://totogt.github.io/DM3-lab/Gravity/MUELLER_REVIEW_MAP.md">MUELLER_REVIEW_MAP.md</a>. It explains each pairing and how strong it is. It is a lab note, not part of the audit of the paper, and it says nothing about whether the paper is right.</div>
+
+<h2 id="what">What this kind of check can and cannot show</h2>
+<p>A &ldquo;green check&rdquo; has a narrow meaning, and most of the discipline in this guide is about not letting it mean more.</p>
+<div class="scroll"><table>
+<thead><tr><th>Tool</th><th>What a pass shows</th><th>What it does not show</th></tr></thead>
+<tbody>
+<tr><td><b>Lean 4 + Mathlib</b></td><td>A stated identity follows from its stated hypotheses, checked by a small trusted kernel.</td><td>That the hypotheses are true of the physical world, or that the paper&rsquo;s physical story is right. A theorem about real numbers is not a theorem about spacetime.</td></tr>
+<tr><td><b>sympy</b></td><td>An algebraic or calculus identity holds symbolically. Cheap, and it handles derivatives of square roots that are tedious in Lean.</td><td>It is a program, not a proof. It can simplify wrongly, and a check written badly can pass for the wrong reason.</td></tr>
+<tr><td><b>Recomputed numbers</b></td><td>A quoted figure can be reproduced from public constants.</td><td>That the quantity means what the paper says. Agreement by construction looks the same as agreement by discovery.</td></tr>
+</tbody></table></div>
+
+<h2 id="steps">The method, step by step</h2>
+<ol class="log">
+<li><b>Get the actual file and read it as text.</b> Run <code>pdftotext -layout paper.pdf out.txt</code> and list the headings and equation numbers. Confirm the title and identifier on page one first; one of our earlier sessions read the wrong PDF for a while (see the mistakes table).</li>
+<li><b>Write down the author&rsquo;s own scope statements before you check anything.</b> Papers usually say what they import and what they assume. Our example said that its key field equations are imported from general relativity. That sentence decides what a Lean check can honestly claim, so it goes in the ledger as the author stated it.</li>
+<li><b>Sort every claim into a ledger.</b> We used five headings: (A) algebra checked, (B) imported from the field, (C) checkable in principle but beyond current Mathlib, (D) assumptions or closures, (E) not claimed by the paper. A claim without a heading has not been looked at yet.</li>
+<li><b>Re-derive each displayed identity in sympy.</b> Where a square root will not simplify, fall back to exact rational spot checks inside the variable&rsquo;s domain (for example a velocity below <i>c</i>) and say in the script which checks used the fallback.</li>
+<li><b>Recompute the quoted numbers from public constants,</b> and for each one add a <em>control</em> that could fail (next section).</li>
+<li><b>Write the identities Mathlib supports as Lean theorems over the reals,</b> compile them, and fix until the exit code is 0.</li>
+<li><b>Run <code>#print axioms</code> on every headline theorem.</b> Only <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code> are acceptable. Anything else, or <code>sorryAx</code>, means the result is not what it looks like.</li>
+<li><b>Write the ledger,</b> with a list of what you did not read and what remains for a specialist.</li>
+<li><b>Decide who sees it before it is public</b> (see Publishing).</li>
+</ol>
+
+<h2 id="setup">Setup we used</h2>
+<p>Lean 4 with a pinned Mathlib, sympy, and <code>pdftotext</code>. Compile a single file against a Mathlib build with:</p>
+<pre><code>export PATH=$HOME/.elan/bin:$PATH
+LEAN_PATH="$(cat leanpath.txt)" lean MuellerChecks.lean</code></pre>
+<p>where <code>leanpath.txt</code> lists the Mathlib library directories. Ask Claude to run the compile itself and paste back the errors rather than describing what it expects; the compiler is the authority, not the model&rsquo;s reading of its own code.</p>
+
+<h2 id="example">What the checks looked like</h2>
+<p><b>A Lean identity.</b> The paper defines an extra coordinate <i>y</i> by &part;<sub>x</sub>y = &beta;&gamma;. The step that &gamma; = &radic;(1 + (&part;<sub>x</sub>y)&sup2;) reduces to this, with the domain made explicit:</p>
+<pre><code>noncomputable def gam (c v : &#8477;) : &#8477; := 1 / Real.sqrt (1 - v ^ 2 / c ^ 2)
+
+theorem gam_sq (hc : 0 &lt; c) (hvc : v &lt; c) (hv : 0 &le; v) :
+    gam c v ^ 2 * (1 - v ^ 2 / c ^ 2) = 1 := by
+  have hq := one_sub_pos hc hvc hv
+  unfold gam
+  rw [div_pow, one_pow, Real.sq_sqrt hq.le]; exact one_div_mul_cancel hq.ne'</code></pre>
+<p>Note the hypotheses <code>0 &lt; c</code>, <code>v &lt; c</code>, <code>0 &le; v</code>. They are the part a reader must judge: the theorem is only about speeds below <i>c</i>. Writing them out is the point.</p>
+<p><b>A control that can fail.</b> One quoted number agreed with an observation to within a fraction of a percent. Before treating that as evidence, we asked how much freedom the formula had. It contained one free reference time. So the script computes the reference time needed for an exact match, and then checks that obviously wrong choices destroy the agreement:</p>
+<pre><code>tau_needed = dip / earth
+for tau, label in ((60.0, "1 minute"), (1e-3, "1 millisecond")):
+    check("CONTROL: with tau = %s the agreement disappears" % label,
+          abs(kin(M, R, tau) - dip) / dip &gt; 0.5)</code></pre>
+<p>The pass of this control does not make the original agreement meaningful. It documents that the agreement is a fit of one parameter, which is what the paper itself says. A check that can only ever pass tells you nothing.</p>
+<p><b>The axiom report.</b> After the theorems, one line per headline result:</p>
+<pre><code>#print axioms MuellerChecks.gamma_eq
+-- 'MuellerChecks.gamma_eq' depends on axioms: [propext, Classical.choice, Quot.sound]</code></pre>
+<p>Never write &ldquo;compiled&rdquo; or &ldquo;proved&rdquo; without that line.</p>
+
+<h2 id="prompts">Prompts that worked for us, and why</h2>
+<ul class="files">
+<li><b>&ldquo;Extract the headings and equation numbers; do not summarise.&rdquo;</b><small>Gives you a map to check against, and it stops the model from paraphrasing a claim and then checking the paraphrase.</small></li>
+<li><b>&ldquo;Before checking anything, list what the author says is imported or assumed, in the author&rsquo;s words, with section numbers.&rdquo;</b><small>Fixes the scope of every later claim.</small></li>
+<li><b>&ldquo;For each identity, state the hypotheses a Lean theorem needs (domains, nonzero denominators) before you write it.&rdquo;</b><small>Most failed proofs in our session were missing side conditions, not wrong algebra.</small></li>
+<li><b>&ldquo;Compile it and show me the full compiler output. Do not say it works until the exit code is 0 and every <code>#print axioms</code> line is standard.&rdquo;</b><small>Removes the model&rsquo;s opinion from the loop.</small></li>
+<li><b>&ldquo;For every recomputed number, add a control that would fail if the agreement were by construction.&rdquo;</b><small>Turns a pass into information.</small></li>
+<li><b>&ldquo;Mark every quotation with its page and section; if you cannot locate the words in the text, paraphrase and cite the section instead.&rdquo;</b><small>Added after we had to remove phrases from a draft that we could not find in the PDF.</small></li>
+<li><b>&ldquo;What did you not read?&rdquo;</b><small>Put the answer in the ledger.</small></li>
+</ul>
+
+<h2 id="mistakes">The mistakes we made</h2>
+<p>These happened in the course of one project. Most were caught by compiling, by re-reading, or by the person we were working for. None is exotic, and each has a habit that would have prevented it.</p>
+<div class="scroll"><table>
+<thead><tr><th>What went wrong</th><th>How it was caught</th><th>Habit that prevents it</th></tr></thead>
+<tbody>
+<tr><td>A Lean skeleton pasted in from another AI did not compile (stray non-Lean characters), and it defined a structure whose fields already assumed the conclusion, so the &ldquo;theorem&rdquo; was vacuous.</td><td>Compiling; reading what the structure assumed.</td><td>Compile everything you are handed. Keep the hard inputs as named hypotheses (for example <code>hprime</code>) rather than structure fields that can be faked.</td></tr>
+<tr><td>A different paper&rsquo;s PDF was read as the target paper for a while.</td><td>The content did not match the title the user had named.</td><td>Check the title and identifier on page one before extracting anything.</td></tr>
+<tr><td>A fetch of the paper&rsquo;s landing page was blocked by the site&rsquo;s <code>robots.txt</code>.</td><td>The fetch tool reported it.</td><td>Do not route around a block. Use the PDF the user supplied.</td></tr>
+<tr><td>A sympy check that could not fail (a quantity that vanishes by construction) was reported alongside real checks.</td><td>Reading the check against the question it was meant to answer.</td><td>Ask of every check: what would make this fail? If nothing, label it trivial.</td></tr>
+<tr><td>A list of things Mathlib &ldquo;does not have&rdquo; was written from memory, not searched.</td><td>The user asked for it to be double-checked; we labelled it unverified. It was later checked against the Mathlib source and was partly wrong: Mathlib has more differential geometry than the memory-based list assumed (covariant derivatives, torsion, metric connections), though not the Levi-Civita connection or curvature.</td><td>Search the Mathlib source before claiming a gap, or say it is unchecked.</td></tr>
+<tr><td>A draft ledger contained quoted phrases from the paper that we could not point to in the text.</td><td>Re-reading the draft before delivery.</td><td>Quote only words you can locate; otherwise paraphrase and cite the section. A model can produce a plausible-sounding quotation.</td></tr>
+<tr><td>A request (&ldquo;see the dm3 file for it&rdquo;) was ambiguous. We guessed, and added a comparison with the user&rsquo;s own work to a referee package about someone else&rsquo;s paper.</td><td>The user asked why the two were mixed.</td><td>When the referent is unclear, ask in one line. Keep an audit of a third party&rsquo;s paper free of material about your own.</td></tr>
+<tr><td>A comparison table gave no reasons and no sources; only the author of the model&rsquo;s guesses could tell what each row meant.</td><td>The user said so directly.</td><td>For every connection state what each side says, where, why you paired them, and how strong the link is.</td></tr>
+<tr><td>A note was called &ldquo;internal&rdquo; but lived in a public repository served as a website.</td><td>Review of what the site actually serves.</td><td>Anything committed to a public repo is public. &ldquo;Internal&rdquo; means a private location, not a word in the file.</td></tr>
+<tr><td>Two passes at the same paper in the same repository disagreed (theorem counts, and one numerical figure), and we had not reconciled them.</td><td>Reading both pages side by side.</td><td>Keep one canonical page per paper. Link or retire the earlier one, and do not state which figure is right until you have recomputed it.</td></tr>
+<tr><td>A file was saved with a tool that requires reading the file first; the save failed, and the next step delivered the stale copy.</td><td>Checking the tool result against what was delivered.</td><td>Read each tool&rsquo;s result before the next step depends on it.</td></tr>
+<tr><td>A page inlined a copy of a shared stylesheet, and its navigation pointed at an older folder.</td><td>Comparing it with the reference page.</td><td>Link the shared stylesheet. Re-check navigation after copying a page.</td></tr>
+<tr><td>Draft criticisms of a named author were published before anyone had reviewed them.</td><td>The user raised reputation.</td><td>See Publishing below.</td></tr>
+</tbody></table></div>
+
+<p>Typical Lean errors in this kind of project were mundane: a missing positivity side condition, <code>field_simp</code> leaving a goal in an unexpected shape, derivative goals that needed <code>HasDerivAt</code> plus <code>congr_deriv</code> to match the stated form, and rewrites that failed because the term was not syntactically the same. Paste the exact error back to the model; do not paraphrase it.</p>
+
+<h2 id="publish">Publishing without damaging your credibility</h2>
+<ul class="files">
+<li><b>Decide the audience first.</b><small>A private working ledger, a note to the author, and a public page are three different documents. The same text is not appropriate for all three.</small></li>
+<li><b>Say who has and has not seen it.</b><small>If the author has not been contacted, say so. If a specialist has not reviewed it, say so.</small></li>
+<li><b>Keep claims to what the checks show.</b><small>&ldquo;The algebra on these pages follows from its stated premises&rdquo; is a claim you can defend. &ldquo;The paper is right&rdquo; and &ldquo;the paper is wrong&rdquo; are not.</small></li>
+<li><b>Hold back unreviewed criticism.</b><small>Draft observations about a named person&rsquo;s work belong in a private file until they are checked, reconciled with everything else you have published, and, if you intend to share them, sent to the author first.</small></li>
+<li><b>Remember what a public repo publishes.</b><small>Every committed file is on the web. A <code>noindex</code> tag asks search engines not to list a page; it does not make it private.</small></li>
+<li><b>Let the human commit.</b><small>We never committed or pushed for the project owner. We gave a one-line message and left the commit to him.</small></li>
+</ul>
+
+<h2 id="disclosure">Disclosures: the model&rsquo;s side and ours</h2>
+<p><b>The model&rsquo;s side.</b> Claude can produce incorrect or misleading output, including invented details and fabricated quotations that read as authoritative. Anthropic says so in its help centre: <a href="https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on">Claude is providing incorrect or misleading responses. What&rsquo;s going on?</a> Its advice, which we follow, is not to treat the model as your only source of truth and to check anything that matters against the original sources. Several rows in the mistakes table above are exactly this: an unsourced quotation, a claim written from memory, a check that could not fail. The compiler, the axiom report and the original PDF were what caught them, not the model&rsquo;s confidence.</p>
+<p><b>Our side, as people.</b> We are only human too, and the project owner&rsquo;s own habits are part of the record:</p>
+<ul class="files">
+<li><b>Ambiguous requests.</b><small>Some instructions were short and could be read two ways (&ldquo;see the dm3 file for it&rdquo;). The model should have asked, and the person asking could have said more. Both are true, and it cost an unrelated comparison being added to the wrong place.</small></li>
+<li><b>Pasted material.</b><small>Text and code pasted in from other AI tools, social posts and web pages came in without being checked. We treat all of it as data to test, not as instructions or as fact.</small></li>
+<li><b>Publishing quickly.</b><small>Pages were put on the web before they had been reviewed, and a note was called internal while it sat in a public repository. That was a people-and-process mistake as much as a model one.</small></li>
+<li><b>No outside review.</b><small>None of this work has been seen by a specialist or by the author of the paper used as the example. A person made every decision to commit and push; the model never did.</small></li>
+<li><b>Typos and slips.</b><small>They happen in the prompts and in the pages. If you find one, or a claim that does not hold, we would like to be told.</small></li>
+</ul>
+<p>Humans and the model both make mistakes. What makes the result trustworthy is a process that catches them: a compiler, controls that can fail, the original source, labels that say what was and was not checked, and a person who decides what goes out.</p>
+
+<h2 id="own">What to say about your own checks</h2>
+<p>Use four labels and stick to them: <b>checked</b> (Lean or sympy, with the axiom report), <b>imported</b> (taken from the literature, not checked here), <b>assumed</b> (a closure or hypothesis), and <b>for a specialist</b>. Give the reader the list of what you did not read. Then end with one sentence that says what the work does not show.</p>
+
+<h2 id="sources">Sources</h2>
+<ul class="files">
+<li>Mueller, A. (2026). <em>The Lorentz Factor as the Slope of an Additional Spatial Coordinate: Embedding, Painlev&eacute;&ndash;Gullstrand Flow, and the Issue Of Simultaneity</em> (Version 1) [Preprint, 62 pp.]. Zenodo, published 16 November 2026. <a href="https://doi.org/10.5281/zenodo.24280888">doi:10.5281/zenodo.24280888</a>. The author gives his affiliation as Independent Researcher, Milwaukee, WI, USA. Read from the PDF supplied by the project owner; section and equation numbers on these pages are the paper&rsquo;s.<small>The paper that was checked. The DOI is as recorded on the Zenodo record when the checks were made; confirm it against the record before citing. Statements about what the paper itself says (its scope, what it imports from general relativity, that the abstract describes the construction as equivalent to general relativity where it can be checked) are taken from its abstract and from &sect;2.4.4, &sect;2.5 and &sect;2.8.4.</small></li>
+<li>de Moura, L., &amp; Ullrich, S. (2021). The Lean 4 theorem prover and programming language. In <em>CADE-28</em>, Lecture Notes in Computer Science 12699, 625&ndash;635. Springer.<small>The proof assistant used for the Lean files.</small></li>
+<li>The mathlib Community (2020). The Lean mathematical library. In <em>Proceedings of CPP 2020</em>, 367&ndash;381. <a href="https://arxiv.org/abs/1910.09336">arXiv:1910.09336</a><small>The library the Lean files import.</small></li>
+<li>Meurer, A., et al. (2017). SymPy: symbolic computing in Python. <em>PeerJ Computer Science</em> 3:e103. <a href="https://doi.org/10.7717/peerj-cs.103">doi:10.7717/peerj-cs.103</a><small>Used in <code>check_sympy.py</code>.</small></li>
+<li>Anthropic Help Center. <a href="https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on">Claude is providing incorrect or misleading responses. What&rsquo;s going on?</a> (page dated 16 March 2026; accessed 20 November 2026).<small>The model-side disclosure.</small></li>
+<li>Constants and observational values used in <code>check_numbers.py</code> are listed with their sources in comments in that script.<small>Nothing numerical on these pages comes from the model&rsquo;s memory without being recomputed there.</small></li>
+<li>Grossi, P. N. (2026). <em>Gravity Across Scales: Nano, Meso, and Macro Instantiations of the dm3 Operator Chain</em>. Principia Orthogona series, G6 LLC. Series concept DOI as printed in the paper: 10.5281/zenodo.19117399. Web chapter: <a href="https://totogt.github.io/geometry/chGravity-scales.html">chGravity-scales</a>; Book VII working papers <a href="https://totogt.github.io/geometry/book7/wp56-special-relativity.html">WP56</a>, <a href="https://totogt.github.io/geometry/book7/wp58-galactic-fold.html">WP58</a>.<small>The lab&rsquo;s own work, referred to in the separate comparison note.</small></li>
+</ul>
+
+<h2 id="reading">Further reading found for this guide</h2>
+<p>Found by searching on 20 November 2026. Titles, authors and identifiers were checked against each page; the one-line notes are ours, and where a page could only be read in part the note says so. Inclusion is not endorsement, and none of these papers has been evaluated by us beyond what the notes say.</p>
+<p><b>Lean 4 and Mathlib, foundations</b></p>
+<ul class="files">
+<li>de Moura &amp; Ullrich (2021), <em>The Lean 4 theorem prover and programming language</em>, CADE-28 (full reference under Sources).<small>The system paper.</small></li>
+<li>Tang, X. <a href="https://arxiv.org/abs/2501.18639">A comprehensive survey of the Lean 4 theorem prover: architecture, applications, and advances</a>, arXiv:2501.18639.<small>An overview of the language and ecosystem. We could read only part of it, and some of its comparative claims looked unsupported in what we read, so use it for orientation and rely on the system paper for facts.</small></li>
+<li>Birkbeck, C. (2022). <a href="https://leanprover-community.github.io/blog/posts/modular-forms">Modular forms</a>. Lean community blog, 21 December 2022.<small>How modular forms and cusp forms were first defined in Mathlib, with the design choices; relevant to anyone formalizing Hecke-type statements.</small></li>
+</ul>
+<p><b>Physics in Lean</b></p>
+<ul class="files">
+<li>Tooby-Smith, J. (2024). <a href="https://arxiv.org/abs/2405.08863">HepLean: Digitalising high energy physics</a>, arXiv:2405.08863.<small>Introduces an open-source Lean 4 project for high-energy-physics definitions and calculations (CKM matrices, anomaly cancellation, Higgs physics).</small></li>
+<li>Tooby-Smith, J. (2024). <a href="https://arxiv.org/abs/2411.07667">Formalization of physics index notation in Lean 4</a>, arXiv:2411.07667.<small>A formally verified implementation of tensor index notation.</small></li>
+<li><a href="https://reservoir.lean-lang.org/@HEPLean/PhysLean">Physlib</a> (Lean Reservoir package page, formerly PhysLean and HepLean; checked 20 Nov 2026).<small>The community library that continues that work. This is the nearest existing home for physics-style Lean statements like the ones in the worked example.</small></li>
+</ul>
+<p><b>Autoformalizing and checking research papers</b></p>
+<ul class="files">
+<li>Ren, Y., Li, J., &amp; Qi, Y. <a href="https://arxiv.org/abs/2602.16554">MerLean: an agentic framework for autoformalization in quantum computation</a>, arXiv:2602.16554.<small>A pipeline that extracts statements from LaTeX, formalizes them in Lean on Mathlib, and back-translates for human review of whether the Lean says what the paper says.</small></li>
+<li>Garg, N. (2026). <a href="https://arxiv.org/abs/2606.13306">EconCSLib: AI-assisted Lean formalization for economics and computation research</a>, arXiv:2606.13306.<small>A public library and workflow for formalizing papers in a field with LLM help, with a checking step for faithful translation. We read only part of the page.</small></li>
+<li>Moakhar, A. S., Gholami, I., Springer, M., JafariRaviz, M., &amp; Hajiaghayi, M. T. <a href="https://arxiv.org/abs/2606.31134">Beyond the library: an agentic framework for autoformalizing research mathematics</a>, arXiv:2606.31134.<small>We verified the title and authors only. We did not read it fully and make no claim about its results.</small></li>
+</ul>
+<p>What these share with our method is the step where a person checks that the formal statement means what the paper says. A theorem can be fully verified and still be about the wrong thing.</p>
+<p><b>Dynamics and control in Lean</b> (for ODE and attractor statements)</p>
+<ul class="files">
+<li>Doll, M., &amp; Shames, I. <a href="https://arxiv.org/abs/2607.19727">Foundations of machine-checked control theory in Lean</a>, arXiv:2607.19727.<small>An open-source library with Lyapunov stability and a small-gain theorem.</small></li>
+<li>Cassie, B. (2026). <a href="https://zenodo.org/records/20475912">Lyapunov-odes-lean: formal proofs of Lyapunov stability theorems for autonomous ODEs in Lean 4</a>. Zenodo, 31 May 2026, doi:10.5281/zenodo.20475912.<small>Lyapunov stability for autonomous ODEs on Mathlib. The record says one convergence step (LaSalle) is taken as an explicit hypothesis, the same named-hypothesis pattern we recommend. The zero-<code>sorry</code> statement is the author&rsquo;s own; we did not inspect the repository.</small></li>
+</ul>
+<p><b>What Mathlib has and lacks in differential geometry, and outside projects</b> (searched 20 Nov 2026)</p>
+<ul class="files">
+<li><b>Mathlib source, commit 81a5d257 (13 July 2026), by text search.</b><small>Present: smooth manifolds, Riemannian manifolds, differential forms and the exterior derivative on normed spaces, covariant derivatives with torsion and metric compatibility, the symplectic group as a matrix group, modular forms (including Eisenstein series, the Dedekind eta and discriminant), abstract Hecke rings (definitions only), generalized Poincar&eacute; conjecture (statement only). Not found: contact structures, Reeb fields, Sasakian geometry, Whitney fold singularities, Lyapunov theory, the Levi-Civita connection, Riemann or Ricci curvature. This is a text search of one revision, not a guarantee, and Mathlib changes weekly.</small></li>
+<li>Chow, B., Liao, Y., &amp; Qin, Z. <a href="https://arxiv.org/abs/2608.21502">A Lean formalization of Hamilton&rsquo;s three-manifold theorem</a>, arXiv:2608.21502; and Qin, Z., Liao, Y., Khaitan, A., &amp; Chow, B. <a href="https://arxiv.org/abs/2609.33842">A Lean formalization of the Hamilton&ndash;Perelman proof of the three-dimensional Poincar&eacute; conjecture</a>, arXiv:2609.33842.<small>Separate project (not part of Mathlib) that, according to the first paper, builds Riemannian metrics, the Levi-Civita connection and Ricci curvature on top of Mathlib&rsquo;s covariant derivatives. Both report that their named theorems depend only on the three standard axioms, and say the claims are about those named theorems, not the whole repository. We read the abstracts and parts only.</small></li>
+<li>Rothgang, M. <a href="https://www.math.uni-bonn.de/people/rothgang/mathlib_contributions.html">Formalisation contributions</a> (page last updated 27 Oct 2025).<small>Status notes on Mathlib differential geometry work, including uniqueness of the Levi-Civita connection complete and existence close to completion at that date. Dated, so it may already be out of date.</small></li>
+<li>Hulak, D. B., Ramos, A. F., &amp; de Queiroz, R. J. G. B. <a href="https://arxiv.org/abs/2605.01028">Stokes&rsquo; theorem for smooth singular cubes in Lean 4</a>, arXiv:2605.01028.<small>Abstract only: connects to Mathlib&rsquo;s exterior derivative and proves d&sup2; = 0 for singular cubical chains.</small></li>
+<li>peabrainiac. <a href="https://reservoir.lean-lang.org/@peabrainiac/CatDG">CatDG: categorical differential geometry in Lean</a> (Lean Reservoir, updated 13 July 2026).<small>Diffeological and smooth spaces, some material upstreamed to Mathlib.</small></li>
+<li>Bordg, A., &amp; Cavalleri, N. <a href="https://arxiv.org/abs/2108.00484">Elements of differential geometry in Lean: a report for mathematicians</a>, arXiv:2108.00484 (2021).<small>Abstract only. A 2021 view of the early state of the subject.</small></li>
+</ul>
+<p><b>Mathematical background for the dm3 material</b></p>
+<ul class="files">
+<li>Geiges, H. <a href="https://arxiv.org/abs/math/0307242">Contact geometry</a>, in <em>Handbook of Differential Geometry</em>, vol. 2, arXiv:math/0307242.<small>Standard introduction to contact structures, the Reeb field and contact 3-manifolds.</small></li>
+<li>Tralle, A. <a href="https://arxiv.org/abs/2308.04968">Some topics in Sasakian geometry, a survey</a>, arXiv:2308.04968.<small>Survey of Sasakian and K-contact geometry.</small></li>
+<li>Cremona, J. E. (2026). <a href="https://arxiv.org/abs/2601.17524">Hecke operators, Hecke eigensystems, and formal modular forms over number fields</a>, arXiv:2601.17524.<small>Background on Hecke theory. &ldquo;Formal&rdquo; here is the number-theory sense and not proof-assistant formalization; it is not a Lean paper.</small></li>
+<li>Tatitscheff, V. <a href="https://arxiv.org/abs/1902.03118">A short introduction to monstrous moonshine</a>, arXiv:1902.03118 (v4).<small>The source used for the lab&rsquo;s Book VIII chapter 8.1 checks.</small></li>
+<li>Cheng, M. C. N., Duncan, J. F. R., &amp; Harvey, J. A. <a href="https://arxiv.org/abs/1204.2779">Umbral moonshine</a>, arXiv:1204.2779.<small>The reference for the umbral extension mentioned in that chapter.</small></li>
+</ul>
+<p><b>The lab&rsquo;s own Lean material</b></p>
+<ul class="files">
+<li>Grossi, P. N. <a href="https://grossi-ops.github.io/Atratores/sessions/session3-lean-skeleton.html">Session S3: Lean 4 skeleton and AXLE Issue #12</a> (Mini-Curso Vol. IV, 2026).<small>States its central theorem is still <code>sorry</code> and that a Lipschitz bound is open, which is the honest status. Anyone citing the lab&rsquo;s Lean work should report what is proved, not what the skeleton aims at.</small></li>
+</ul>
+
+<h2 id="files">Files from the worked example</h2>
+<ul class="files">
+<li><a href="https://totogt.github.io/DM3-lab/Gravity/MUELLER_REVIEW_MAP.md">MUELLER_REVIEW_MAP.md</a><small>The separate DM3-lab note comparing the example paper with the lab&rsquo;s own gravity work, with each connection explained and rated</small></li>
+<li><a href="../mueller-lorentz-slope/">The referee package page</a><small>Scope, results, and downloads for the example paper</small></li>
+<li><a href="../mueller-lorentz-slope/MuellerChecks.lean" download>MuellerChecks.lean</a><small>The Lean file; no <code>sorry</code>; axiom reports for the headline theorems</small></li>
+<li><a href="../mueller-lorentz-slope/check_sympy.py" download>check_sympy.py</a><small>Symbolic checks</small></li>
+<li><a href="../mueller-lorentz-slope/check_numbers.py" download>check_numbers.py</a><small>Recomputed numbers with controls</small></li>
+<li><a href="../mueller-lorentz-slope/LEDGER.md" download>LEDGER.md</a><small>The five-heading ledger</small></li>
+</ul>
+
+<p class="foot">Prepared 20 Nov 2026 by Claude (Cowork) for G6 LLC. Not reviewed by a second system or a specialist.</p>
+</main>
+<script src="../../euler/brand.js"></script>
+</body>
+</html>
