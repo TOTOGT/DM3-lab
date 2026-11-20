@@ -108,3 +108,25 @@ Trust note: even with all three discharged, the finite range (Euler1747.euler_fi
 Status 2026-11-18: HJac proved (Section80.hjac, run #41; Section81.hjac, run #42). Hr2 proved (Section65.hr2). H31 reduced to H31gt3 (Section83.euler_1747_of_H31gt3, dev run #5): the only mathematical hypothesis left is Prop 3.1 for primes p > 3 with p not dividing m. Routes to it: Lemma 3.2 (Jacquet-Langlands + Ramanujan-Petersson, not in Mathlib); the one-vector bound <h_p, T_m h_p> <= B(m)||h_p||^2 suffices for the existing bridge; a direct count of bad representations is another possible route; none proved. The reduction does not show every route needs the full operator-norm theorem.
 Trust note (still applies to every final theorem): the finite range n < 64^4 uses native_decide, axiom Euler1747.allOk_true._native.native_decide.ax_1_1, not only kernel checking.
 | Hybrid budget (conditional, not Lean) | for 1/2 <= beta < 3/5, C = 1, cutoff P(n) = floor(2 n^((1-beta)/2)): the aggregate inequality of Sufficiency.sufficiency follows from hypothesis (H) for all n >= n0 | euler/hybrid-budget/certify_budget.py (exact Fractions, rerun identical) | CONDITIONAL. n0 = 64^4 at beta = 1/2 (that is H31gt3); 10^11 at beta = 0.55 (extra interval (64^4, 10^11]: 24,995,805,696 integers = 2 mod 4 before the factor reduction, uncertified). (H) is NOT proved for any beta < 1. No Lean for the moving-cutoff assembly. |
+
+
+## Hecke chain on Y_p (layer A, StageA4a to StageA4k)
+
+Added 2026-11-20. Every row: Lean-kernel checked by the "Euler layer A (latest stage)" workflow (compile, no ": error", no sorry, axiom report present, axioms limited to propext, Classical.choice, Quot.sound), conclusion success on the commit named. None of these rows is Prop 3.1 or H31gt3. The operators are on functions on Y_p = PGL2(F_p) / Gamma_p (Gamma_p of order 12, the image of the Hurwitz units); U_n is the sum over Hurwitz quaternions of norm n, T_n = U_n / 24.
+
+| Stage | Statement | Declaration | Commit | Status |
+|---|---|---|---|---|
+| A4b | T_m self-adjoint for the counting inner product | SectionA4b.Tm_adjoint | b6704ff | Kernel-checked |
+| A4c | weighted Hecke counting identity on Hn | SectionA4c.hecke_count | 80a3483 | Kernel-checked, CI green |
+| A4d | the same sum over the full norm-l family equals 24 times the right side | SectionA4d.hecke_U | 3693f32 | Kernel-checked, CI green |
+| A4e | U_m U_l = 24 (U_lm + l U_m/l), l prime, p not dividing l or m | SectionA4e.hecke_Yp | 53c178c | Kernel-checked, CI green |
+| A4f | U_l and U_m commute, l prime | SectionA4f.U_comm | 38b8191 | Kernel-checked, CI green |
+| A4g | T_m T_l = T_lm + l T_m/l; T_m T_l = T_l T_m | SectionA4g.Tn_rel, Tn_comm | e22e0fb | Kernel-checked, CI green |
+| A4h | U_1 = 24 id, T_1 = id; T_m T_n = T_n T_m for odd n | SectionA4h.U_one, Tn_one, comm_all | 80c88e6 | Kernel-checked, CI green |
+| A4i | T_mn = T_m T_n for gcd(m, n) = 1, n odd | SectionA4i.mult | 2044ae4 | Kernel-checked, CI green |
+| A4j | T_m 1 = sigma(m) 1, odd m prime to p (input: Section79b.h_eq, copied from Stage80a) | SectionA4j.Tn_const | 827a770 | Kernel-checked, CI green |
+| A4k | T_m chi = (m/p) sigma(m) chi, chi the quadratic character of det on Y_p | SectionA4k.Tn_chi | 09638fd | Kernel-checked, CI green (run 44646584114) |
+
+Hand derivations behind these rows are in A4C_PLAN.md (including its Correction section: one generator per key is not right-stable, so the full norm-l family and the factor 24 are needed).
+
+What this chain does NOT establish. (1) Lemma 3.2, the bound ||T_m|| <= tau(m) sqrt m on the orthogonal complement of span{1, chi}: it needs Jacquet-Langlands and the weight-2 Ramanujan-Petersson bound, neither in Mathlib. The two eigenvalue rows (A4j, A4k) are the two exceptional modes only. (2) Prop 3.1 and H31gt3, which remain the one open hypothesis of Section83.euler_1747_of_H31gt3. (3) Even n for the relations that need a Hecke prime (those use 2 invertible mod l). (4) That chi is nonzero or distinct from the constant function. The finite range n < 64^4 still rests on native_decide, as stated above.
