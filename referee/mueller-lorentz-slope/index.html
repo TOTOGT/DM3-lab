@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mueller Lorentz-slope paper: referee package</title>
+<style>
+/* dm3 brand, shared by euler/index.html and euler/hybrid-budget/index.html.
+   Derived from AXLE/AAlpha_Linkedin/dm3brand.html. Dark single-theme by design. */
+:root{
+  --void:#04060d; --deep:#080d1a; --panel:rgba(255,255,255,0.028);
+  --hair:rgba(201,168,76,0.16); --hair-lo:rgba(255,255,255,0.07);
+  --gold:#c9a84c; --gold-hi:#e7cd7c; --cyan:#56c8d8; --violet:#8b7bf0; --rose:#e48a8a;
+  --cream:#ece9e0; --muted:rgba(236,233,224,0.62); --faint:rgba(236,233,224,0.36);
+  --code-bg:rgba(255,255,255,0.05);
+  --mono:'Courier New',ui-monospace,monospace; color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--void);font-family:Georgia,'Times New Roman',serif;color:var(--cream);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.7;font-size:17px}
+a{color:var(--gold);text-decoration:none;transition:color .15s} a:hover{color:var(--gold-hi)}
+code{font-family:var(--mono);color:rgba(236,233,224,0.85);background:var(--code-bg);padding:.05rem .3rem;border-radius:3px;font-size:.86em}
+pre{font-family:var(--mono);font-size:.82rem;background:var(--code-bg);border:1px solid var(--hair-lo);padding:.8rem 1rem;border-radius:8px;overflow-x:auto;margin:.9rem 0}
+pre code{background:none;padding:0;font-size:inherit}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(4,6,13,0.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--hair-lo);
+  padding:.55rem 1.4rem;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.1em}
+nav a{color:rgba(236,233,224,0.5)} nav a:hover{color:var(--gold)}
+
+.dm3-brand{display:inline-block;white-space:nowrap;font-family:Georgia,serif;font-weight:bold;color:var(--gold);line-height:1;cursor:default;padding-top:.4em}
+.dm3-brand .dm-wrap{position:relative;display:inline-block}
+.dm3-brand .dm{letter-spacing:-.02em}
+.dm3-brand .wave-svg{position:absolute;bottom:100%;left:0;width:100%;height:.3em;margin-bottom:-.01em;overflow:visible;pointer-events:none}
+.dm3-brand .cube{display:inline-block;font-size:.6em;line-height:1;vertical-align:.52em;margin-left:.04em}
+.dm3-brand.nav-size{font-size:.88rem}
+.dm3-brand.hero-size{font-size:clamp(3rem,9vw,4.4rem);text-shadow:0 0 38px rgba(201,168,76,0.4)}
+
+.hero{position:relative;overflow:hidden;padding:4.8rem 1.5rem 3.8rem;text-align:center;border-bottom:1px solid var(--hair-lo)}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 55% at 50% 42%,rgba(201,168,76,0.10) 0%,transparent 72%),
+             radial-gradient(ellipse 90% 70% at 18% 88%,rgba(139,123,240,0.10) 0%,transparent 70%),
+             linear-gradient(to bottom,transparent 60%,var(--void) 100%)}
+.hero>*{position:relative;z-index:2}
+.hero-brand{display:flex;justify-content:center;margin-bottom:.9rem}
+.hero-sub{font-family:var(--mono);font-size:.62rem;letter-spacing:.26em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 1rem}
+.hero h1{font-size:clamp(1.3rem,3vw,2rem);font-weight:normal;letter-spacing:.05em;color:var(--cream);text-wrap:balance;max-width:38rem;margin:0 auto}
+.gold-rule{width:54px;height:1px;background:var(--gold);margin:1.8rem auto 0;opacity:.75}
+
+main{max-width:46rem;margin:0 auto;padding:3rem max(1.5rem,env(safe-area-inset-left)) 5rem}
+.section-title,h2{font-family:var(--mono);font-size:.64rem;letter-spacing:.22em;color:var(--gold);font-weight:normal;
+  text-transform:uppercase;margin:3rem 0 1.1rem;padding-bottom:.55rem;border-bottom:1px solid var(--hair);text-wrap:balance}
+.section-title:first-child{margin-top:0}
+p{margin:.9rem 0;color:var(--muted)}
+.lede{font-size:1.08rem;color:var(--cream)}
+.kicker{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+strong,b{color:var(--cream);font-weight:bold}
+em{color:var(--cream)}
+.status,.note{background:var(--panel);border:1px solid var(--hair-lo);border-left:2px solid var(--gold);
+  border-radius:0 10px 10px 0;padding:1.1rem 1.3rem;margin:1.2rem 0;color:var(--muted)}
+.note.ok{border-left-color:var(--cyan)}
+.scroll{overflow-x:auto;border:1px solid var(--hair-lo);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:34rem;font:.88rem/1.5 Georgia,serif}
+th,td{text-align:left;vertical-align:top;padding:.65rem .8rem;border-bottom:1px solid var(--hair-lo);color:var(--muted)}
+td b{color:var(--cream)}
+th{font:normal .62rem/1.2 var(--mono);color:var(--gold);letter-spacing:.16em;text-transform:uppercase}
+tr:last-child td{border-bottom:0}
+.tag{font:600 .66rem/1 var(--mono);letter-spacing:.06em;padding:.25rem .5rem;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.ok{color:var(--cyan)} .warn{color:var(--gold)} .bad{color:var(--rose)}
+ol.log{padding-left:1.2rem;margin:.6rem 0;color:var(--muted)} ol.log li{margin:.8rem 0}
+ol.log b{font-family:var(--mono);font-size:.8rem;letter-spacing:.04em;color:var(--cream)}
+ul.files{list-style:none;border:1px solid var(--hair-lo);border-radius:10px;background:var(--panel)}
+ul.files li{padding:.8rem 1.2rem;border-bottom:1px solid var(--hair-lo)} ul.files li:last-child{border-bottom:0}
+ul.files small{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--faint)}
+.foot{margin-top:3rem;border-top:1px solid var(--hair);padding-top:1rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--faint)}
+.foot a{color:var(--gold)}
+
+@media (max-width:40rem){
+  table.lemmas{min-width:0}
+  table.lemmas thead{display:none}
+  table.lemmas,table.lemmas tbody,table.lemmas tr,table.lemmas td{display:block;width:100%}
+  table.lemmas tr{border-bottom:1px solid var(--hair);padding:.5rem .2rem}
+  table.lemmas td{border-bottom:0;padding:.3rem .8rem}
+  table.lemmas td[data-label]::before{content:attr(data-label);display:block;font:normal .6rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+}
+
+.note.ok{color:var(--muted)}
+</style>
+</head>
+<body>
+<nav><span class="dm3-brand nav-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgn)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span><a href="https://totogt.github.io/DM3-lab/euler/">Euler 1747</a><a href="https://github.com/TOTOGT/DM3-lab/tree/main/referee/mueller-2026-11">Files</a></nav>
+<header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">DM3-lab &middot; Referee package &middot; Lean, sympy, numbers &middot; 20 Nov 2026</div><h1>The Lorentz factor as the slope of an additional spatial coordinate: what the checks do and do not say</h1><div class="gold-rule"></div></header>
+<main>
+<p class="lede">A. Mueller, <em>The Lorentz Factor as the Slope of an Additional Spatial Coordinate</em>, Zenodo v1 (16 Nov 2026), 62 pages. We checked whether the paper&rsquo;s displayed algebra follows from its stated premises and whether its quoted numbers recompute. Every check we ran passed; the physical inputs are imported from general relativity, as the paper itself says.</p>
+<div class="note"><strong>Scope.</strong> This is not a review of the physics, and not an endorsement or refutation. Not read: &sect;1 and &sect;2.1 with Table 1, &sect;2.3.6, &sect;2.4.1&ndash;2.4.2, &sect;4.1&ndash;4.5, Appendix A.1&ndash;A.3 and A.6, the Appendix B derivations, and the references. No rotation-curve data were available, so no &chi;&sup2; was recomputed. Prepared with Claude (Anthropic) assisting. Nothing here has been sent to the author.</div>
+
+<h2>Download</h2>
+<ul class="files">
+<li><a href="mueller-lorentz-slope-package.zip" download><b>Download everything (zip)</b></a><small>all five files below, one click</small></li>
+<li><a href="LEDGER.md" download>LEDGER.md</a><small>Scope, results table, ledger by status, draft findings, limits</small></li>
+<li><a href="MuellerChecks.lean" download>MuellerChecks.lean</a><small>Lean 4.32.0 + Mathlib; 24 theorems, no <code>sorry</code>; <code>#print axioms</code> for the nine headline theorems shows only <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code></small></li>
+<li><a href="check_sympy.py" download>check_sympy.py</a><small>Symbolic re-derivations, including the ones needing second derivatives of square roots; all pass</small></li>
+<li><a href="check_numbers.py" download>check_numbers.py</a><small>Quoted numbers recomputed from public constants, with controls that could fail; all pass</small></li>
+<li><a href="MUELLER_REVIEW_MAP.md" download>MUELLER_REVIEW_MAP.md</a><small>The paper mapped onto <em>Gravity Across Scales</em>; also in <code>Gravity/</code></small></li>
+</ul>
+
+<h2>What was machine-checked</h2>
+<div class="scroll"><table>
+<thead><tr><th>Check</th><th>Scope</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td><b>Lean 4 (Mathlib)</b>, 24 theorems</td><td>&gamma;&sup2; = 1 + (&part;<sub>x</sub>y)&sup2; with &part;<sub>x</sub>y = &beta;&gamma; (the sinh of the rapidity); &sup3;R and &beta;&sup2; = 2Gm/(c&sup2;R); exterior and cap embeddings; critical density; Prop. 1 lapse ODE; g<sub>00</sub>h<sub>RR</sub> = &minus;1; Buchdahl 9/8; Painlev&eacute;&ndash;Gullstrand to Schwarzschild time; Hubble flow</td><td><span class="tag ok">kernel-checked</span> Standard axioms only.</td></tr>
+<tr><td><b>Symbolic</b> (sympy)</td><td>Slice curvature 0 and 6/L&sup2;; Prop. 1 radial and angular components; interior solution, TOV gradient and hydrostatic equilibrium; &Phi; solving eq 52; v<sub>local</sub>&sup2; and L&sup2; for circular orbits; exact-rational spot checks at v = 1/3, 3/5, 99/100</td><td><span class="tag ok">computed</span> All pass.</td></tr>
+<tr><td><b>Numeric</b></td><td>&sect;3.1 ratios, H<sub>0</sub>R, Sciama identity, g<sub>0</sub> = cH<sub>0</sub>/2&pi;, Table A3, v<sub>orbit</sub>, Sun/Saturn/Moon velocities, Mercury 42.98&Prime; per century, Cassini bound</td><td><span class="tag ok">computed</span> Reproduce, except the Earth figure below.</td></tr>
+</tbody></table></div>
+
+<h2>Draft observations for the author (not sent)</h2>
+<ol class="log">
+<li><b>G<sub>44</sub> = 1 follows from how y is defined.</b> Since y is defined by &part;<sub>R</sub>y = &beta;&gamma;, the Cassini bound constrains the construction as a whole rather than testing G<sub>44</sub> independently.</li>
+<li><b>Eqs 46&ndash;47.</b> G<sub>44</sub><sup>(U)</sup> = 1 and G<sub>44</sub><sup>(S)</sup>dy&sup2; = 0 are presented together; the second follows from the choice of the S frame, so it is a statement about that choice.</li>
+<li><b>Prop. 1 (the derived lapse).</b> The ODE step is correct (Lean-checked). It is a derivation from the imported static vacuum equations, so any wording that the lapse is not postulated should keep that qualifier.</li>
+<li><b>Hypothesis M.</b> With &kappa;&prime; = 1/2&pi; the deep-limit flat speed for the adopted baryonic mass is about 159 km/s (this ledger&rsquo;s mass-normalisation estimate, not a fit) against the quoted 198&ndash;227 km/s. The paper&rsquo;s own free fit gives g<sub>0</sub>/(cH<sub>0</sub>) = 0.35; reporting the &chi;&sup2; at 1/2&pi; would show how much the factor of two matters.</li>
+<li><b>Appendix A, Earth.</b> c&radic;(GM/R&sup3;)&middot;(1 s) recomputes to 372.2 km/s against 371.6 km/s quoted (0.16%). The match with the CMB dipole (369.82 km/s) is 0.64% and fixes the reference time at 0.9936 s; with 1 minute or 1 ms it fails. By the appendix&rsquo;s own account this is a one-parameter fit.</li>
+<li><b>Equivalence to GR</b> holds by import of the Hamiltonian constraint in the vacuum and pressureless spherical cases, not by derivation.</li>
+</ol>
+
+<h2>Mapped onto <em>Gravity Across Scales</em></h2>
+<p>Full table: <a href="MUELLER_REVIEW_MAP.md" download>MUELLER_REVIEW_MAP.md</a>. The two papers both add a direction to a geometric picture, but by different constructions: Mueller&rsquo;s has a metric, imported field equations and recomputable numbers; the dm3 chain is an ODE on a contact 3-manifold with no metric. The map is editorial suggestions for the author, not claims about the physics.</p>
+<div class="scroll"><table>
+<thead><tr><th>Mueller</th><th>dm3 paper</th><th>Suggested action</th></tr></thead>
+<tbody>
+<tr><td>Fourth coordinate y, slope = sinh of rapidity</td><td>&sect;6, T4: Reeb field &part;z</td><td>Do not identify the two without writing down a map.</td></tr>
+<tr><td>Circular-orbit L&sup2; = GMR&sup2;/(R&minus;3GM/c&sup2;), minimum at 6GM/c&sup2;</td><td>T2 fold r*, Conj. 9.1</td><td>Compare r* with the standard 6M fold, stating where they differ.</td></tr>
+<tr><td>Hubble flow, critical density, Sciama identity</td><td>Open Problem 11.4 (galactic fold radius)</td><td>Where the Hubble-flow term overtakes local binding is a candidate observable; a suggestion, not a derivation.</td></tr>
+<tr><td>Hypothesis M, candidate &kappa;&prime; = 1/2&pi;</td><td>T* = 2&pi;</td><td>Do not connect the two 2&pi;&rsquo;s; neither paper derives the other&rsquo;s value.</td></tr>
+<tr><td>Appendix A alignments (one-parameter fit)</td><td>&sect;12 empirical grounding</td><td>If cited, say they are fits, not tests.</td></tr>
+<tr><td>Imported constraint, listed assumptions</td><td>&sect;&sect;9&ndash;12</td><td>Adopt the checked / imported / assumed ledger style.</td></tr>
+</tbody></table></div>
+
+<h2>Status of the paper&rsquo;s claims</h2>
+<div class="scroll"><table>
+<thead><tr><th>Status</th><th>Items</th></tr></thead>
+<tbody>
+<tr><td><span class="tag ok">checked</span></td><td>The coordinate-level identities listed above (Lean or sympy), and the recomputed numbers.</td></tr>
+<tr><td><span class="tag warn">imported</span></td><td>Hamiltonian constraint; static vacuum equations; Gauss equation for a hypersurface of flat R<sup>4</sup>; Schwarzschild, Painlev&eacute;&ndash;Gullstrand, FLRW, TOV and Buchdahl results; the Cassini measurement; the modified-inertia framework and rotation-curve data.</td></tr>
+<tr><td><span class="tag warn">beyond Mathlib today</span></td><td>Levi-Civita connection, Riemann and Ricci tensors, Einstein equations, Gauss&ndash;Codazzi, geodesics on pseudo-Riemannian manifolds, and &ldquo;equivalent to general relativity&rdquo; as a theorem. This list is from memory of Mathlib and was not searched.</td></tr>
+<tr><td><span class="tag warn">assumed</span></td><td>The constraint and vacuum equations; the closure N = 1/&gamma;; five-dimensional vacuum for G<sub>44</sub>; Hypothesis M, the interpolation function and &kappa;&prime;.</td></tr>
+<tr><td><span class="tag bad">for a specialist</span></td><td>A covariant action and field equations for G<sub>44</sub> (&sect;4.6 says none yet); Hypothesis M beyond one galaxy; the Appendix A alignments; the sections not read.</td></tr>
+</tbody></table></div>
+<div class="note ok">The Lean files show that the displayed identities follow from their premises. They do not verify any physical claim, any imported general-relativity result, or Hypothesis M. An earlier pass over the same paper is in <a href="../mueller-2026-11/">mueller-2026-11</a>.</div>
+
+<p class="foot">Prepared 20 Nov 2026 by Claude (Cowork), configured model <code>claude-sonnet-5-5</code>; the serving model can differ. Not reviewed by a second system or a specialist.</p>
+</main>
+<script>
+/* dm3 brand animation: travelling sine wave and hero phase portrait.
+   Copied from AXLE/AAlpha_Linkedin/dm3brand.html. */
+/* ── TRAVELLING SINE WAVE (the dm³ wake) ───────────────── */
+(function () {
+  var STEPS = 64, W = 100, CY = 10, AMP = 6.2, FREQ = 1.15, SPEED = 2.2, start = null;
+  function buildPath(phase) {
+    var pts = [], i, t, env, y;
+    for (i = 0; i <= STEPS; i++) {
+      t = i / STEPS;
+      env = Math.sin(Math.PI * t);            /* taper to zero at both ends */
+      y = CY + AMP * env * Math.sin(2 * Math.PI * FREQ * t - phase);
+      pts.push([(t * W).toFixed(2), y.toFixed(2)]);
+    }
+    return 'M' + pts[0].join(',') + pts.slice(1).map(function (p) { return 'L' + p.join(','); }).join('');
+  }
+  var paths = Array.prototype.map.call(
+    document.querySelectorAll('.wave-svg[data-wave]'),
+    function (s) { return s.querySelector('.wave-path'); }
+  );
+  if (!paths.length) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var d0 = buildPath(0); paths.forEach(function (p) { p.setAttribute('d', d0); }); return;
+  }
+  (function loop(ts) {
+    if (!start) start = ts;
+    var d = buildPath((ts - start) / 1000 * SPEED);
+    paths.forEach(function (p) { p.setAttribute('d', d); });
+    requestAnimationFrame(loop);
+  })(performance.now());
+})();
+
+/* ── HERO FIELD: starfield + phase portrait ────────────────
+   The trajectories integrate the polar system
+
+       dr/dt = r(1 - r²)      dθ/dt = ω
+
+   whose unit circle is an attracting limit cycle — the same
+   object the transverse Lyapunov exponent μmax = −2 measures.
+   Orbits started inside and outside both wind onto it.        */
+(function () {
+  var cv = document.getElementById('field');
+  if (!cv) return;
+  var ctx = cv.getContext('2d'), w = 0, h = 0, dpr = 1;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stars = [], orbits = [];
+
+  function seed() {
+    stars = [];
+    var n = Math.min(170, Math.round(w * h / 9000));
+    for (var i = 0; i < n; i++) {
+      stars.push({ x: Math.random() * w, y: Math.random() * h,
+                   r: Math.random() * 1.05 + 0.2,
+                   a: Math.random() * 0.45 + 0.12,
+                   tw: Math.random() * 6.28, sp: Math.random() * 0.8 + 0.25 });
+    }
+    orbits = [];
+    for (var k = 0; k < 26; k++) {
+      var inside = k % 2 === 0;
+      orbits.push({
+        r: inside ? 0.06 + Math.random() * 0.34 : 1.35 + Math.random() * 1.25,
+        th: Math.random() * 6.28,
+        w: 0.34 + Math.random() * 0.30,
+        hue: k % 3,
+        a: 0.16 + Math.random() * 0.30
+      });
+    }
+  }
+
+  function resize() {
+    var rect = cv.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = rect.width; h = rect.height;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seed();
+    ctx.fillStyle = '#04060d'; ctx.fillRect(0, 0, w, h);
+  }
+
+  var COLORS = ['201,168,76', '86,200,216', '139,123,240'];
+  var last = 0;
+
+  function frame(ts) {
+    var dt = Math.min((ts - last) / 1000, 0.05); last = ts;
+
+    /* motion-blur wash leaves the orbit trails behind */
+    ctx.fillStyle = 'rgba(4,6,13,0.13)';
+    ctx.fillRect(0, 0, w, h);
+
+    var cx = w * 0.5, cy = h * 0.46;
+    var R = Math.min(w, h) * 0.30;
+
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      s.tw += dt * s.sp;
+      var a = s.a * (0.62 + 0.38 * Math.sin(s.tw));
+      ctx.fillStyle = 'rgba(236,233,224,' + a.toFixed(3) + ')';
+      ctx.fillRect(s.x, s.y, s.r, s.r);
+    }
+
+    for (var j = 0; j < orbits.length; j++) {
+      var o = orbits[j];
+      /* one explicit Euler step of the limit-cycle flow */
+      o.r += o.r * (1 - o.r * o.r) * dt * 0.85;
+      o.th += o.w * dt;
+      var px = cx + Math.cos(o.th) * o.r * R;
+      var py = cy + Math.sin(o.th) * o.r * R * 0.52;
+      ctx.beginPath();
+      ctx.arc(px, py, 1.25, 0, 6.2832);
+      ctx.fillStyle = 'rgba(' + COLORS[o.hue] + ',' + o.a.toFixed(3) + ')';
+      ctx.fill();
+    }
+
+    /* the attractor itself */
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, R, R * 0.52, 0, 0, 6.2832);
+    ctx.strokeStyle = 'rgba(201,168,76,0.13)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  if (!reduce) requestAnimationFrame(function (t) { last = t; frame(t); });
+})();
+
+
+</script>
+</body>
+</html>
