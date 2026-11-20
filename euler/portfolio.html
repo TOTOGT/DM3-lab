@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lean Formalization Portfolio</title>
+<style>
+/* dm3 brand, shared by euler/index.html and euler/hybrid-budget/index.html.
+   Derived from AXLE/AAlpha_Linkedin/dm3brand.html. Dark single-theme by design. */
+:root{
+  --void:#04060d; --deep:#080d1a; --panel:rgba(255,255,255,0.028);
+  --hair:rgba(201,168,76,0.16); --hair-lo:rgba(255,255,255,0.07);
+  --gold:#c9a84c; --gold-hi:#e7cd7c; --cyan:#56c8d8; --violet:#8b7bf0; --rose:#e48a8a;
+  --cream:#ece9e0; --muted:rgba(236,233,224,0.62); --faint:rgba(236,233,224,0.36);
+  --code-bg:rgba(255,255,255,0.05);
+  --mono:'Courier New',ui-monospace,monospace; color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--void);font-family:Georgia,'Times New Roman',serif;color:var(--cream);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.7;font-size:17px}
+a{color:var(--gold);text-decoration:none;transition:color .15s} a:hover{color:var(--gold-hi)}
+code{font-family:var(--mono);color:rgba(236,233,224,0.85);background:var(--code-bg);padding:.05rem .3rem;border-radius:3px;font-size:.86em}
+pre{font-family:var(--mono);font-size:.82rem;background:var(--code-bg);border:1px solid var(--hair-lo);padding:.8rem 1rem;border-radius:8px;overflow-x:auto;margin:.9rem 0}
+pre code{background:none;padding:0;font-size:inherit}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(4,6,13,0.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--hair-lo);
+  padding:.55rem 1.4rem;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.1em}
+nav a{color:rgba(236,233,224,0.5)} nav a:hover{color:var(--gold)}
+
+.dm3-brand{display:inline-block;white-space:nowrap;font-family:Georgia,serif;font-weight:bold;color:var(--gold);line-height:1;cursor:default;padding-top:.4em}
+.dm3-brand .dm-wrap{position:relative;display:inline-block}
+.dm3-brand .dm{letter-spacing:-.02em}
+.dm3-brand .wave-svg{position:absolute;bottom:100%;left:0;width:100%;height:.3em;margin-bottom:-.01em;overflow:visible;pointer-events:none}
+.dm3-brand .cube{display:inline-block;font-size:.6em;line-height:1;vertical-align:.52em;margin-left:.04em}
+.dm3-brand.nav-size{font-size:.88rem}
+.dm3-brand.hero-size{font-size:clamp(3rem,9vw,4.4rem);text-shadow:0 0 38px rgba(201,168,76,0.4)}
+
+.hero{position:relative;overflow:hidden;padding:4.8rem 1.5rem 3.8rem;text-align:center;border-bottom:1px solid var(--hair-lo)}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 55% at 50% 42%,rgba(201,168,76,0.10) 0%,transparent 72%),
+             radial-gradient(ellipse 90% 70% at 18% 88%,rgba(139,123,240,0.10) 0%,transparent 70%),
+             linear-gradient(to bottom,transparent 60%,var(--void) 100%)}
+.hero>*{position:relative;z-index:2}
+.hero-brand{display:flex;justify-content:center;margin-bottom:.9rem}
+.hero-sub{font-family:var(--mono);font-size:.62rem;letter-spacing:.26em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 1rem}
+.hero h1{font-size:clamp(1.3rem,3vw,2rem);font-weight:normal;letter-spacing:.05em;color:var(--cream);text-wrap:balance;max-width:38rem;margin:0 auto}
+.gold-rule{width:54px;height:1px;background:var(--gold);margin:1.8rem auto 0;opacity:.75}
+
+main{max-width:46rem;margin:0 auto;padding:3rem max(1.5rem,env(safe-area-inset-left)) 5rem}
+.section-title,h2{font-family:var(--mono);font-size:.64rem;letter-spacing:.22em;color:var(--gold);font-weight:normal;
+  text-transform:uppercase;margin:3rem 0 1.1rem;padding-bottom:.55rem;border-bottom:1px solid var(--hair);text-wrap:balance}
+.section-title:first-child{margin-top:0}
+p{margin:.9rem 0;color:var(--muted)}
+.lede{font-size:1.08rem;color:var(--cream)}
+.kicker{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+strong,b{color:var(--cream);font-weight:bold}
+em{color:var(--cream)}
+.status,.note{background:var(--panel);border:1px solid var(--hair-lo);border-left:2px solid var(--gold);
+  border-radius:0 10px 10px 0;padding:1.1rem 1.3rem;margin:1.2rem 0;color:var(--muted)}
+.note.ok{border-left-color:var(--cyan)}
+.scroll{overflow-x:auto;border:1px solid var(--hair-lo);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:34rem;font:.88rem/1.5 Georgia,serif}
+th,td{text-align:left;vertical-align:top;padding:.65rem .8rem;border-bottom:1px solid var(--hair-lo);color:var(--muted)}
+td b{color:var(--cream)}
+th{font:normal .62rem/1.2 var(--mono);color:var(--gold);letter-spacing:.16em;text-transform:uppercase}
+tr:last-child td{border-bottom:0}
+.tag{font:600 .66rem/1 var(--mono);letter-spacing:.06em;padding:.25rem .5rem;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.ok{color:var(--cyan)} .warn{color:var(--gold)} .bad{color:var(--rose)}
+ol.log{padding-left:1.2rem;margin:.6rem 0;color:var(--muted)} ol.log li{margin:.8rem 0}
+ol.log b{font-family:var(--mono);font-size:.8rem;letter-spacing:.04em;color:var(--cream)}
+ul.files{list-style:none;border:1px solid var(--hair-lo);border-radius:10px;background:var(--panel)}
+ul.files li{padding:.8rem 1.2rem;border-bottom:1px solid var(--hair-lo)} ul.files li:last-child{border-bottom:0}
+ul.files small{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--faint)}
+.foot{margin-top:3rem;border-top:1px solid var(--hair);padding-top:1rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--faint)}
+.foot a{color:var(--gold)}
+
+@media (max-width:40rem){
+  table.lemmas{min-width:0}
+  table.lemmas thead{display:none}
+  table.lemmas,table.lemmas tbody,table.lemmas tr,table.lemmas td{display:block;width:100%}
+  table.lemmas tr{border-bottom:1px solid var(--hair);padding:.5rem .2rem}
+  table.lemmas td{border-bottom:0;padding:.3rem .8rem}
+  table.lemmas td[data-label]::before{content:attr(data-label);display:block;font:normal .6rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+}
+
+.note.ok{color:var(--muted)}
+</style>
+<style>
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:0;background:var(--deep);border:1px solid var(--hair-lo);border-radius:10px;overflow:hidden;margin:1.2rem 0 .4rem}
+.fact{padding:1rem 1.1rem;min-width:0;outline:1px solid var(--hair-lo);outline-offset:-.5px}
+.fact b{display:block;font:normal 1.7rem/1.1 var(--mono);color:var(--gold);font-variant-numeric:tabular-nums}
+.fact span{display:block;margin-top:.35rem;font-size:.82rem;line-height:1.4;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.9rem;margin:1rem 0}
+.card{background:var(--panel);border:1px solid var(--hair-lo);border-radius:10px;padding:1rem 1.1rem;min-width:0}
+.card h3{font:normal .64rem/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.card p{margin:0;font-size:.92rem}
+.bars{display:flex;align-items:flex-end;gap:1rem;height:9rem;padding:.4rem .3rem 0;margin:1rem 0 .2rem;border-bottom:1px solid var(--hair)}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:.3rem;height:100%;min-width:0}
+.bar i{display:block;width:100%;max-width:4rem;background:var(--gold);opacity:.8;border-radius:3px 3px 0 0}
+.bar em{font:normal .8rem/1 var(--mono);font-style:normal;color:var(--cream)}
+.barlab{display:flex;gap:1rem;padding:.3rem .3rem 0;font:normal .66rem/1 var(--mono);letter-spacing:.08em;color:var(--faint)}
+.barlab span{flex:1;text-align:center}
+table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+.mail{user-select:all;font-family:var(--mono);font-size:.86em;color:var(--cream)}
+</style>
+</head>
+<body>
+<nav><span class="dm3-brand nav-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgn)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span><a href="https://totogt.github.io/DM3-lab/euler/">Euler 1747</a><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">Ledger</a><a href="https://github.com/TOTOGT/DM3-lab">Repo</a></nav>
+<header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">DM3-lab &middot; Lean 4 formalization portfolio &middot; 20 Nov 2026</div><h1>Lean 4 formalization of research mathematics, with a ledger that says what is and is not proven</h1><div class="gold-rule"></div></header>
+<main>
+<p class="lede">I turn papers into Lean 4 statements and proofs against current Mathlib. The work is built with AI assistance (Claude) and every result is checked by the Lean kernel, with an axiom report and a status word in a public ledger. Pablo Nogueira Grossi, G6 LLC. <span class="mail">g6llc@proton.me</span></p>
+
+<div class="facts">
+<div class="fact"><b>425</b><span>distinct theorems and lemmas in the Euler formalization</span></div>
+<div class="fact"><b>69</b><span>Lean files, Lean v4.32.0 with Mathlib</span></div>
+<div class="fact"><b>126</b><span>commits, Nov 16 to 19, 2026</span></div>
+<div class="fact"><b>0</b><span><code>sorry</code> or <code>axiom</code> declarations in that code</span></div>
+<div class="fact"><b>1</b><span>open hypothesis, named in the ledger</span></div>
+</div>
+<p class="note" style="margin-top:1rem">The 425 counts unique theorem and lemma names in <code>euler/lean/EulerLean</code>. The 69 stage files are cumulative and repeat earlier code, so counting declaration lines would give about 4,500 and overstate the work.</p>
+
+<h2>What is formalized</h2>
+<p>The target is Howe, Huffman, Kohlmeyer and Kruer, &ldquo;Euler&rsquo;s 1747 conjecture on sums of integers with restricted prime factors&rdquo; (2611.00370v1): every n &equiv; 2 (mod 4) is a sum of two positive integers whose prime factors are all &equiv; 1 (mod 4). This is an independent formalization, not the authors&rsquo; own. The analytic step uses Hurwitz quaternions and Hecke operators on a finite quotient of PGL&#8322;(&#120125;&#8346;), and that machinery is now in Lean.</p>
+<div class="scroll"><table>
+<thead><tr><th>Result</th><th>Lean declaration</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Hurwitz order: closed under products, Euclidean division on both sides, principal right ideals, exactly 24 units</td><td><code>Section71c to 73e</code></td><td><span class="tag ok">kernel</span></td></tr>
+<tr><td>Jacobi&rsquo;s four-square count: #{x &isin; &#8484;&#8308; : |x|&sup2; = 2m} = 24&sigma;(m) for odd m, via right ideals and a Hecke recurrence</td><td><code>Section80.hjac</code></td><td><span class="tag ok">kernel</span></td></tr>
+<tr><td>Reduction mod p: &rho; : HurU &rarr; PGL&#8322;(&#120125;&#8346;), the group &Gamma;&#8346; of order 12, and the quotient Y&#8346;</td><td><code>SectionA3b</code></td><td><span class="tag ok">kernel</span></td></tr>
+<tr><td>Hecke operators on functions Y&#8346; &rarr; &#8450;: self-adjoint (A4b), counting identity (A4c, A4d), U&#8344;U&#8343; = 24(U&#8343;&#8344; + l&middot;U&#8344;/&#8343;) (A4e), commuting (A4f)</td><td><code>SectionA4b to A4f</code></td><td><span class="tag ok">kernel, CI</span></td></tr>
+<tr><td>Normalised T&#8345; = U&#8345;/24: T&#8344;T&#8343; = T&#8343;&#8344; + l&middot;T&#8344;/&#8343; (A4g); T&#8321; = id and all odd T&#8345; commute with every T&#8344; (A4h); T&#8344;&#8345; = T&#8344;T&#8345; for coprime m, n (A4i)</td><td><code>SectionA4g to A4i</code></td><td><span class="tag ok">kernel, CI</span></td></tr>
+<tr><td>The two exceptional eigenfunctions: T&#8344;&middot;1 = &sigma;(m)&middot;1 (A4j) and T&#8344;&chi; = (m/p)&sigma;(m)&middot;&chi;, with &chi; the quadratic character of the determinant (A4k)</td><td><code>SectionA4j.Tn_const</code>, <code>SectionA4k.Tn_chi</code></td><td><span class="tag ok">kernel, CI</span></td></tr>
+<tr><td>Euler 1747 for n &equiv; 2 (mod 4), assuming only H31gt3. The finite range n &lt; 64&#8308; uses <code>native_decide</code></td><td><code>Section83.euler_1747_of_H31gt3</code></td><td><span class="tag warn">conditional</span></td></tr>
+</tbody></table></div>
+
+<h2>What is not proven</h2>
+<div class="status">
+<p><b>H31gt3</b>, Prop 3.1 for primes p &gt; 3 not dividing m, is the one open hypothesis of the Euler theorem. The paper&rsquo;s route needs a norm bound on T&#8344; away from span{1, &chi;}, which rests on Jacquet&ndash;Langlands and the weight-2 Ramanujan&ndash;Petersson bound. Neither is in Mathlib.</p>
+<p>The eigenvalue results cover the two exceptional modes only, not the rest of the spectrum. The Hecke relations that need a Hecke prime are proved for odd n only. It is not shown that &chi; is nonzero or different from the constant function. The final Euler theorem lists the <code>native_decide</code> axiom for the finite range, so it is not kernel-only.</p>
+</div>
+
+<h2>How results are checked</h2>
+<div class="cards">
+<div class="card"><h3>Public ledger</h3><p>Every numbered statement of the paper has one status word: kernel-checked, native-decide, computed by a script, read by hand, or open. Hand arguments are labelled as such.</p></div>
+<div class="card"><h3>Axiom gate in CI</h3><p>Each new stage compiles on push and fails on any compile error, any <code>sorry</code>, a missing axiom report, or an axiom outside propext, Classical.choice and Quot.sound.</p></div>
+<div class="card"><h3>Statement audit</h3><p>A line-by-line audit of the paper&rsquo;s sections 2 to 6, plus Python scripts that test its constants and bounds on thousands of cases. Those are labelled as tests, not proofs.</p></div>
+</div>
+
+<h2>Beyond the Euler chain</h2>
+<p>The same machine-readable count, taken over every git repository on my computer (16 clones, de-duplicated by file content), is a census of declared theorem and lemma names. It does not say that a file compiles. Only the Euler chain above has CI behind it.</p>
+<div class="facts">
+<div class="fact"><b>3,084</b><span>distinct declared theorem and lemma names across 16 repositories</span></div>
+<div class="fact"><b>2,645</b><span>declared in files with no <code>sorry</code> and no <code>axiom</code> declaration</span></div>
+<div class="fact"><b>1,646</b><span>of those in files that also print axiom reports</span></div>
+</div>
+<div class="scroll"><table class="num" style="min-width:30rem">
+<thead><tr><th>Clone (largest)</th><th>Names</th><th>No sorry</th><th>With axiom report</th></tr></thead>
+<tbody>
+<tr><td>geometry-probe</td><td>1,440</td><td>1,392</td><td>1,072</td></tr>
+<tr><td>DM3-lab</td><td>650</td><td>611</td><td>462</td></tr>
+<tr><td>AXLE</td><td>561</td><td>437</td><td>20</td></tr>
+<tr><td>dnls</td><td>165</td><td>34</td><td>13</td></tr>
+<tr><td>neuro</td><td>163</td><td>49</td><td>0</td></tr>
+<tr><td>GTCT</td><td>145</td><td>99</td><td>0</td></tr>
+<tr><td>vol1-proofs</td><td>92</td><td>92</td><td>24</td></tr>
+<tr><td>io</td><td>74</td><td>74</td><td>67</td></tr>
+</tbody></table></div>
+<p class="foot" style="margin-top:.6rem;border:0;padding:0">Per-clone rows overlap, so they do not sum to the total. The script is <code>scripts/theorems-census.py</code> in DM3-lab. Mathlib itself is excluded.</p>
+
+<h2>Pace</h2>
+<div class="bars" role="img" aria-label="Commits touching the Euler formalization per day: Nov 16, 19; Nov 17, 71; Nov 18, 13; Nov 19, 23">
+<div class="bar"><em>19</em><i style="height:26%"></i></div>
+<div class="bar"><em>71</em><i style="height:100%"></i></div>
+<div class="bar"><em>13</em><i style="height:18%"></i></div>
+<div class="bar"><em>23</em><i style="height:32%"></i></div>
+</div>
+<div class="barlab"><span>Nov 16</span><span>Nov 17</span><span>Nov 18</span><span>Nov 19</span></div>
+<p>Commits touching <code>euler/lean/EulerLean</code>, 126 in total. The Hecke chain from the self-adjointness stage (A4b) to the character eigenfunction (A4k) was written, compiled and pushed stage by stage on Nov 19.</p>
+
+<h2>What I offer</h2>
+<div class="cards">
+<div class="card"><h3>Faithful statements</h3><p>Lean 4 statements that match the text of a paper, with a ledger mapping each one to its source.</p></div>
+<div class="card"><h3>Proofs</h3><p>Lemmas or full results against current Mathlib, with an axiom report and CI on every commit.</p></div>
+<div class="card"><h3>Audits</h3><p>Checks of an existing formalization or paper: statement fidelity, hidden hypotheses, axioms used, numerical tests of claims.</p></div>
+</div>
+<div class="status ok"><p><b>Definition of done.</b> Builds on a pinned Lean and Mathlib version. Zero <code>sorry</code>, and <code>#print axioms</code> shows only propext, Classical.choice and Quot.sound, unless <code>native_decide</code> is agreed in advance and flagged. Statements change only with the client&rsquo;s approval. A ledger lists what is proven, what is assumed, and what is open.</p></div>
+<p>The niche is the arithmetic of quaternion orders, Hecke operators and finite quotients of PGL&#8322;. A small paid trial block is a good way to start.</p>
+
+<h2>Links</h2>
+<ul class="files">
+<li><a href="https://github.com/TOTOGT/DM3-lab">DM3-lab repository</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">Lemma ledger: what is and is not proven</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/StageA4k.lean">Hecke chain, latest stage (StageA4k.lean)</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/Stage80a.lean">Jacobi four-square count (Stage80a.lean)</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/scripts/theorems-census.py">Theorem census script</a></li>
+</ul>
+<p class="foot">Counts taken 20 Nov 2026 from the repositories. The Euler chain is checked by the &ldquo;Euler layer A&rdquo; workflow; the wider census records declarations only.</p>
+</main>
+<script>
+/* dm3 brand animation: travelling sine wave and hero phase portrait.
+   Copied from AXLE/AAlpha_Linkedin/dm3brand.html. */
+/* ── TRAVELLING SINE WAVE (the dm³ wake) ───────────────── */
+(function () {
+  var STEPS = 64, W = 100, CY = 10, AMP = 6.2, FREQ = 1.15, SPEED = 2.2, start = null;
+  function buildPath(phase) {
+    var pts = [], i, t, env, y;
+    for (i = 0; i <= STEPS; i++) {
+      t = i / STEPS;
+      env = Math.sin(Math.PI * t);            /* taper to zero at both ends */
+      y = CY + AMP * env * Math.sin(2 * Math.PI * FREQ * t - phase);
+      pts.push([(t * W).toFixed(2), y.toFixed(2)]);
+    }
+    return 'M' + pts[0].join(',') + pts.slice(1).map(function (p) { return 'L' + p.join(','); }).join('');
+  }
+  var paths = Array.prototype.map.call(
+    document.querySelectorAll('.wave-svg[data-wave]'),
+    function (s) { return s.querySelector('.wave-path'); }
+  );
+  if (!paths.length) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var d0 = buildPath(0); paths.forEach(function (p) { p.setAttribute('d', d0); }); return;
+  }
+  (function loop(ts) {
+    if (!start) start = ts;
+    var d = buildPath((ts - start) / 1000 * SPEED);
+    paths.forEach(function (p) { p.setAttribute('d', d); });
+    requestAnimationFrame(loop);
+  })(performance.now());
+})();
+
+/* ── HERO FIELD: starfield + phase portrait ────────────────
+   The trajectories integrate the polar system
+
+       dr/dt = r(1 - r²)      dθ/dt = ω
+
+   whose unit circle is an attracting limit cycle — the same
+   object the transverse Lyapunov exponent μmax = −2 measures.
+   Orbits started inside and outside both wind onto it.        */
+(function () {
+  var cv = document.getElementById('field');
+  if (!cv) return;
+  var ctx = cv.getContext('2d'), w = 0, h = 0, dpr = 1;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stars = [], orbits = [];
+
+  function seed() {
+    stars = [];
+    var n = Math.min(170, Math.round(w * h / 9000));
+    for (var i = 0; i < n; i++) {
+      stars.push({ x: Math.random() * w, y: Math.random() * h,
+                   r: Math.random() * 1.05 + 0.2,
+                   a: Math.random() * 0.45 + 0.12,
+                   tw: Math.random() * 6.28, sp: Math.random() * 0.8 + 0.25 });
+    }
+    orbits = [];
+    for (var k = 0; k < 26; k++) {
+      var inside = k % 2 === 0;
+      orbits.push({
+        r: inside ? 0.06 + Math.random() * 0.34 : 1.35 + Math.random() * 1.25,
+        th: Math.random() * 6.28,
+        w: 0.34 + Math.random() * 0.30,
+        hue: k % 3,
+        a: 0.16 + Math.random() * 0.30
+      });
+    }
+  }
+
+  function resize() {
+    var rect = cv.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = rect.width; h = rect.height;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seed();
+    ctx.fillStyle = '#04060d'; ctx.fillRect(0, 0, w, h);
+  }
+
+  var COLORS = ['201,168,76', '86,200,216', '139,123,240'];
+  var last = 0;
+
+  function frame(ts) {
+    var dt = Math.min((ts - last) / 1000, 0.05); last = ts;
+
+    /* motion-blur wash leaves the orbit trails behind */
+    ctx.fillStyle = 'rgba(4,6,13,0.13)';
+    ctx.fillRect(0, 0, w, h);
+
+    var cx = w * 0.5, cy = h * 0.46;
+    var R = Math.min(w, h) * 0.30;
+
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      s.tw += dt * s.sp;
+      var a = s.a * (0.62 + 0.38 * Math.sin(s.tw));
+      ctx.fillStyle = 'rgba(236,233,224,' + a.toFixed(3) + ')';
+      ctx.fillRect(s.x, s.y, s.r, s.r);
+    }
+
+    for (var j = 0; j < orbits.length; j++) {
+      var o = orbits[j];
+      /* one explicit Euler step of the limit-cycle flow */
+      o.r += o.r * (1 - o.r * o.r) * dt * 0.85;
+      o.th += o.w * dt;
+      var px = cx + Math.cos(o.th) * o.r * R;
+      var py = cy + Math.sin(o.th) * o.r * R * 0.52;
+      ctx.beginPath();
+      ctx.arc(px, py, 1.25, 0, 6.2832);
+      ctx.fillStyle = 'rgba(' + COLORS[o.hue] + ',' + o.a.toFixed(3) + ')';
+      ctx.fill();
+    }
+
+    /* the attractor itself */
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, R, R * 0.52, 0, 0, 6.2832);
+    ctx.strokeStyle = 'rgba(201,168,76,0.13)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  if (!reduce) requestAnimationFrame(function (t) { last = t; frame(t); });
+})();
+
+
+</script>
+</body>
+</html>
