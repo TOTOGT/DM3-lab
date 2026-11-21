@@ -15,3 +15,15 @@ For larger n the allowed E_max falls like m^(-1/4) (fitted slope -0.247 to -0.24
 
 ## What averaging can and cannot do
 Each b_p is a nonnegative count, so the sum has no sign cancellation. A saving over the per-prime bound must come from structure of the counts themselves (for example the same lattice points being counted for several p). Nothing in this note proves such a saving.
+
+## Exact aggregate sums at the threshold (agg_true.py; computed, 4 values of m, not a proof)
+`b_p(n)` is an elementary count: representations n = x0^2+x1^2+x2^2+x3^2 with x0+x1 and x2+x3 odd and p dividing both coordinates of one pair. With r2odd(v) = #{(a,b) : a^2+b^2 = v, a+b odd}, b_p(n) = 2 sum_v r2odd(v) r2odd(n - p^2 v) - (overlap, zero when p^2 does not divide n). `agg_true.py` evaluates this exactly, with no per-prime bound assumed.
+
+| m | prime factors | S(m) = sum_p b_p / (24 sigma) | target T* | sum 2/(p(p-1)) | max_p (b_p/(24 sigma) - 2/(p(p-1))) |
+|---|---|---|---|---|---|
+| 8388611 | prime | 0.2333 | 0.5689 | 0.4157 | -4.7e-05 |
+| 8388619 | prime | 0.2771 | 0.5689 | 0.4157 | -2.7e-05 |
+| 8388671 | 3 primes | 0.2732 | 0.5689 | 0.4157 | -3.4e-05 |
+| 8388721 | 4 primes | 0.2620 | 0.5689 | 0.4157 | -4.6e-05 |
+
+At these four values the true sum is about half the target, and every per-prime inequality holds with no error term at all. This is evidence about the truth of AggTarget at the threshold, not a proof of it for all m. The proof obligation is a bound on a sum of r2odd convolutions, which is elementary in statement and is where an aggregate argument would have to work.
