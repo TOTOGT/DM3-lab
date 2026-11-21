@@ -27,8 +27,17 @@ For odd m with p not dividing m, and every f in L^2(Y_p) orthogonal to span{1, c
 ## 3. How it is meant to follow from standard results (this is read, not verified)
 
 (a) The one-dimensional automorphic representations of B^x that have a vector fixed at this level lie in span{1, chi}.
-(b) Every other constituent of L^2(Y_p) corresponds under Jacquet-Langlands to a cuspidal weight-2 newform whose level is supported on 2 and p, with Hecke eigenvalue a_l at each prime l not dividing 2p. The exact level and nebentypus must be confirmed; we have not done so.
+(b) Every other constituent of L^2(Y_p) corresponds, under Jacquet-Langlands or the classical Eichler correspondence between quaternionic theta series and weight-2 forms, to a cuspidal weight-2 newform whose level is supported on 2 and p, with Hecke eigenvalue a_l at each prime l not dividing 2p. The exact level and nebentypus must be confirmed; we have not done so. Section 3b notes that the LPS paper reaches the bound without citing Jacquet-Langlands.
 (c) The Ramanujan-Petersson bound |a_l| <= 2 sqrt(l) for weight 2. It gives |a_m| <= tau(m) sqrt(m) for m coprime to the level, which is the bound above. The source paper cites Deligne. My recollection, not checked, is that weight 2 may need only Weil's bound for curves via Eichler-Shimura.
+
+## 3b. Route test, 20 Nov 2026: what the literature says about the bound in section 2
+
+Read from three sources (the Lubotzky-Phillips-Sarnak paper, Stier's notes on it, and Livne's paper on Hilbert modular forms); not independently checked.
+
+- The LPS paper does not use Jacquet-Langlands. It counts representations of integers by a quaternary form built from Hamilton quaternions (a theta series of weight two), splits the result into an Eisenstein part and a cusp part, and bounds the cusp part by citing Eichler and Igusa. Deligne is not cited there.
+- Livne states that Eichler and Shimura reduced the weight-2 Ramanujan bound to Weil's results on Frobenius eigenvalues of curves over finite fields, for all but finitely many primes, and that Igusa removed the exceptional primes (every prime not dividing the level).
+- So for weight 2 the chain appears to be: Weil for curves, then the Eichler-Shimura relation T_l = Frobenius + Verschiebung on Jacobians of modular curves, then Igusa. Deligne's later work is needed for higher weight. Axiom's formalization of the Weil conjectures (AxiomMath/Weil) would supply the first link. The modular-curve geometry and the Eichler-Shimura relation are not in Mathlib.
+- Reduction to primes (hand-derived; the algebra is already in Lean): for a prime l, the Hecke relation T_l T_{l^k} = T_{l^{k+1}} + l T_{l^{k-1}} makes T_{l^k} a Chebyshev polynomial in T_l. If every eigenvalue of T_l on {1, chi}^perp has absolute value at most 2 sqrt(l), then T_{l^k} has norm at most (k+1) l^{k/2}, and multiplicativity for coprime arguments gives tau(m) sqrt(m) for general odd m. So Lemma 3.2 follows from its prime case, which says exactly that the graphs defined by norm-l Hurwitz quaternions on Y_p are Ramanujan graphs, with trivial eigenvalues l+1 and (l/p)(l+1). Stage A4l (StageA4l.lean, standard axioms only) proves this reduction in abstract form: for a family T_n on a finite-dimensional complex inner product space with T_1 = 1, coprime multiplicativity, the prime-power recurrence, T_l self-adjoint and the prime case ||T_l f|| <= 2 sqrt(l) ||f||, it gives ||T_n f|| <= tau(n) sqrt(n) ||f||. Instantiation on {1, chi}^perp inside L^2(Y_p) (invariance of the subspace, the counting inner product, assembling the hypotheses) is pending (stage A4m). The prime case itself remains a named hypothesis.
 
 ## 4. What is and is not in Lean
 
