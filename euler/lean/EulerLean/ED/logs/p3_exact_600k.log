@@ -1,0 +1,2 @@
+odd m<=600000, 3 not | m: 200000 values tested, c(m)!=0 in 52930; exceptions to b_3 = (16/3)(sigma - c): 0 []
+min c(m)/sigma(m) = -0.500000 at m=7  (H31ndvd at p=3 needs >= -1/2)

@@ -1,0 +1,29 @@
+# cross-check of the reduction against brute-force enumeration of Rmix
+  m=  1 p=3: reduction      0  brute      0  OK
+  m=  5 p=3: reduction     32  brute     32  OK
+  m=  7 p=3: reduction     64  brute     64  OK
+  m= 11 p=3: reduction     64  brute     64  OK
+  m= 13 p=3: reduction     64  brute     64  OK
+  m= 17 p=3: reduction     96  brute     96  OK
+  m= 19 p=7: reduction      0  brute      0  OK
+  m= 23 p=7: reduction      0  brute      0  OK
+  m= 29 p=7: reduction     32  brute     32  OK
+  m= 35 p=3: reduction    256  brute    256  OK
+  m= 37 p=7: reduction     96  brute     96  OK
+  m= 41 p=3: reduction    224  brute    224  OK
+  m= 43 p=3: reduction    192  brute    192  OK
+  m= 47 p=7: reduction     64  brute     64  OK
+  ALL OK
+# Part A: p=3, all odd m<=60000, 3 not | m: 20000 values
+  max b_3/(8 sigma) (=b/(24sigma)/(1/3); must stay <1 for H31ndvd at p=3): 1.0000 at m=7
+  mean ratio 0.6666 (main term predicts 2/3 = 0.6667)
+  residual rho = b/(24 sigma) - 2/9: min -0.2222, max +0.1111, mean -0.00001
+  ten largest b_3/(8 sigma): [(7, 1.0), (37, 0.8421), (67, 0.8235), (133, 0.8), (25, 0.7742), (199, 0.76), (73, 0.7568), (31, 0.75), (223, 0.75), (139, 0.7429)]
+  m in [1,100): n=    33 max ratio 1.0000  max|rho| 0.2222
+  m in [100,1000): n=   300 max ratio 0.8000  max|rho| 0.0444
+  m in [1000,10000): n=  3000 max ratio 0.7294  max|rho| 0.0209
+  m in [10000,60000): n= 16667 max ratio 0.6923  max|rho| 0.0085
+
+real	0m1.931s
+user	0m0.895s
+sys	0m0.093s
