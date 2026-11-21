@@ -1,0 +1,76 @@
+# Compiles the ED layer (HPrime implies H31gt3 and Euler for n = 2 mod 4) in dependency order and gates it.
+# Sources: euler/lean/EulerLean/StageA4o.lean, euler/lean/EulerLean/ED/*.lean (Stage83cut.lean included).
+# Fails on: a Lean error, any 'sorry' in the chain, a missing axiom report for euler_1747_of_hprime,
+# or an axiom outside propext / Classical.choice / Quot.sound / the one native_decide axiom.
+# Run on demand: Actions > this workflow > Run workflow.
+name: Euler ED layer (lake build)
+
+on:
+  push:
+    paths:
+      - 'euler/lean/EulerLean/ED/**'
+      - '.github/workflows/euler-ed.yml'
+  workflow_dispatch:
+
+jobs:
+  ed:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Compile the chain in order
+        run: |
+          set -uxo pipefail
+          W=$GITHUB_WORKSPACE/ci_ed
+          mkdir -p $W
+          cp EulerLean/StageA4o.lean $W/
+          cp EulerLean/ED/*.lean $W/
+          rm -f $W/EDa2.lean $W/EDb6test.lean   # scratch files, not in the chain
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
+          for m in StageA4o EDa1 EDa3 EDa4 EDa5 EDa6 EDa7 EDa8 EDa9 EDb1 EDb2 EDb3 EDb4 EDb5 EDb6 Stage83cut EDb7 EDb8 EDb9; do
+            echo "::group::$m"
+            lean -R $W -o $W/$m.olean $W/$m.lean 2>&1 | tee $W/$m.out
+            rc=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            if [ $rc -ne 0 ]; then echo "::error::$m failed (exit $rc)"; exit 1; fi
+          done
+
+      - name: Gate and axiom report
+        run: |
+          set -uxo pipefail
+          W=$GITHUB_WORKSPACE/ci_ed
+          cat > $W/Axioms.lean <<'LEAN'
+          import EDb9
+          #print axioms EDb9.euler_1747_of_hprime
+          #print axioms EDb8.H31gt3_of_hprime
+          LEAN
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
+          lean -R $W $W/Axioms.lean 2>&1 | tee $W/axioms.txt
+          if grep -l "sorry" $W/ED*.out $W/Stage83cut.out 2>/dev/null; then echo "::error::sorry in chain"; exit 1; fi
+          python3 - <<'PY'
+          import re, os, sys
+          w = os.environ['GITHUB_WORKSPACE'] + '/ci_ed'
+          t = open(w + '/axioms.txt').read()
+          ok = {'propext', 'Classical.choice', 'Quot.sound', 'Euler1747.allOk_true._native.native_decide.ax_1_1'}
+          reps = re.findall(r"'([^']+)' depends on axioms: \[(.*?)\]", t, re.S)
+          bad = [(n, a) for n, a in reps if not {x.strip() for x in a.replace('\n', ' ').split(',')} <= ok]
+          out = ['### Euler ED layer', f'axiom reports: {len(reps)}; non-allowed: {len(bad)}', ''] + [f'- `{n}`: {a.strip()}' for n, a in reps]
+          open(os.environ['GITHUB_STEP_SUMMARY'], 'a').write('\n'.join(out) + '\n')
+          if len(reps) < 2 or bad:
+              print('::error::axiom gate failed'); sys.exit(1)
+          PY
