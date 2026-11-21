@@ -130,3 +130,19 @@ Added 2026-11-20. Every row: Lean-kernel checked by the "Euler layer A (latest s
 Hand derivations behind these rows are in A4C_PLAN.md (including its Correction section: one generator per key is not right-stable, so the full norm-l family and the factor 24 are needed).
 
 What this chain does NOT establish. (1) Lemma 3.2, the bound ||T_m|| <= tau(m) sqrt m on the orthogonal complement of span{1, chi}: it needs Jacquet-Langlands and the weight-2 Ramanujan-Petersson bound, neither in Mathlib. The two eigenvalue rows (A4j, A4k) are the two exceptional modes only. (2) Prop 3.1 and H31gt3, which remain the one open hypothesis of Section83.euler_1747_of_H31gt3. (3) Even n for the relations that need a Hecke prime (those use 2 invertible mod l). (4) That chi is nonzero or distinct from the constant function. The finite range n < 64^4 still rests on native_decide, as stated above.
+
+
+## Layer ED: H31gt3 from HPrime (ED/ folder)
+
+Added 2026-11-21. Files ED/EDa1, EDa3 to EDa9, EDb1 to EDb9 compiled one by one against StageA4o and Stage83cut (Stage83 with the namespaces it shares with StageA4o dropped); each returned code 0 with no sorry. Axiom report on the final theorem: propext, Classical.choice, Quot.sound and Euler1747.allOk_true._native.native_decide.ax_1_1. ED/EDa2.lean is unused scratch containing a sorry and is not imported. Compiled in the cloud workspace; not yet run by CI.
+
+| Stage | Statement | Declaration | Status |
+|---|---|---|---|
+| EDa1 | |PGL2(F_p)| = p(p^2-1) | EDa1.card_PGL2_eq | Compiled, standard axioms |
+| EDa9 | 2 |O_p| <= p+1 | EDa9.card_OK_Kp_le | Compiled, standard axioms |
+| EDb6 | alpha = x(1+i)^-1 is injective into Q_m | EDb6.alpha_inj, alpha_mem | Compiled, standard axioms |
+| EDb7 | b_p(2m) <= #{alpha in Q_m : rho(alpha) in K_p} | EDb7.bp_le_S | Compiled, standard axioms |
+| EDb8 | HPrime (Lemma 3.2 for primes, p = 3 mod 4, p > 3) implies Section83.H31gt3 | EDb8.H31gt3_of_hprime | Compiled; conditional on HPrime |
+| EDb9 | HPrime implies Euler's conjecture for n = 2 mod 4 | EDb9.euler_1747_of_hprime | Compiled; conditional on HPrime plus native_decide for n < 64^4 |
+
+What this does NOT establish. HPrime itself (Lemma 3.2 for primes) is unproved and not in Mathlib; it needs the Brandt/Eichler identification with S_2(Gamma_0(p)), Eichler-Shimura and the Weil bound. If HPrime were false for an admissible (p, l) the theorem is vacuous. The hypothesis is restricted to p = 3 mod 4, p > 3, which is exactly the range H31gt3 itself quantifies over (p = 3 mod 4, p not dividing m), so nothing further is lost in the reduction. The finite range still rests on native_decide.

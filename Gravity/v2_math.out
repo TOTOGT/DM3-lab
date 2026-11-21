@@ -1,0 +1,23 @@
+== A. basin boundary r*(z0), bisection, DOP853
+  z0=0.0000  r*=0.7759405755
+  z0=0.6931  r*=0.5722354584
+  z0=1.0000  r*=0.4827697403
+  z0=2.0000  r*=0.2390001194
+  z0=3.0000  r*=0.0974818974
+  z0=4.0000  r*=0.0365284793
+  repo rigorous certificate for z0=0: [0.7759405755019531, 0.7759405755023437] -> rounds to 0.77594058, not ...059
+== B. saddle r_s=0.445042 z_s=1.134596
+  closest approach of the boundary trajectory to the saddle: dist=2.393e-02 at t=14.04
+  Jacobian eigenvalues at saddle: [ 1.49147893+0.j -0.24449932+0.j]  tr= 1.246979603717467  det= -0.3646655852118093  2cos(2pi/7)= 1.2469796037174672
+== C. r*(z0) against the rdot=0 nullcline root rf(z0)
+  z0=0.000 r*=0.77594 rf=1.00000 2e^-z=2.00000
+  z0=0.693 r*=0.57224 rf=0.61803 2e^-z=1.00000
+  z0=1.000 r*=0.48277 rf=0.49285 2e^-z=0.73576
+  z0=2.000 r*=0.23900 rf=0.22158 2e^-z=0.27067
+  z0=3.000 r*=0.09748 rf=0.09125 2e^-z=0.09957
+  z0=4.000 r*=0.03653 rf=0.03538 2e^-z=0.03663
+== D. T1 region: min bracket r(1+r)-2e^-z = 2.22e-16 (>=0), min zdot = 0.2361 (>= 2r-1 >= 0.236>0)
+== E. Hill W Hessian at L1 (x=3^-1/3): [9, 0, 0, -3]  det= -27 -> index-1 Morse saddle (nondegenerate)
+== G. stable manifold of the saddle, branch followed backward in time, crossing of z=0:
+  branch 1 z=0 crossing r= []
+  branch -1 z=0 crossing r= [0.77594057550229]

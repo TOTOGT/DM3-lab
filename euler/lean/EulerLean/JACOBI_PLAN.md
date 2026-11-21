@@ -34,3 +34,6 @@ but the conditional theorem in Euler1747.lean stays conditional either way.
 1. Define the Hurwitz order as a subring of Quaternion Q and prove N multiplicative (Mathlib: Quaternion.normSq).
 2. Step A in Lean (small).  3. Step B (Euclidean).  4. Step C (the bulk, likely many sessions).
 Each step: hand-derive, write Lean, mark untested, you run it, fix against the compiler.
+
+## Update 2026-11-21
+The remaining blocker is now one named hypothesis, HPrime (ED/EDb8.lean): Lemma 3.2 for primes p = 3 mod 4, p > 3. Given it, ED/EDb9.euler_1747_of_hprime proves Euler for n = 2 mod 4 (plus native_decide for n < 64^4). Next: E-D2 (prove HPrime from the cited Brandt/Eichler-Shimura/Weil results), E-E (replace native_decide), E-A (CI).

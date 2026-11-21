@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gravity Across Scales — v1 with corrections today</title>
+<style>
+:root{
+  --bg:#06090f; --bg2:#0b1018; --bg3:#0f1520;
+  --gold:#c9a84c; --gold-dim:#8a6f2e;
+  --nano:#a78bfa; --meso:#34d399; --macro:#38bdf8;
+  --text:#e8e4d8; --dim:#7a8090;
+  --rule:rgba(201,168,76,0.15);
+  --serif:Georgia,serif;
+  --mono:'Courier New',monospace;
+  --sans:'Helvetica Neue',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--serif);background:var(--bg);color:var(--text);font-size:17px;line-height:1.85;}
+
+nav{position:sticky;top:0;z-index:200;background:rgba(6,9,15,.96);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);padding:.6rem 2rem;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
+.nav-logo{font-family:var(--mono);font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);text-decoration:none;}
+.nav-links{display:flex;gap:1.4rem;flex-wrap:wrap;}
+.nav-links a{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--dim);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+
+/* HERO */
+.hero{padding:5rem 2rem 4rem;text-align:center;border-bottom:1px solid var(--rule);position:relative;overflow:hidden;}
+.hero::before{content:'G';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:28rem;font-weight:900;color:rgba(201,168,76,.03);user-select:none;pointer-events:none;
+  font-family:var(--serif);line-height:1;}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1.2rem;}
+.op-chain{font-family:var(--mono);font-size:1rem;letter-spacing:.15em;color:var(--dim);margin-bottom:.8rem;}
+.op-chain .active{color:var(--gold);text-decoration:underline;text-underline-offset:4px;font-weight:bold;}
+.hero-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:400;letter-spacing:.04em;margin-bottom:1rem;}
+.hero-title em{color:var(--gold);font-style:normal;}
+.hero-sub{font-size:1.05rem;color:var(--dim);max-width:680px;margin:0 auto 2rem;font-style:italic;}
+.scale-badges{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;}
+.sbadge{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;padding:.4rem 1rem;
+  border-radius:2px;border:1px solid;text-transform:uppercase;}
+.sbadge.nano{border-color:rgba(167,139,250,.4);color:var(--nano);background:rgba(167,139,250,.06);}
+.sbadge.meso{border-color:rgba(52,211,153,.4);color:var(--meso);background:rgba(52,211,153,.06);}
+.sbadge.macro{border-color:rgba(56,189,248,.4);color:var(--macro);background:rgba(56,189,248,.06);}
+
+/* CONTENT */
+.content{max-width:820px;margin:0 auto;padding:3.5rem 2rem 5rem;}
+h2{font-size:1.35rem;font-weight:400;color:var(--gold);margin:3.5rem 0 1rem;letter-spacing:.06em;}
+h3{font-size:1.05rem;font-weight:600;color:var(--text);margin:2rem 0 .6rem;}
+p{margin-bottom:1.2rem;}
+.gold-rule{border:none;border-top:1px solid var(--gold-dim);margin:2.5rem 0;opacity:.35;}
+
+/* SCALE PANELS */
+.scale-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;margin:2rem 0;}
+.scale-panel{border-radius:6px;padding:1.4rem;border:1px solid;}
+.scale-panel.nano{border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.04);}
+.scale-panel.meso{border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.04);}
+.scale-panel.macro{border-color:rgba(56,189,248,.25);background:rgba(56,189,248,.04);}
+.scale-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:.8rem;}
+.scale-panel.nano .scale-label{color:var(--nano);}
+.scale-panel.meso .scale-label{color:var(--meso);}
+.scale-panel.macro .scale-label{color:var(--macro);}
+.scale-size{font-family:var(--mono);font-size:1.1rem;font-weight:bold;margin-bottom:.4rem;}
+.scale-panel.nano .scale-size{color:var(--nano);}
+.scale-panel.meso .scale-size{color:var(--meso);}
+.scale-panel.macro .scale-size{color:var(--macro);}
+.scale-desc{font-size:.82rem;color:var(--dim);line-height:1.7;}
+
+/* OPERATOR TABLE */
+.op-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.85rem;}
+.op-table th{font-family:var(--sans);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--dim);padding:.5rem .7rem;border-bottom:1px solid var(--rule);text-align:left;}
+.op-table td{padding:.55rem .7rem;border-bottom:1px solid rgba(201,168,76,.07);line-height:1.6;vertical-align:top;}
+.op-table tr:last-child td{border-bottom:none;}
+.op-name{font-family:var(--mono);font-size:.9rem;font-weight:bold;}
+.op-name.C{color:#4a9eff;}
+.op-name.K{color:#e05a3a;}
+.op-name.F{color:#50c878;}
+.op-name.U{color:#c084fc;}
+.op-name.E{color:var(--gold);}
+.nano-col{color:var(--nano);}
+.meso-col{color:var(--meso);}
+.macro-col{color:var(--macro);}
+
+/* MATH BLOCKS */
+.math{font-family:var(--mono);font-size:.9rem;color:var(--gold);
+  background:rgba(201,168,76,.06);border-left:3px solid var(--gold-dim);
+  padding:.7rem 1rem;margin:1rem 0;border-radius:0 4px 4px 0;line-height:1.6;}
+.math.nano{color:var(--nano);background:rgba(167,139,250,.06);border-color:rgba(167,139,250,.4);}
+.math.meso{color:var(--meso);background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.4);}
+.math.macro{color:var(--macro);background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.4);}
+
+/* THEOREM / INSIGHT BOXES */
+.theorem{background:var(--bg3);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;
+  padding:1.2rem 1.5rem;margin:1.5rem 0;}
+.theorem-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:var(--gold);
+  text-transform:uppercase;margin-bottom:.5rem;}
+.theorem-label.nano{color:var(--nano);}
+.theorem-label.meso{color:var(--meso);}
+.theorem-label.macro{color:var(--macro);}
+.theorem.nano{border-color:var(--nano);}
+.theorem.meso{border-color:var(--meso);}
+.theorem.macro{border-color:var(--macro);}
+.theorem p{margin-bottom:.4rem;font-size:.92rem;}
+
+/* G-SERIES LADDER */
+.g-ladder{display:flex;flex-direction:column;gap:0;margin:1.5rem 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+.g-rung{display:grid;grid-template-columns:80px 1fr 1fr 1fr;border-bottom:1px solid var(--rule);padding:.5rem .8rem;align-items:center;gap:.5rem;}
+.g-rung:last-child{border-bottom:none;}
+.g-rung.head{background:rgba(201,168,76,.06);}
+.g-n{font-family:var(--mono);font-size:.8rem;font-weight:bold;color:var(--gold);}
+.g-scale{font-family:var(--mono);font-size:.75rem;color:var(--dim);}
+.g-nano{font-size:.78rem;color:var(--nano);}
+.g-meso{font-size:.78rem;color:var(--meso);}
+.g-macro{font-size:.78rem;color:var(--macro);}
+
+/* OPEN / STATUS */
+.open-box{background:rgba(249,115,22,.05);border:1px solid rgba(249,115,22,.2);
+  border-radius:4px;padding:1rem 1.2rem;margin:1.5rem 0;}
+.open-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:#f97316;
+  text-transform:uppercase;margin-bottom:.4rem;}
+
+/* NAV PREV/NEXT */
+.chapter-nav{display:flex;justify-content:space-between;margin-top:4rem;
+  padding-top:1.5rem;border-top:1px solid var(--rule);}
+.chapter-nav a{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;
+  color:var(--dim);text-decoration:none;transition:color .2s;}
+.chapter-nav a:hover{color:var(--gold);}
+
+  .prov-add{display:inline-block;margin-top:.5rem;opacity:.9;font-size:.95em;}
+  .prov-add a{color:inherit;text-decoration:underline;text-underline-offset:2px;}
+  footer.prov-foot{margin-top:3rem;padding:2rem 1.5rem;border-top:1px solid currentColor;
+    font-size:.72rem;line-height:1.8;opacity:.85;text-align:center;}
+  footer.prov-foot a{color:inherit;text-decoration:underline;text-underline-offset:2px;}
+</style>
+
+<style>
+.today,.added{border-radius:0 6px 6px 0;padding:1.1rem 1.4rem;margin:1.6rem 0;font-size:.93rem;line-height:1.75;}
+.today{background:rgba(249,171,40,.07);border-left:4px solid #f5a623;}
+.added{background:rgba(56,189,248,.06);border-left:4px solid #38bdf8;}
+.box-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.6rem;}
+.today .box-label{color:#f5a623;} .added .box-label{color:#38bdf8;}
+.today h4,.added h4{font-family:var(--sans);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:.9rem 0 .2rem;font-weight:600;}
+.today p,.added p{margin-bottom:.55rem;font-size:.93rem;}
+.today table,.added table{display:block;overflow-x:auto;width:100%;border-collapse:collapse;font-size:.8rem;margin:.6rem 0;}
+.today th,.today td,.added th,.added td{border:1px solid var(--rule);padding:.35rem .5rem;text-align:left;vertical-align:top;}
+.today th,.added th{font-family:var(--sans);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.chk{font-family:var(--mono);font-size:.74rem;color:var(--dim);}
+.tilde{display:inline-block;transform:translateY(-.55em);font-size:.8em;}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;margin:.6rem 0 1rem;}
+.legend span{padding:.2rem .6rem;border:1px solid;border-radius:3px;}
+.legend .l1{border-color:#f5a623;color:#f5a623;} .legend .l2{border-color:#38bdf8;color:#38bdf8;} .legend .l3{border-color:var(--gold-dim);color:var(--gold);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">⚜ Principia Orthogona ⚜</a>
+  <div class="nav-links">
+    <a href="chPI-recurrence.html">π</a>
+    <a href="ch9-phi.html">φ</a>
+    <a href="chMu-lyapunov.html">μ</a>
+    <a href="chEta-tribonacci.html">η</a>
+    <a href="chDelta-tetranacci.html">Δ</a>
+    <a href="chOmega-hexabonacci.html">Ω</a>
+    <a href="chT-tubulin.html">T</a>
+    <a href="chW-wigner.html">W</a>
+    <a href="chE-gtct.html">E</a>
+    <a href="ch16-scale.html">Scale</a>
+    <a href="impa-portal.html">Purchase</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="eyebrow">Principia Orthogona · Gravity Chapter</div>
+  <div class="op-chain">
+    G = U ∘ F ∘ K ∘ C &nbsp;·&nbsp;
+    <span class="active">Nano → Meso → Macro</span>
+  </div>
+  <h1 class="hero-title">
+    Gravity Across Scales:<br>
+    <em>Nano · Meso · Macro</em>
+  </h1>
+  <p class="hero-sub">
+    The same operator chain G = U∘F∘K∘C runs at every scale — from the string worldsheet
+    at the Planck length to the helical attractor in a rotating electromagnetic system.
+    The g-series g⁰→g⁶⁴ is the bridge. The limit cycle T* = 2π is the fixed point that locks them together.
+  </p>
+  <div class="scale-badges">
+    <span class="sbadge nano">Nano · 10⁻³⁵ m · Worldsheet · ADE · Sasakian</span>
+    <span class="sbadge meso">Meso · 10⁻¹⁵ m · Nuclear · SU(3) · QCD</span>
+    <span class="sbadge macro">Macro · 10⁻³ – 10¹ m · Electromagnetic · r* · Levitation</span>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="content">
+  <div class="added"><div class="box-label">Read this first · how this page is built</div><p>The chapter below is the first version, <strong>unchanged</strong>. Nothing was deleted. Where we would write something differently today, an amber box follows the passage and says what we would change, why, and what checked it. Blue boxes are material added in this revision. The August 2026 addendum (WP70) at the end of the chapter is the earlier example of the same practice.</p>
+<div class="legend"><span class="l3">v1 text, as published</span><span class="l1">correction today</span><span class="l2">added in v2</span></div>
+<h4>For students: two documents, two jobs</h4>
+<p>The chapter is the <strong>presentation version</strong>: it is written to make you want to climb, from the string worldsheet to Milkomeda, and it is kept as it was. The amber boxes show the other half of the craft, how a published claim is audited and corrected in the open. The <strong>paper version</strong> (<code>GRAVITY_V2_DRAFT.md</code>, for Zenodo) is the template for how to write a paper: a header that says which cut and which axis; every claim labelled proved, checked, proposed or empty; every number produced by a script kept beside it; a limits section that says what was not checked; and a disclosure of how the text was made. Read the chapter for the view, and the paper for the method.</p>
+<h4>What this chapter is for</h4>
+<p>The operator chain G = U∘F∘K∘C and the g-series are <strong>taxonomies</strong>. They give each phenomenon a place and an anchor, so that what is understood about a phenomenon in one domain or at one scale can be carried to another. They are not a new law of gravity. An entry in the chain is an <em>anchor</em>: the known structure on one side (a law, threshold, fold, measured quantity) and the operator slot it occupies on the other. Anchors are marked <strong>strong</strong> (the known side is checked), <strong>proposed</strong> (the slot reading is a proposal) or <strong>empty</strong> (no known structure written down yet).</p>
+<h4>The cut</h4>
+<p>This chapter: contact-geometric; axis: length, 10⁻³⁵ m to 10²² m, which is 57 orders of magnitude (the exponent difference). Other volumes cut the same material other ways (the first paper was symplectic; the Coherence Bridge pages speak of “17 orders of magnitude” across 12+ domains). Those are different cuts and their figures are not comparable to this one; the repository does not derive the 17 from a length range, so we do not use it here.</p>
+<p>The cuts nest by parity. Symplectic manifolds are even-dimensional and contact manifolds are odd-dimensional, and a contact manifold fibres over a symplectic base, the Reeb direction being the extra coordinate. This chapter’s (ℝ³, α) is the line bundle over the plane (x, y) with symplectic form dα = −2 dx∧dy: 3 = 2 + 1 (checked, sympy). Nothing can be dynamic without time, and the fibre coordinate z, twice the accumulated area, is a clock along each orbit; the dm³ tilde marks that role. The author’s statement is that the next case is 4 + t = 5: a four-dimensional (even, symplectic) base with time as the fibre, a five-dimensional (odd, contact) space, a modified Kaluza–Klein structure. Already in three dimensions the Sasakian metric of the box on Sasakian geometry below has Kaluza–Klein form, (dz − A)² + dx² + dy² with A = x dy − y dx, whose field strength F = dA = 2 dx∧dy is a uniform field on the base (checked). The five-dimensional case is not worked out here: which four-dimensional base, and whether its fibre coordinate is physical time, are open.</p>
+<h4>The dm³ tilde</h4>
+<p>The framework is named dm³, and its mark carries a tilde. The dm³ tilde says that the objects of study are in motion, which needs time: thresholds such as r*(z) and d/r<sub>H</sub> move as the system moves. A fold is not a place; it is where the system is heading or has passed.</p>
+<h4>Provenance and responsibility</h4>
+<p>Several earlier papers in this series were machine-condensed from larger source files, and figures in them were not always traced back. This revision recomputes every number it states with scripts kept beside it (<code>v2_math.py</code>, <code>moon_hill_roche.py</code>, <code>hill_stability.py</code>, <code>audit_gravity_scales.py</code>, <code>gravity_law_reading.py</code>). An AI assistant (Claude, Sonnet 5.5) drafted text and wrote the scripts; the claims and their responsibility are the author’s. No independent referee has read this chapter.</p></div>
+
+
+  <h2>The Central Conjecture</h2>
+  <p><strong>Conjecture (not a theorem):</strong> gravity can be read as a geometric identity — the same identity at every scale — expressed through the contact condition α = 0. What is established here is the geometry of the contact condition itself. On the contact 3-manifold (ℝ³, α = dz − r²dθ), the condition α = 0 reads:</p>
+  <div class="math">dz = r² dθ &nbsp;·&nbsp; vertical lift = angular momentum</div>
+  <p>This holds at the Planck scale (where it encodes the Hopf fiber of the M-theory circle), at the nuclear scale (where it encodes the color confinement geometry of SU(3)), and at the electromagnetic scale (where it determines the stable levitation gap r* = 0.77594058). The <strong>same equation</strong> — three substrates — nobody talking to each other.</p>
+  <div class="today"><div class="box-label">Today’s correction · the contact condition and the value of r*</div><h4>What the page says</h4><p>The condition dz = r²dθ “holds at the Planck scale, the nuclear scale and the electromagnetic scale”, and determines the levitation gap r* = 0.77594058.</p><h4>What we would change today</h4><p>Say precisely what dz = r²dθ is: Kepler’s second law. For a planar central-force motion with h = r²θ̇, taking z to be twice the swept area gives ż = h, so α = 0 along every such motion. It holds for every central force and carries no information about gravity itself. The solid, checkable fact is scale-freedom of the form: under r → λr, z → λ²z, α → λ²α, so ker α is unchanged. Keep r* = 0.77594058 (correct rounding of the certified interval [0.7759405755019531, 0.7759405755023437]; the PDF’s …059 is a slip), but state that it is the value at z₀ = 0 only: r*(0) = 0.7759, r*(log 2) = 0.5722, r*(1) = 0.4828, r*(2) = 0.2390, r*(3) = 0.0975, r*(4) = 0.0365. The boundary is a curve. The levitation experiment itself was not examined.</p><h4>Why</h4><p>The curve is the moving threshold the tilde stands for. The curve is the moving threshold the dm³ tilde stands for; a single constant read from one slice presents a moving boundary as fixed.</p><p class="chk">Checked by: <code>audit_gravity_scales.py</code>, <code>v2_math.py</code> sections A and C; the repo’s interval certificate <code>certify_rstar_rigorous.py</code>.</p></div>
+
+  <p><strong>What would turn this conjecture into a theorem.</strong> It needs three things, none of which this chapter yet provides: (1) a precise gravitational object — a Lorentzian metric or an affine connection — together with a stated field equation; (2) an explicit map from the contact form α to that object, for example through a Sasakian metric; (3) a check that the map recovers known behaviour (Newtonian or Schwarzschild) in a stated limit. Until then, the contact condition is a statement about curves on a contact manifold, not a law of gravitation.</p>
+  <div class="today"><div class="box-label">Today’s correction · what would make this a theorem</div><h4>What the page says</h4><p>Three things are needed to turn the conjecture into a theorem: a Lorentzian metric with a field equation, a map from α to it, and a recovery of Newton or Schwarzschild.</p><h4>What we would change today</h4><p>Reframe the task. The chain does not propose a new law; it reads laws that are already known. The three needs become three parts of an anchor: (1) the gravitational object is supplied by the law being read (the Schwarzschild solution, the Newton–Poisson equation), not by dm³; (2) the “map” is the dictionary entry, with both sides written down; (3) the check is that the known structure is reproduced, entry by entry. The field being read is the 3-manifold itself: α is the potential 1-form and dα its field strength.</p><h4>Why</h4><p>The framework is a taxonomy with anchors (author’s statement). Lovelock’s theorem and Hawking–Ellis fix what the known laws are: the only second-order local equations from a 4D metric action are Einstein’s, and small bodies follow timelike geodesics. A taxonomy has to match those, not replace them.</p><p class="chk">Checked by: <code>GRAVITY_LAW_READING.md</code>; dα = −2 dx∧dy and α∧dα = −2 dz∧dx∧dy ≠ 0 (sympy).</p></div>
+
+
+  <div class="scale-grid">
+    <div class="scale-panel nano">
+      <div class="scale-label">Nano Scale</div>
+      <div class="scale-size">10⁻³⁵ m</div>
+      <p class="scale-desc">Planck length. String worldsheet. ADE singularities govern the gauge group. Sasakian geometry. The Hopf fiber direction ∂_z is the M-theory circle. T-duality self-dual point at R = 1.</p>
+    </div>
+    <div class="scale-panel meso">
+      <div class="scale-label">Meso Scale</div>
+      <div class="scale-size">10⁻¹⁵ m</div>
+      <p class="scale-desc">Nuclear / hadronic scale. The A₂ singularity in the F operator hierarchy selects SU(3) — the gauge group of QCD. Confinement = fold. Hadronization = Whitney A₂ singularity.</p>
+    </div>
+    <div class="scale-panel macro">
+      <div class="scale-label">Macro Scale</div>
+      <div class="scale-size">10⁻³ – 10¹ m</div>
+      <p class="scale-desc">Electromagnetic / laboratory scale. The Whitney A₁ fold at r* = 0.77594058 is the stable levitation gap. The limit cycle Γ = {r=1, θ̇=1, ż=1} is the helical attractor. Observable. Certifiable.</p>
+    </div>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>The Operator Chain at Each Scale</h2>
+  <p>The operator chain G = U∘F∘K∘C is read across scales below by an identification at each level. These are proposed identifications, not derivations; the operators carry across fields, while constants and mechanisms do not:</p>
+
+  <table class="op-table">
+    <thead>
+      <tr>
+        <th>Operator</th>
+        <th>dm³ Role</th>
+        <th class="nano-col">Nano (Worldsheet)</th>
+        <th class="meso-col">Meso (Nuclear / QCD)</th>
+        <th class="macro-col">Macro (Electromagnetic)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="op-name C">C</span></td>
+        <td>Lipschitz compression</td>
+        <td class="nano-col">Level truncation in Witten's cubic string field theory — projection to finite-dimensional subspace of string Hilbert space</td>
+        <td class="meso-col">Color averaging — SU(3) Wilson loop compressed to gauge-invariant observables</td>
+        <td class="macro-col">Field compression — radial averaging from r to the effective basin coordinate</td>
+      </tr>
+      <tr>
+        <td><span class="op-name K">K</span></td>
+        <td>Curvature induction toward κ*</td>
+        <td class="nano-col">Worldsheet kinetic operator ∂² — selects on-shell configurations, the string equation of motion</td>
+        <td class="meso-col">Confinement threshold — driving quark separation toward the string-breaking distance</td>
+        <td class="macro-col">Basin threshold κ* = √(7/9) ≈ 0.882 — the curvature induction boundary in the contact ODE</td>
+      </tr>
+      <tr>
+        <td><span class="op-name F">F</span></td>
+        <td>Whitney fold A₁–A₃</td>
+        <td class="nano-col">String interaction vertex: A₁ = emission, A₂ = splitting, A₃ = four-string junction. ADE singularity hierarchy in scattering amplitudes.</td>
+        <td class="meso-col">Hadronization fold: A₂ singularity selects SU(3) gauge group (McKay correspondence). Confinement/deconfinement transition.</td>
+        <td class="macro-col">Whitney A₁ fold at r* = 0.77594058 — the stable levitation gap, the corona discharge threshold</td>
+      </tr>
+      <tr>
+        <td><span class="op-name U">U</span></td>
+        <td>Gradient descent to stable branch</td>
+        <td class="nano-col">BRST cohomology — descending to a Q-closed representative after interaction; finding the physical state</td>
+        <td class="meso-col">Descent to stable hadron ground state after the confinement fold</td>
+        <td class="macro-col">Convergence to the unit helix Γ: r → 1, ż → 1, exponential rate μ = −2</td>
+      </tr>
+      <tr>
+        <td><span class="op-name E">E</span></td>
+        <td>Entropic boundary / generative circuit</td>
+        <td class="nano-col">D-brane boundary conditions: E selects trajectories with ż → 0⁺ — exactly a Neumann boundary condition in the z-direction. E defines a D-brane.</td>
+        <td class="meso-col">Nuclear surface: the boundary of color confinement, where quarks end</td>
+        <td class="macro-col">The levitation equilibrium surface: ż = 0 at the attractor — the disc floats at constant z</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="today"><div class="box-label">Today’s correction · the F and U rows, macro column</div><h4>What the page says</h4><p>F: “Whitney A₁ fold at r* = 0.77594058”. U: convergence to the unit helix with exponential rate μ = −2.</p><h4>What we would change today</h4><p>F: replace “Whitney A₁ fold of a map” by “stable manifold of a hyperbolic saddle”. The reduced system has one saddle at r<sub>s</sub> = 2cos(3π/7) = 0.4450, z<sub>s</sub> = 1.1346, with eigenvalues 1.4915 and −0.2445, tr J = 2cos(2π/7) and det J = −0.3647. Followed backward in time along its stable direction, the saddle’s stable manifold crosses z = 0 at r = 0.7759405755, agreeing with the bisection value to ten digits. So the basin boundary is that manifold (numerically; not a proof). The A₁-fold wording is withdrawn because the asymptotic map is 1 on one side of r* and undefined on the other, so it has no derivative to vanish. U: proved on the region D = {r ≥ (√5−1)/2, z ≥ log 2}, which is forward invariant with V̇ ≤ 0 and ż ≥ 0.236; the rate tends to −2 as z → ∞. The bound with constant 1 is not proved. The K row’s κ* = √(7/9) was not checked.</p><h4>Why</h4><p>A fold is a property of a map, a saddle’s stable manifold is a property of a flow, and the second is what the numerics show. The trace identity tr J = 2cos(2π/7) is exact and stands.</p><p class="chk">Checked by: <code>v2_math.py</code> sections B, D, G; the roots 2cos(kπ/7) of x³ − x² − 2x + 1 (discriminant 49) are exact.</p></div>
+
+
+  <hr class="gold-rule"/>
+
+  <h2>T-Duality: T* = 2π is Not Decorative</h2>
+  <p>The proved invariant T* = 2π of the dm³ limit cycle has an exact counterpart in string physics. A string compactified on a circle of radius R has:</p>
+  <div class="math nano">Winding modes: periodicity 2πR &nbsp;·&nbsp; Momentum modes: periodicity 2π/R</div>
+  <p>At R = 1 (in α' = 1 units), the theory is <strong>T-self-dual</strong>: R ↔ 1/R maps the theory to itself. T* = 2π corresponds to exactly R = 1 — the limit cycle of the dm³ system sits at the T-duality fixed point.</p>
+  <div class="theorem nano">
+    <div class="theorem-label nano">T-Duality Fixed Point</div>
+    <p><strong>T* = 2π &nbsp;⟺&nbsp; R = 1</strong> (in α' = 1 units). The dm³ limit cycle is the T-self-dual configuration.</p>
+    <p>The stability radii ε₀ = 1/3 and r* ≈ 0.77594058 bound a basin around R = 1. Trajectories outside ε₀ are attracted back (winding and momentum modes are exchanged, but the theory remains equivalent). Trajectories inside r* escape toward R → 0 — the decompactification limit, the color-deconfinement analog.</p>
+  </div>
+
+  <div class="today"><div class="box-label">Today’s correction · T-duality</div><h4>What the page says</h4><p>T* = 2π is “not decorative”: it is the T-self-dual radius R = 1, and the limit cycle sits at the T-duality fixed point.</p><h4>What we would change today</h4><p>Keep Buscher’s theorem and the proved invariant T* = 2π, but drop the identification as stated. T* is the period of θ in the dm³ cycle. The self-dual radius is R = √α′, so “R = 1” is a choice of units, and 2πR = 2π then holds by construction: the agreement is built into the units, not found. Present it as an analogy that would need a stated map between the two circles.</p><h4>Why</h4><p>An equality that follows from a unit choice cannot count as evidence for the identification.</p><p class="chk">Checked by: Reading of the claim; no script, since there is nothing to recompute.</p></div>
+<hr class="gold-rule"/>
+
+  <h2>ADE Singularities: The F Operator Hierarchy Is Not Accidental</h2>
+  <p>The classification of the dm³ fold operator F by Whitney singularities A₁ → A₂ → A₃ matches exactly the ADE singularity classification that governs gauge groups in superstring compactifications (Type IIA on ℂ²/Γ orbifolds):</p>
+
+  <div class="scale-grid">
+    <div class="scale-panel nano">
+      <div class="scale-label">A₁ Singularity</div>
+      <div class="scale-size">SU(2)</div>
+      <p class="scale-desc">Whitney fold (standard). The dm³ levitation gap r* — the macro-scale observable. At nano scale: SU(2) gauge theory on the worldvolume (McKay correspondence).</p>
+    </div>
+    <div class="scale-panel meso">
+      <div class="scale-label">A₂ Singularity</div>
+      <div class="scale-size">SU(3)</div>
+      <p class="scale-desc">Whitney cusp. Nuclear matter / QCD. SU(3) is the gauge group of the strong force. The Conjecture 3.1 physical identification — confinement/hadronization — is an A₂ fold event. This is the right singularity for the right gauge group.</p>
+    </div>
+    <div class="scale-panel macro">
+      <div class="scale-label">A₃ Singularity</div>
+      <div class="scale-size">SU(4) / Sp(2)</div>
+      <p class="scale-desc">Whitney swallowtail. The next gauge group in the ADE ladder. In dm³ terms: the four-string junction, the transition from three-body to four-body confinement.</p>
+    </div>
+  </div>
+
+  <div class="theorem meso">
+    <div class="theorem-label meso">McKay Correspondence (Theorem — not conjecture)</div>
+    <p>For each finite subgroup Γ ⊂ SU(2), the minimal resolution of ℂ²/Γ gives an ADE Dynkin diagram. The gauge group emerging from Type IIA string theory on ℂ²/Γ is the corresponding ADE Lie group. The dm³ F-operator hierarchy A₁→A₂→A₃ is the same hierarchy. The physical identification of F with the confinement transition in SU(3) QCD (A₂) is therefore not incidental — it follows from the ADE structure.</p>
+  </div>
+
+  <div class="today"><div class="box-label">Today’s correction · ADE and the fold hierarchy (including a correction to our own audit note)</div><h4>What the page says</h4><p>The Whitney hierarchy A₁ → A₂ → A₃ matches exactly the ADE classification that gives SU(2) → SU(3) → SU(4).</p><h4>What we would change today</h4><p>Two separate things were run together. (a) The McKay correspondence is a theorem and stands. (b) The labels A₁, A₂, A₃ do coincide legitimately: Arnold’s simple singularities x<sup>k+1</sup> (fold, cusp, swallowtail) and the Kleinian singularities ℂ²/ℤ<sub>k+1</sub> are the same A<sub>k</sub> in the ADE list, the second being the zero set of the first stabilised by two squares. Our first audit note called this “different objects”, which was too strong and is corrected here. What is not shown is the physical step: that a dm³ fold at the nuclear scale selects SU(3). That is a proposal.</p><h4>Why</h4><p>The shared label is a real mathematical relation; the gauge-group assignment at a given scale is a physical identification that needs its own argument.</p><p class="chk">Checked by: Reading and correction of <code>AUDIT_GravityScales.md</code>; not machine-checked.</p></div>
+<hr class="gold-rule"/>
+
+  <h2>Sasakian Geometry: The Unifying Language</h2>
+  <p>A manifold is <strong>Sasakian</strong> if its metric cone is Kähler. This is the odd-dimensional analog of Kähler geometry — and it is the natural home of the contact structure α = dz − r²dθ.</p>
+  <ul style="margin:.8rem 0 1.2rem 1.5rem;line-height:2;">
+    <li>S³ is Sasakian. Its metric cone is ℂ² \ {0}, which is Kähler.</li>
+    <li>The dm³ manifold (ℝ³, α = dz − r²dθ) is a local model of a Sasakian 3-manifold.</li>
+    <li>Superstring compactifications on Sasakian manifolds (especially Sasaki-Einstein spaces S⁵, T^{1,1}) are the backbone of AdS/CFT.</li>
+    <li>The Reeb flow ∂_z in dm³ generates the S¹ action that makes the manifold Sasakian — and is the Hopf fiber direction / M-theory circle.</li>
+  </ul>
+  <div class="theorem">
+    <div class="theorem-label">Sasakian Identification (Open Problem F.5)</div>
+    <p>The QCD vacuum geometry — if Sasakian — connects the dm³ framework directly to the AdS₅ × SE₅ family in AdS/CFT. Showing that the α_QCD construction produces a Sasakian manifold would make the contact geometry of the dm³ limit cycle a literal string background. This is the deepest open problem in the series.</p>
+  </div>
+
+  <div class="today"><div class="box-label">Today’s correction · Sasakian geometry</div><h4>What the page says</h4><p>(ℝ³, α = dz − r²dθ) is a local model of a Sasakian 3-manifold with Reeb field ∂<sub>z</sub>.</p><h4>What we would change today</h4><p>The statement is true and can be made global and explicit. In Cartesian form α = dz − (x dy − y dx). Take g = α⊗α + dx² + dy². Then g(∂<sub>z</sub>, ·) = α, the coefficients do not depend on z so ∂<sub>z</sub> is Killing, the frame e₁ = ∂<sub>x</sub> − y∂<sub>z</sub>, e₂ = ∂<sub>y</sub> + x∂<sub>z</sub> spans ker α and is orthonormal, and dα(e₁, e₂) = −2. A K-contact structure in dimension 3 is Sasakian (Blair). The earlier proof in the PDF, which cites Gray stability for compact manifolds, does not apply to ℝ³ and is replaced by this.</p><h4>Why</h4><p>This is shorter and covers all of ℝ³, not a neighbourhood. Whether the QCD vacuum geometry is Sasaki–Einstein (Open Problem F.5) is untouched.</p><p class="chk">Checked by: sympy: det g = 1; g(ξ,·) = α; ∂<sub>z</sub>g = 0; α(e₁) = α(e₂) = 0; g(e<sub>i</sub>,e<sub>j</sub>) = δ<sub>ij</sub>. The step “K-contact ⇒ Sasakian in dimension 3” is cited, not re-derived.</p></div>
+<hr class="gold-rule"/>
+
+  <h2>The g-Series: Nano to Macro in 64 Steps</h2>
+  <p>The g-series g⁰ → g⁶⁴ is the scale ladder. Each step is a renormalization group transformation: the coupling constants {gᵢ} → {gᵢ'} under rescaling by factor b. The fixed point of this flow is G itself — the operator chain is scale-invariant.</p>
+
+  <div class="g-ladder">
+    <div class="g-rung head">
+      <span class="g-n">Level</span>
+      <span class="g-scale">Scale</span>
+      <span class="g-nano">Nano physics</span>
+      <span class="g-macro">Macro physics</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁰ – g⁴</span>
+      <span class="g-scale">10⁻³⁵ – 10⁻³¹ m</span>
+      <span class="g-nano">Planck scale · string worldsheet · Sasakian geometry</span>
+      <span class="g-macro">—</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁵ – g⁸</span>
+      <span class="g-scale">10⁻³¹ – 10⁻²⁵ m</span>
+      <span class="g-nano">ADE singularities · gauge group emergence · T-duality</span>
+      <span class="g-macro">—</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁶ (seed)</span>
+      <span class="g-scale">—</span>
+      <span class="g-nano">Minimum viable seed · cajueiro point · first stable basin</span>
+      <span class="g-macro">—</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g¹⁶ – g³²</span>
+      <span class="g-scale">10⁻¹⁸ – 10⁻¹² m</span>
+      <span class="g-nano">Electroweak / QCD transition · SU(3) A₂ fold</span>
+      <span class="g-meso">Confinement · nuclear force · hadronic matter</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g³² – g⁴⁸</span>
+      <span class="g-scale">10⁻¹² – 10⁻⁶ m</span>
+      <span class="g-nano">—</span>
+      <span class="g-meso">Atomic / molecular · Whitney A₁ appears · r* emerges</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁶⁴ (saturated)</span>
+      <span class="g-scale">10⁻³ – 10¹ m</span>
+      <span class="g-nano">—</span>
+      <span class="g-macro">r* = 0.77594058 certified · helical attractor · levitation gap · stable band</span>
+    </div>
+    <div class="g-rung" style="background:rgba(56,189,248,.04);">
+      <span class="g-n" style="color:#38bdf8;">g⁹⁶</span>
+      <span class="g-scale" style="color:#38bdf8;">10⁹ – 10²² m</span>
+      <span class="g-nano" style="color:var(--dim);">—</span>
+      <span class="g-macro" style="color:#38bdf8;">Planetary orbits · Hill sphere = Whitney A₁ fold at galactic scale · Milkomeda merger (~4.5 Gyr) = two g⁹⁶ limit cycles whose basins overlap</span>
+    </div>
+    <div class="g-rung" style="background:rgba(201,168,76,.04);">
+      <span class="g-n" style="color:#f97316;">g⁶⁴ → matrix</span>
+      <span class="g-scale" style="color:var(--dim);">Saturation boundary</span>
+      <span class="g-nano" style="color:#f97316;">Scalar g-series → matrix G_ij where each entry is a full g⁰→g⁶⁴ cycle. Non-commutative. Quantum gravity re-enters.</span>
+      <span class="g-macro" style="color:#f97316;">Open — the saturation boundary is where nano and macro close the loop.</span>
+    </div>
+  </div>
+
+  <div class="open-box">
+    <div class="open-label">Open: The g64 Matrix Extension</div>
+    <p style="font-size:.9rem;">At g64 (saturated form), the scalar g-series can no longer capture the full physics. The next level is matrix-valued: G_matrix = [g_ij] where each entry is a full g⁰→g⁶⁴ scalar cycle. This is the dm³ analog of the BFSS matrix model (D0-brane matrix quantum mechanics), where quantum gravity emerges from the matrix mechanics at Planck scale. The scalar series expands into a matrix at the saturation boundary — the nano and macro scales close the loop.</p>
+  </div>
+
+  <div class="today"><div class="box-label">Today’s correction · the g-series ladder</div><h4>What the page says</h4><p>Levels g⁰ … g⁹⁶ are listed with scale ranges, and g⁶⁴ is the saturated level with r* “certified”.</p><h4>What we would change today</h4><p>State the cut and its arithmetic: 10⁻³⁵ m to 10²² m is 57 orders. The listed rows cover only 39 of them (4 + 6 + 6 + 6 + 4 + 13); the gaps (10⁻²⁵ to 10⁻¹⁸, 10⁻⁶ to 10⁻³, 10¹ to 10⁹) are unlisted levels, not claims. The table does not give the scale factor b of the renormalisation step, and the row spans imply a non-uniform one (about 1 order per step in g⁰–g⁴, about 0.4 in g¹⁶–g³²), so the fixed-point reading needs b stated. Mark each rung with a strength: g⁶⁴: the number r*(0) is certified, the levitation reading is proposed; g¹⁶–g³²: proposed; g⁹⁶: proposed (see the Hill box below); others: empty or conjecture, as labelled.</p><h4>Why</h4><p>A reader following a claim across 57 orders must be able to see which rungs carry weight. Empty rungs are empty slots, not failed predictions.</p><p class="chk">Checked by: Arithmetic from the table in this chapter.</p></div>
+<hr class="gold-rule"/>
+
+  <h2>From Cajueiros to Nebulas</h2>
+  <p>The cajueiro (cashew tree) grows one seed — then overshoots, hits resistance, finds a new lock point, branches, and each branch becomes a new g⁶ seed. One tree becomes a forest. The pattern is the g-series cycle: seed → overshoot → resistance → lock → branch → new seed.</p>
+  <p>A nebula does the same thing at g⁹⁶. A gas cloud overshoots its self-gravity threshold, collapses, hits radiation pressure resistance, locks into a protostellar core at the Whitney fold, ignites, and the stellar wind seeds new molecular clouds — each a new g⁶ at cosmic scale. Geologists see it in fold mountains. Economists see it in market cycles. Mycologists see it in mycelium branching. Architects see it in load-path bifurcation.</p>
+  <p><strong>Same pattern — different substrate — nobody talking.</strong> The g-series is the translation layer.</p>
+
+  <div class="theorem" style="border-color:#38bdf8;background:rgba(56,189,248,.05);">
+    <div class="theorem-label" style="color:#38bdf8;">The Cosmic Scale: g⁹⁶ and Milkomeda</div>
+    <p>The Milky Way and Andromeda (Milkomeda merger, ~4.5 × 10⁹ years) are two galactic-scale limit cycles at g⁹⁶. Each galaxy is a helical attractor: the spiral arm is the Reeb flow, the galactic plane is the contact surface dz = r²dθ, the bulge is the inner basin (r &lt; r*), the disc is the outer basin (r &gt; r*).</p>
+    <p style="margin-top:.6rem;">The merger is the moment the outer basins of two g⁹⁶ attractors overlap. The two limit cycles begin folding onto a single attractor. The fold event is an A₁ Whitney singularity at galactic scale — the same geometric object as the levitation gap at r* = 0.77594058, magnified by 10²⁵.</p>
+    <p style="margin-top:.6rem;color:var(--dim);font-size:.9rem;"><em>Status: conjecture. The g⁹⁶ identification is mathematically precise; the Milkomeda merger timescale is measured (van der Marel et al., <em>ApJ</em> 2012). The fold event as a Whitney singularity is the conjectured extension.</em></p>
+  </div>
+
+  <div class="today"><div class="box-label">Today’s correction · Hill sphere and Milkomeda</div><h4>What the page says</h4><p>The Hill sphere is an A₁ Whitney singularity at galactic scale, “the same geometric object as r*, magnified by 10²⁵”; Milkomeda is two g⁹⁶ basins overlapping.</p><h4>What we would change today</h4><p>Read the Hill sphere as a saddle, not a fold. In Hill’s problem the axial potential W = 3x²/2 + 1/r has its critical points L1 and L2 at exactly one Hill radius, and the Hessian there is diag(9, −3), determinant −27: an index-1 Morse saddle. That is the same kind of object as the dm³ boundary saddle, whose stable manifold is the basin boundary. The factor 10²⁵ is the ratio 10²² / 10⁻³, a ratio of the table’s endpoints, and is not a derived rescaling of r*. Milkomeda is an N-body merger measured by simulation (van der Marel et al.); describing it as overlapping basins is a reading, not a derivation.</p><h4>Why</h4><p>The saddle slot is supported by the standard structure of Hill’s problem; the A₁-fold wording is not.</p><p class="chk">Checked by: <code>v2_math.py</code> section E (sympy).</p></div>
+<hr class="gold-rule"/>
+
+  <h2>Gravity: What the Mathematics Says</h2>
+  <p>Brahmagupta (628 CE) described gravity as gurutvākarṣaṇam — attraction due to heaviness, a property of the Earth that pulls heavy objects toward it. Newton (1687) gave it an inverse-square law. Einstein (1915) replaced force with curvature. None of them explained the <em>lock gap</em> — why objects sit at stable distances rather than collapsing or escaping.</p>
+  <p>The dm³ framework's answer: <strong>the lock gap is the Whitney fold of the radial map</strong>. At r* = 0.77594058, the attractive outer basin and the repulsive inner basin balance exactly. This is not a gravitational force law — it is a geometric identity expressed through the contact condition dz = r²dθ. The same identity that locks a disc at r* in a magnetic levitation experiment locks an electron at its orbital radius, locks a quark inside a hadron, and — if the Sasakian identification holds — locks strings at the T-self-dual radius R = 1.</p>
+  <div class="theorem">
+    <div class="theorem-label">The Unification Claim (Stated Honestly)</div>
+    <p><strong>Proved:</strong> The Whitney A₁ fold at r* = 0.77594058 is a geometric consequence of the contact structure. The F operator hierarchy A₁→A₂→A₃ follows the ADE classification. T* = 2π is the T-self-dual radius. The contact manifold is locally Sasakian.</p>
+    <p style="margin-top:.6rem;"><strong>Conjectured:</strong> That these identifications describe the same physical reality at different scales — that the macro levitation gap, the nuclear confinement fold, and the string worldsheet vertex are the same geometric object viewed at different resolutions of the g-series.</p>
+    <p style="margin-top:.6rem;"><strong>Open:</strong> The closed-form expression for r*. The Sasakian identification of the QCD vacuum (Open Problem F.5). The g⁶⁴ matrix extension. The g⁹⁶ closed-form fold radius for galactic attractors (Milkomeda). Lean 4 mechanisation of Theorems B.1–B.5 in AXLE.</p>
+  </div>
+
+  <div class="today"><div class="box-label">Today’s correction · “none explained the lock gap”</div><h4>What the page says</h4><p>Brahmagupta, Newton and Einstein “none explained the lock gap — why objects sit at stable distances rather than collapsing or escaping.”</p><h4>What we would change today</h4><p>This is wrong for Einstein and should be rewritten. Newtonian circular orbits satisfy L² = GM·r, which is monotone: no fold and no innermost stable radius. General relativity does have one. For Schwarzschild (G = c = 1) circular orbits satisfy L² = M r²/(r − 3M); its derivative vanishes at r = 6M, the second derivative there is 2/3, and L² = 12M² at the fold. The effective-potential curvature V<sub>eff</sub>″ is −1/250, 0 and +1/1372 at r = 5M, 6M, 7M (M = 1). So the stable-orbit boundary is a genuine fold, and it lives in general relativity. The dm³ system is a toy with the same qualitative structure and should be presented as a vocabulary for it, not as an explanation of something GR leaves open.</p><h4>Why</h4><p>It is a correction of fact, and it also turns the chapter’s strongest anchor from a claim against the field into a claim with it.</p><p class="chk">Checked by: <code>gravity_law_reading.py</code> (sympy).</p></div>
+<div class="added"><div class="box-label">Added in v2 · how gravity folds and unfolds</div><p>Circular orbits around a mass M (G = c = 1) solve M r² − L² r + 3M L² = 0, whose discriminant is L²(L² − 12M²). The count of circular orbits is therefore two for L² &gt; 12M², one at L² = 12M² (r = 6M), and none below. That is the standard fold normal form, and the chain reads it as:</p>
+<table><tr><th>Operator</th><th>Reading</th></tr>
+<tr><td>C</td><td>angular momentum lowered, the orbit set compressed</td></tr>
+<tr><td>K</td><td>V<sub>eff</sub>″ falls toward zero as r decreases to 6M</td></tr>
+<tr><td>F</td><td>the two circular orbits merge at r = 6M (A₁ fold of L²(r))</td></tr>
+<tr><td>U</td><td>above the fold a stable and an unstable orbit; below it, plunge</td></tr></table>
+<p><strong>Unfolding.</strong> For L² &gt; 12M² the pair is r<sub>±</sub> = (L² ± L√(L² − 12M²)) / 2M, stable outer and unstable inner. For large L, r<sub>+</sub> → L²/M, which is Newton’s relation, and r<sub>−</sub> → 3M, the photon sphere. The unfolded state links the Newtonian regime to the photon sphere, and the fold at 6M is where the two branches meet. The fold lives in the space of orbits; it is not a statement that the field itself folds. Newton shows the case where the chain does not close, because L² = GM·r has no fold.</p></div>
+<div class="today"><div class="box-label">Today’s correction · “the attractive and repulsive basins balance exactly”</div><h4>What the page says</h4><p>At r* the outer and inner basins balance exactly; “the lock gap is the Whitney fold of the radial map”.</p><h4>What we would change today</h4><p>The August 2026 addendum below already marks the “balance” reading as unlicensed. We would go further: nothing balances. r* is where the stable manifold of a saddle meets a chosen slice, and it moves with z. In the unforced radial equation ṙ = r(1 − r²) = −dV/dr, V = r⁴/4 − r²/2, the only boundary is r = 0 (the potential maximum). The forcing 2(r − 1)e<sup>−z</sup> raises the boundary, and as z grows it decays: for large z, r*(z) ≈ 2e<sup>−z</sup> (0.0365 against 0.0366 at z = 4). The boundary returns to the unforced one as the clock z advances. Here z is twice the accumulated area, a monotone clock, so the moving threshold is the forcing dying away along the orbit.</p><h4>Why</h4><p>It replaces a picture of balance with the mechanism that the numbers show.</p><p class="chk">Checked by: <code>v2_math.py</code> sections A, C, G; sympy: −dV/dr = r(1 − r²).</p></div>
+<div class="today"><div class="box-label">Today’s correction · “The Unification Claim (Stated Honestly)”: the Proved list</div><h4>What the page says</h4><p>Proved: the Whitney A₁ fold at r*; the ADE hierarchy; T* = 2π is the T-self-dual radius; the manifold is locally Sasakian.</p><h4>What we would change today</h4><p>Item by item, with today’s status: <strong>Whitney A₁ fold at r*</strong>: not proved, and the wording is withdrawn; the boundary is the stable manifold of a saddle (numerical agreement to ten digits). <strong>ADE hierarchy</strong>: the label coincidence is a real theorem (McKay, Arnold); the gauge-group identification at a given scale is a proposal. <strong>T* = 2π as the self-dual radius</strong>: not supported; it is a unit choice. <strong>Locally Sasakian</strong>: true, and globally on ℝ³ with g = α² + dx² + dy². Also proved today: the unit helix attracts every orbit starting in D.</p><h4>Why</h4><p>The “Proved” label should be reserved for statements with a derivation the reader can follow; the conjectured and open lists below it stand as written.</p><p class="chk">Checked by: See the boxes above.</p></div>
+<div class="added"><div class="box-label">Added in v2 · the anchors, with strengths</div><table><tr><th>Phenomenon</th><th>Operator reading</th><th>Strength</th><th>What is checked</th></tr>
+<tr><td>Kepler’s second law</td><td>the contact condition α = 0</td><td>strong</td><td>exact</td></tr>
+<tr><td>Newton circular orbits</td><td>C and K, no F; the chain does not close</td><td>strong</td><td>dL²/dr = GM ≠ 0</td></tr>
+<tr><td>Schwarzschild ISCO</td><td>K, F, U all present (fold at 6M)</td><td>strong</td><td>V<sub>eff</sub>″ sign change; d²L²/dr² = 2/3</td></tr>
+<tr><td>Hill sphere</td><td>the saddle slot: L1/L2 as an index-1 saddle</td><td>proposed</td><td>Hessian diag(9, −3)</td></tr>
+<tr><td>Newton–Poisson ∇²Φ = 4πGρ</td><td>the field is the 3-manifold; curvature of the potential equals its source</td><td>proposed</td><td>dα constant; no source term written</td></tr>
+<tr><td>Cosmic history: the expanding funnel (Ferreira 2013, slides 8–14)</td><td>a ladder in time that parallels the g-series ladder in length; the horizon H⁻¹ ≈ 3000 h⁻¹ Mpc (slide 40) is a moving threshold</td><td>proposed</td><td>read from the slides; the funnel is a schematic, not data</td></tr>
+<tr><td>Earth–Moon (below)</td><td>a trajectory through an unfolding</td><td>proposed</td><td>numbers recomputed; the tidal model is a toy</td></tr></table>
+<p>An anchor is acceptable when both sides are written down. A rung with no known structure written down is an empty slot, not a failed prediction. Each rung has its own control parameter (L at 6M, d/r<sub>H</sub> for satellites, the Roche radius for tides) while the slot, a stable branch, an unstable branch and a plunge or escape, is the same. That is what the taxonomy carries from one scale to the next.</p></div>
+<div class="added"><div class="box-label">Added in v2 · a worked anchor: the Earth–Moon distance</div><p>The threshold moves with the state, so the Moon is a trajectory through an unfolding, not a point beside a fold. Recomputed from G, the masses and the Earth–Sun distance:</p>
+<table><tr><th>Quantity</th><th>Value</th></tr>
+<tr><td>Earth’s Hill radius</td><td>1.496 × 10⁶ km</td></tr>
+<tr><td>Moon’s distance / Hill radius</td><td>0.257</td></tr>
+<tr><td>Prograde stability limit in Hill’s problem (scan: first escape at 0.50 r<sub>H</sub>, bound up to 0.48)</td><td>about 0.5 r<sub>H</sub>; the Moon is at about 0.51 of it</td></tr>
+<tr><td>Fluid Roche limit</td><td>18,370 km; the Moon is 20.9 times farther out</td></tr>
+<tr><td>Earth’s Schwarzschild ISCO</td><td>2.66 cm: real, and irrelevant at this scale</td></tr>
+<tr><td>Constant-Q tidal toy (ȧ ∝ a<sup>−11/2</sup>, from 3.8 cm/yr)</td><td>reaches 0.5 r<sub>H</sub> after about 117 Gyr; a geometry illustration, not a forecast</td></tr></table>
+<p>Limits: the retrograde scan stayed bound across its whole range (to 0.96 r<sub>H</sub>), which only tests a short horizon and is not a derivation of the published retrograde limit; the tidal model ignores the solar tide and changes in Earth’s spin.</p>
+<p class="chk">Checked by: <code>moon_hill_roche.py</code>, <code>hill_stability.py</code> (controls pass).</p></div>
+<div class="added"><div class="box-label">Added in v2 · a geometric reading: S³, H⁴ and the expanding disc</div><p>This box only reads known structures in the framework’s language; it adds no physics and every item is <strong>proposed</strong>. Identities marked “checked” were verified in sympy (<code>h4_checks.py</code>); the rest are standard facts stated without re-derivation.</p>
+<table><tr><th>Known structure</th><th>Geometric reading</th><th>Status</th></tr>
+<tr><td>Global AdS₅: −cosh²ρ dt² + dρ² + sinh²ρ dΩ₃²</td><td>at fixed t the spatial slice is hyperbolic 4-space H⁴; the spheres S³(ρ) foliate it and t is the Killing time. Even-dimensional base (H⁴), odd-dimensional sphere (S³), time added: 4 + t = 5</td><td>checked: with r = sinh ρ, dr²/(1 + r²) = dρ²</td></tr>
+<tr><td>Geodesic sphere in H⁴</td><td>round S³ of intrinsic radius sinh ρ, with the Hopf contact structure (Sasakian); area 2π² sinh³ρ against 2π²ρ³ in flat space; principal curvature coth ρ, tending to 1, so far out it looks like a horosphere, intrinsically flat ℝ³</td><td>checked (limits); contact and Sasakian structure of the round S³ is standard</td></tr>
+<tr><td>Conformal boundary ℝ<sub>t</sub> × S³</td><td>S³ minus a point is ℝ³ by stereographic projection, and the standard contact structure on S³ becomes the standard one on ℝ³: the chapter’s (ℝ³, α) is the border with a point removed (up to constants in α)</td><td>standard fact, not re-derived</td></tr>
+<tr><td>A plane through the centre of H⁴</td><td>a totally geodesic H², which in the Poincaré model is a disc. In the chapter’s ℝ³ the disc is the base (x, y) with area form dα = −2 dx∧dy, and z is twice the area swept (Kepler’s second law), so an orbit in the disc lifts to a curve that climbs by its swept area: the “galactic disc” of the chapter</td><td>checked: dα = −2 dx∧dy; z = twice the area as in section 1</td></tr>
+<tr><td>Kaluza–Klein form</td><td>g = (dz − A)² + dx² + dy² with A = x dy − y dx and F = dA = 2 dx∧dy: a uniform field on the base. The pattern is a symplectic base (2) with a fibre (1), then the author’s statement that the next case is 4 + t = 5</td><td>checked in 3D; the 5D case is not worked out</td></tr>
+<tr><td>Expanding disc moving outward in time</td><td>geodesics from a point diverge exponentially in H⁴ and the sphere area grows as sinh³ρ. The ODE moves the other way: r*(z) shrinks as z advances (0.776 at z = 0, 0.0365 at z = 4) and orbits converge on the helix. Whether the two are sides of one picture is open</td><td>area growth checked; the comparison is a reading</td></tr>
+<tr><td>Cosmic history (Ferreira 2013, slides 8, 9, 12, 14)</td><td>the funnel widens with time from the quantum-gravity wall to today, with labelled stages (grand unification, electroweak, quark–hadron, nucleosynthesis, matter domination, recombination, galaxy formation, acceleration). That is a Planck → QCD → atomic → galactic ladder in time, in the same order as the g-series in length</td><td>read from the slides at low resolution; the funnel is a schematic. <b>Dated 2013, before JWST.</b> The galaxy-formation stage is the one JWST is now probing: Harvard Magazine (Pacucci, 4 Mar 2026, updated 9 Jun 2026) describes &ldquo;little red dots&rdquo; at roughly 0.6&ndash;1.5 Gyr after the Big Bang that seem too large and mature for that epoch, with black-hole versus supermassive-star interpretations still debated; an IPAC/Caltech release (17 Jun 2026) reports cluster XLSSC 122 at about 10.4 billion light-years with mass more concentrated than the cosmological model predicts, which the authors say would need many more clusters to test. Read at press/summary level only, not the papers. What is established is that early objects look more developed than expected; whether the stage ordering in the funnel changes is open, so the funnel stays a schematic and the stage timeline is not asserted here.</td></tr>
+<tr><td>The horizon (slide 40)</td><td>a preferred length scale H⁻¹ = (ȧ/a)⁻¹ ≈ 3000 h⁻¹ Mpc that moves as the universe expands: a moving threshold of the kind the dm³ tilde stands for</td><td>read from the slide</td></tr></table>
+<p>Throughout, we are only reading what is known. The anchors above take the known structure on one side; the framework supplies the vocabulary on the other.</p></div>
+<hr class="gold-rule"/>
+
+  <h2>Empirical Grounding — No Speculative Framework Required</h2>
+  <p>Every claim in this chapter that touches experiment is anchored in peer-reviewed measurement, not in the string mathematical framework:</p>
+  <ul style="margin:.8rem 0 1.2rem 1.5rem;line-height:2.1;font-size:.95rem;">
+    <li><strong>r* = 0.77594058</strong> — certified numerically, reproducible in under 2 minutes (certify_rstar.py)</li>
+    <li><strong>Atom trap stable radius</strong> — Chu, Cohen-Tannoudji, Phillips, Nobel 1997, <em>Science</em></li>
+    <li><strong>Antimatter gravity</strong> — ALPHA Collaboration, <em>Nature</em> 615, 591–595 (2023)</li>
+    <li><strong>ADE gauge groups</strong> — McKay (1980), standard theorem in algebraic geometry</li>
+    <li><strong>Sasakian geometry</strong> — Sparks (2011), <em>Surveys in Differential Geometry</em></li>
+    <li><strong>T-duality</strong> — Buscher (1987), <em>Phys. Lett. B</em> 194; standard result in string mathematics</li>
+  </ul>
+  <p style="font-size:.9rem;color:var(--dim);">The string mathematical framework (not a theory — no confirmed experimental predictions to date) is used here as a source of mathematical structures that happen to match the dm³ operator chain. The physical claims are the contact geometry results, which stand independently.</p>
+
+  <div class="today"><div class="box-label">Today’s correction · “Every claim … is anchored in peer-reviewed measurement”</div><h4>What the page says</h4><p>Six items are listed as the empirical grounding: r*, the atom-trap radius, antimatter gravity, McKay, Sasakian geometry, T-duality.</p><h4>What we would change today</h4><p>Say what each anchors. r* is a computation (certified), not a measurement. The atom-trap result, the ALPHA experiment and the three mathematical references stand as sources for what they state; none is a test of the g-series against gravity data. Add the column Ferreira’s review asks for: what gravity measurement, if any, exists at each rung of the ladder.</p><h4>Why</h4><p>A list of true citations that does not test the claim can read as support. Naming what each item shows, and what it does not, makes the chapter harder to misread.</p><p class="chk">Checked by: Reading; no script.</p></div>
+<div class="added"><div class="box-label">Added in v2 · the universality hypothesis</div><p>Two claims are kept apart. <strong>(i) The form is scale-free.</strong> This is a theorem: α → λ²α under r → λr, z → λ²z, so ker α is invariant. It shows the form can repeat; it does not show nature uses it. <strong>(ii) Each rung has a real phenomenon with the structure.</strong> This is a set of anchors, each standing or falling alone.</p>
+<p><strong>Hypothesis:</strong> every known gravitational threshold has a place in the chain. <strong>Falsifier:</strong> a known threshold at some rung that the chain cannot place. A reader who has seen the Schwarzschild fold and the Earth–Moon example worked honestly can then judge the rungs that are still only proposed.</p></div>
+<div class="added"><div class="box-label">Added in v2 · index of corrections</div><table><tr><th>Where</th><th>Page said</th><th>Today</th><th>Status</th></tr>
+<tr><td>Central Conjecture</td><td>three needs for a theorem</td><td>taxonomy with anchors</td><td>reframed</td></tr>
+<tr><td>Central Conjecture</td><td>r* = 0.77594058 constant</td><td>value at z₀ = 0; a curve r*(z₀)</td><td>checked</td></tr>
+<tr><td>Operator table, F</td><td>Whitney A₁ fold</td><td>stable manifold of a saddle</td><td>numerical, 10 digits</td></tr>
+<tr><td>Operator table, U</td><td>rate −2, global</td><td>proved on region D; asymptotic rate</td><td>proved</td></tr>
+<tr><td>T-duality</td><td>T* = 2π is the self-dual radius</td><td>unit choice; analogy</td><td>withdrawn</td></tr>
+<tr><td>ADE</td><td>fold hierarchy = gauge groups</td><td>labels coincide (Arnold, McKay); gauge assignment is a proposal</td><td>refined; first audit note corrected</td></tr>
+<tr><td>Sasakian</td><td>local model</td><td>explicit global metric g = α² + dx² + dy²</td><td>checked; one step cited</td></tr>
+<tr><td>g-series</td><td>ladder, g⁶⁴ certified</td><td>cut and arithmetic: 39 of 57 orders listed; strengths marked</td><td>checked</td></tr>
+<tr><td>Hill sphere, Milkomeda</td><td>A₁ fold; 10²⁵ magnification</td><td>index-1 saddle; ratio of endpoints</td><td>checked</td></tr>
+<tr><td>Gravity section</td><td>no one explained the lock gap</td><td>GR has the ISCO fold at 6M</td><td>checked</td></tr>
+<tr><td>Gravity section</td><td>basins balance exactly</td><td>forcing decays along z; r*(z) ≈ 2e<sup>−z</sup></td><td>checked</td></tr>
+<tr><td>Unification claim</td><td>four “Proved” items</td><td>item-by-item statuses</td><td>revised</td></tr>
+<tr><td>Empirical grounding</td><td>all anchored in measurement</td><td>what each item shows</td><td>reframed</td></tr></table>
+<p class="chk">Not checked in this revision: the references, the figures, the K-row threshold κ* = √(7/9), the levitation experiment, and the unlisted levels of the ladder.</p></div>
+<div class="chapter-nav">
+    <a href="chW-wigner.html">← W · Wigner Crystal</a>
+    <a href="chE-gtct.html">E · Galilean Confluence →</a>
+  </div>
+
+</div><!-- /content -->
+
+
+<div style="background:#0e1525;border-top:1px solid #2a3a5a;padding:.55rem 2rem;text-align:right;font-family:sans-serif;font-size:.72rem;color:#666">
+  <a href="https://grossi-ops.github.io/g6/" target="_blank" style="color:#c9a84c;text-decoration:none;letter-spacing:.05em">G6 LLC</a>
+  <span style="color:#333">&nbsp;·&nbsp;</span>
+  <span>g6llc@proton.me</span>
+  <span style="color:#333">&nbsp;·&nbsp;</span>
+  <span>+1 (646) 342-3751</span>
+</div>
+
+
+<!-- ===== cross-reference addendum · WP70 · August 2026 ===== -->
+<section id="xref-wp70" style="max-width:860px;margin:2.5rem auto 0;padding:1.45rem 1.7rem;background:#0c0d16;border-left:3px solid #c9a84c;font-family:'Noto Serif',Georgia,serif;color:#e8e4d8;line-height:1.75;">
+  <div style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:.85rem;">Addendum · August 2026 · WP70</div>
+  <p style="margin:0 0 .95rem;">The reading of <em>r</em>* given here — the radius at which “the attractive outer basin and the repulsive inner basin balance exactly” — is a global claim about a flow, and <a href="book6/wp70-the-function-and-the-exponent.html" style="color:#c9a84c;">WP70</a> marks it as unlicensed pending Open Problem L1. The Whitney A<sub>1</sub> fold reading is unaffected: a fold is a local statement about a map. WP70 also closes a nearby temptation — the black hole merger remnant spin a<sub>f</sub>/M<sub>f</sub> ≈ 0.6864 is derived within standard general relativity and is not available as a dm³ prediction; 0.686 ≠ 0.776.</p>
+  <p style="margin:.4rem 0 0;font-size:.82rem;color:#6b6757;">A Lyapunov exponent is local and asymptotic; a Lyapunov function is global and constructive. Only the second bounds a basin. See <a href="book6/wp70-the-function-and-the-exponent.html" style="color:#c9a84c;">WP70 · The Function and the Exponent</a>.</p>
+</section>
+
+<footer class="prov-foot">
+  <strong>Gravity Across Scales</strong><br>
+  Principia Orthogona &middot; totogt.github.io/geometry<br>
+  G6 LLC &middot; Pablo Nogueira Grossi &middot; Newark NJ &middot; 2026 &middot; ORCID <a href="https://orcid.org/0009-0000-6496-2186" target="_blank" rel="noopener">0009-0000-6496-2186</a><br>
+  Series <a href="https://zenodo.org/communities/principia-orthogona" target="_blank" rel="noopener">Principia Orthogona community</a> &middot; <a href="https://github.com/TOTOGT/geometry">GitHub</a><br>
+  &copy; 2026 Pablo Nogueira Grossi &mdash; G6 LLC &middot; Licence CC BY-NC-ND 4.0
+</footer>
+</body>
+</html>

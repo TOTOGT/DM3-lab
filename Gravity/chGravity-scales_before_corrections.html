@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gravity Across Scales — Nano · Meso · Macro | Principia Orthogona</title>
+<style>
+:root{
+  --bg:#06090f; --bg2:#0b1018; --bg3:#0f1520;
+  --gold:#c9a84c; --gold-dim:#8a6f2e;
+  --nano:#a78bfa; --meso:#34d399; --macro:#38bdf8;
+  --text:#e8e4d8; --dim:#7a8090;
+  --rule:rgba(201,168,76,0.15);
+  --serif:Georgia,serif;
+  --mono:'Courier New',monospace;
+  --sans:'Helvetica Neue',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--serif);background:var(--bg);color:var(--text);font-size:17px;line-height:1.85;}
+
+nav{position:sticky;top:0;z-index:200;background:rgba(6,9,15,.96);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);padding:.6rem 2rem;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
+.nav-logo{font-family:var(--mono);font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);text-decoration:none;}
+.nav-links{display:flex;gap:1.4rem;flex-wrap:wrap;}
+.nav-links a{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--dim);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+
+/* HERO */
+.hero{padding:5rem 2rem 4rem;text-align:center;border-bottom:1px solid var(--rule);position:relative;overflow:hidden;}
+.hero::before{content:'G';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:28rem;font-weight:900;color:rgba(201,168,76,.03);user-select:none;pointer-events:none;
+  font-family:var(--serif);line-height:1;}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1.2rem;}
+.op-chain{font-family:var(--mono);font-size:1rem;letter-spacing:.15em;color:var(--dim);margin-bottom:.8rem;}
+.op-chain .active{color:var(--gold);text-decoration:underline;text-underline-offset:4px;font-weight:bold;}
+.hero-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:400;letter-spacing:.04em;margin-bottom:1rem;}
+.hero-title em{color:var(--gold);font-style:normal;}
+.hero-sub{font-size:1.05rem;color:var(--dim);max-width:680px;margin:0 auto 2rem;font-style:italic;}
+.scale-badges{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;}
+.sbadge{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;padding:.4rem 1rem;
+  border-radius:2px;border:1px solid;text-transform:uppercase;}
+.sbadge.nano{border-color:rgba(167,139,250,.4);color:var(--nano);background:rgba(167,139,250,.06);}
+.sbadge.meso{border-color:rgba(52,211,153,.4);color:var(--meso);background:rgba(52,211,153,.06);}
+.sbadge.macro{border-color:rgba(56,189,248,.4);color:var(--macro);background:rgba(56,189,248,.06);}
+
+/* CONTENT */
+.content{max-width:820px;margin:0 auto;padding:3.5rem 2rem 5rem;}
+h2{font-size:1.35rem;font-weight:400;color:var(--gold);margin:3.5rem 0 1rem;letter-spacing:.06em;}
+h3{font-size:1.05rem;font-weight:600;color:var(--text);margin:2rem 0 .6rem;}
+p{margin-bottom:1.2rem;}
+.gold-rule{border:none;border-top:1px solid var(--gold-dim);margin:2.5rem 0;opacity:.35;}
+
+/* SCALE PANELS */
+.scale-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;margin:2rem 0;}
+.scale-panel{border-radius:6px;padding:1.4rem;border:1px solid;}
+.scale-panel.nano{border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.04);}
+.scale-panel.meso{border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.04);}
+.scale-panel.macro{border-color:rgba(56,189,248,.25);background:rgba(56,189,248,.04);}
+.scale-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:.8rem;}
+.scale-panel.nano .scale-label{color:var(--nano);}
+.scale-panel.meso .scale-label{color:var(--meso);}
+.scale-panel.macro .scale-label{color:var(--macro);}
+.scale-size{font-family:var(--mono);font-size:1.1rem;font-weight:bold;margin-bottom:.4rem;}
+.scale-panel.nano .scale-size{color:var(--nano);}
+.scale-panel.meso .scale-size{color:var(--meso);}
+.scale-panel.macro .scale-size{color:var(--macro);}
+.scale-desc{font-size:.82rem;color:var(--dim);line-height:1.7;}
+
+/* OPERATOR TABLE */
+.op-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.85rem;}
+.op-table th{font-family:var(--sans);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--dim);padding:.5rem .7rem;border-bottom:1px solid var(--rule);text-align:left;}
+.op-table td{padding:.55rem .7rem;border-bottom:1px solid rgba(201,168,76,.07);line-height:1.6;vertical-align:top;}
+.op-table tr:last-child td{border-bottom:none;}
+.op-name{font-family:var(--mono);font-size:.9rem;font-weight:bold;}
+.op-name.C{color:#4a9eff;}
+.op-name.K{color:#e05a3a;}
+.op-name.F{color:#50c878;}
+.op-name.U{color:#c084fc;}
+.op-name.E{color:var(--gold);}
+.nano-col{color:var(--nano);}
+.meso-col{color:var(--meso);}
+.macro-col{color:var(--macro);}
+
+/* MATH BLOCKS */
+.math{font-family:var(--mono);font-size:.9rem;color:var(--gold);
+  background:rgba(201,168,76,.06);border-left:3px solid var(--gold-dim);
+  padding:.7rem 1rem;margin:1rem 0;border-radius:0 4px 4px 0;line-height:1.6;}
+.math.nano{color:var(--nano);background:rgba(167,139,250,.06);border-color:rgba(167,139,250,.4);}
+.math.meso{color:var(--meso);background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.4);}
+.math.macro{color:var(--macro);background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.4);}
+
+/* THEOREM / INSIGHT BOXES */
+.theorem{background:var(--bg3);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;
+  padding:1.2rem 1.5rem;margin:1.5rem 0;}
+.theorem-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:var(--gold);
+  text-transform:uppercase;margin-bottom:.5rem;}
+.theorem-label.nano{color:var(--nano);}
+.theorem-label.meso{color:var(--meso);}
+.theorem-label.macro{color:var(--macro);}
+.theorem.nano{border-color:var(--nano);}
+.theorem.meso{border-color:var(--meso);}
+.theorem.macro{border-color:var(--macro);}
+.theorem p{margin-bottom:.4rem;font-size:.92rem;}
+
+/* G-SERIES LADDER */
+.g-ladder{display:flex;flex-direction:column;gap:0;margin:1.5rem 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+.g-rung{display:grid;grid-template-columns:80px 1fr 1fr 1fr;border-bottom:1px solid var(--rule);padding:.5rem .8rem;align-items:center;gap:.5rem;}
+.g-rung:last-child{border-bottom:none;}
+.g-rung.head{background:rgba(201,168,76,.06);}
+.g-n{font-family:var(--mono);font-size:.8rem;font-weight:bold;color:var(--gold);}
+.g-scale{font-family:var(--mono);font-size:.75rem;color:var(--dim);}
+.g-nano{font-size:.78rem;color:var(--nano);}
+.g-meso{font-size:.78rem;color:var(--meso);}
+.g-macro{font-size:.78rem;color:var(--macro);}
+
+/* OPEN / STATUS */
+.open-box{background:rgba(249,115,22,.05);border:1px solid rgba(249,115,22,.2);
+  border-radius:4px;padding:1rem 1.2rem;margin:1.5rem 0;}
+.open-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:#f97316;
+  text-transform:uppercase;margin-bottom:.4rem;}
+
+/* NAV PREV/NEXT */
+.chapter-nav{display:flex;justify-content:space-between;margin-top:4rem;
+  padding-top:1.5rem;border-top:1px solid var(--rule);}
+.chapter-nav a{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;
+  color:var(--dim);text-decoration:none;transition:color .2s;}
+.chapter-nav a:hover{color:var(--gold);}
+
+  .prov-add{display:inline-block;margin-top:.5rem;opacity:.9;font-size:.95em;}
+  .prov-add a{color:inherit;text-decoration:underline;text-underline-offset:2px;}
+  footer.prov-foot{margin-top:3rem;padding:2rem 1.5rem;border-top:1px solid currentColor;
+    font-size:.72rem;line-height:1.8;opacity:.85;text-align:center;}
+  footer.prov-foot a{color:inherit;text-decoration:underline;text-underline-offset:2px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">⚜ Principia Orthogona ⚜</a>
+  <div class="nav-links">
+    <a href="chPI-recurrence.html">π</a>
+    <a href="ch9-phi.html">φ</a>
+    <a href="chMu-lyapunov.html">μ</a>
+    <a href="chEta-tribonacci.html">η</a>
+    <a href="chDelta-tetranacci.html">Δ</a>
+    <a href="chOmega-hexabonacci.html">Ω</a>
+    <a href="chT-tubulin.html">T</a>
+    <a href="chW-wigner.html">W</a>
+    <a href="chE-gtct.html">E</a>
+    <a href="ch16-scale.html">Scale</a>
+    <a href="impa-portal.html">Purchase</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="eyebrow">Principia Orthogona · Gravity Chapter</div>
+  <div class="op-chain">
+    G = U ∘ F ∘ K ∘ C &nbsp;·&nbsp;
+    <span class="active">Nano → Meso → Macro</span>
+  </div>
+  <h1 class="hero-title">
+    Gravity Across Scales:<br>
+    <em>Nano · Meso · Macro</em>
+  </h1>
+  <p class="hero-sub">
+    The same operator chain G = U∘F∘K∘C runs at every scale — from the string worldsheet
+    at the Planck length to the helical attractor in a rotating electromagnetic system.
+    The g-series g⁰→g⁶⁴ is the bridge. The limit cycle T* = 2π is the fixed point that locks them together.
+  </p>
+  <div class="scale-badges">
+    <span class="sbadge nano">Nano · 10⁻³⁵ m · Worldsheet · ADE · Sasakian</span>
+    <span class="sbadge meso">Meso · 10⁻¹⁵ m · Nuclear · SU(3) · QCD</span>
+    <span class="sbadge macro">Macro · 10⁻³ – 10¹ m · Electromagnetic · r* · Levitation</span>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="content">
+
+  <h2>The Central Conjecture</h2>
+  <p><strong>Conjecture (not a theorem):</strong> gravity can be read as a geometric identity — the same identity at every scale — expressed through the contact condition α = 0. What is established here is the geometry of the contact condition itself. On the contact 3-manifold (ℝ³, α = dz − r²dθ), the condition α = 0 reads:</p>
+  <div class="math">dz = r² dθ &nbsp;·&nbsp; vertical lift = angular momentum</div>
+  <p>This holds at the Planck scale (where it encodes the Hopf fiber of the M-theory circle), at the nuclear scale (where it encodes the color confinement geometry of SU(3)), and at the electromagnetic scale (where it determines the stable levitation gap r* = 0.77594058). The <strong>same equation</strong> — three substrates — nobody talking to each other.</p>
+  <p><strong>What would turn this conjecture into a theorem.</strong> It needs three things, none of which this chapter yet provides: (1) a precise gravitational object — a Lorentzian metric or an affine connection — together with a stated field equation; (2) an explicit map from the contact form α to that object, for example through a Sasakian metric; (3) a check that the map recovers known behaviour (Newtonian or Schwarzschild) in a stated limit. Until then, the contact condition is a statement about curves on a contact manifold, not a law of gravitation.</p>
+
+  <div class="scale-grid">
+    <div class="scale-panel nano">
+      <div class="scale-label">Nano Scale</div>
+      <div class="scale-size">10⁻³⁵ m</div>
+      <p class="scale-desc">Planck length. String worldsheet. ADE singularities govern the gauge group. Sasakian geometry. The Hopf fiber direction ∂_z is the M-theory circle. T-duality self-dual point at R = 1.</p>
+    </div>
+    <div class="scale-panel meso">
+      <div class="scale-label">Meso Scale</div>
+      <div class="scale-size">10⁻¹⁵ m</div>
+      <p class="scale-desc">Nuclear / hadronic scale. The A₂ singularity in the F operator hierarchy selects SU(3) — the gauge group of QCD. Confinement = fold. Hadronization = Whitney A₂ singularity.</p>
+    </div>
+    <div class="scale-panel macro">
+      <div class="scale-label">Macro Scale</div>
+      <div class="scale-size">10⁻³ – 10¹ m</div>
+      <p class="scale-desc">Electromagnetic / laboratory scale. The Whitney A₁ fold at r* = 0.77594058 is the stable levitation gap. The limit cycle Γ = {r=1, θ̇=1, ż=1} is the helical attractor. Observable. Certifiable.</p>
+    </div>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>The Operator Chain at Each Scale</h2>
+  <p>The operator chain G = U∘F∘K∘C is read across scales below by an identification at each level. These are proposed identifications, not derivations; the operators carry across fields, while constants and mechanisms do not:</p>
+
+  <table class="op-table">
+    <thead>
+      <tr>
+        <th>Operator</th>
+        <th>dm³ Role</th>
+        <th class="nano-col">Nano (Worldsheet)</th>
+        <th class="meso-col">Meso (Nuclear / QCD)</th>
+        <th class="macro-col">Macro (Electromagnetic)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="op-name C">C</span></td>
+        <td>Lipschitz compression</td>
+        <td class="nano-col">Level truncation in Witten's cubic string field theory — projection to finite-dimensional subspace of string Hilbert space</td>
+        <td class="meso-col">Color averaging — SU(3) Wilson loop compressed to gauge-invariant observables</td>
+        <td class="macro-col">Field compression — radial averaging from r to the effective basin coordinate</td>
+      </tr>
+      <tr>
+        <td><span class="op-name K">K</span></td>
+        <td>Curvature induction toward κ*</td>
+        <td class="nano-col">Worldsheet kinetic operator ∂² — selects on-shell configurations, the string equation of motion</td>
+        <td class="meso-col">Confinement threshold — driving quark separation toward the string-breaking distance</td>
+        <td class="macro-col">Basin threshold κ* = √(7/9) ≈ 0.882 — the curvature induction boundary in the contact ODE</td>
+      </tr>
+      <tr>
+        <td><span class="op-name F">F</span></td>
+        <td>Whitney fold A₁–A₃</td>
+        <td class="nano-col">String interaction vertex: A₁ = emission, A₂ = splitting, A₃ = four-string junction. ADE singularity hierarchy in scattering amplitudes.</td>
+        <td class="meso-col">Hadronization fold: A₂ singularity selects SU(3) gauge group (McKay correspondence). Confinement/deconfinement transition.</td>
+        <td class="macro-col">Whitney A₁ fold at r* = 0.77594058 — the stable levitation gap, the corona discharge threshold</td>
+      </tr>
+      <tr>
+        <td><span class="op-name U">U</span></td>
+        <td>Gradient descent to stable branch</td>
+        <td class="nano-col">BRST cohomology — descending to a Q-closed representative after interaction; finding the physical state</td>
+        <td class="meso-col">Descent to stable hadron ground state after the confinement fold</td>
+        <td class="macro-col">Convergence to the unit helix Γ: r → 1, ż → 1, exponential rate μ = −2</td>
+      </tr>
+      <tr>
+        <td><span class="op-name E">E</span></td>
+        <td>Entropic boundary / generative circuit</td>
+        <td class="nano-col">D-brane boundary conditions: E selects trajectories with ż → 0⁺ — exactly a Neumann boundary condition in the z-direction. E defines a D-brane.</td>
+        <td class="meso-col">Nuclear surface: the boundary of color confinement, where quarks end</td>
+        <td class="macro-col">The levitation equilibrium surface: ż = 0 at the attractor — the disc floats at constant z</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="gold-rule"/>
+
+  <h2>T-Duality: T* = 2π is Not Decorative</h2>
+  <p>The proved invariant T* = 2π of the dm³ limit cycle has an exact counterpart in string physics. A string compactified on a circle of radius R has:</p>
+  <div class="math nano">Winding modes: periodicity 2πR &nbsp;·&nbsp; Momentum modes: periodicity 2π/R</div>
+  <p>At R = 1 (in α' = 1 units), the theory is <strong>T-self-dual</strong>: R ↔ 1/R maps the theory to itself. T* = 2π corresponds to exactly R = 1 — the limit cycle of the dm³ system sits at the T-duality fixed point.</p>
+  <div class="theorem nano">
+    <div class="theorem-label nano">T-Duality Fixed Point</div>
+    <p><strong>T* = 2π &nbsp;⟺&nbsp; R = 1</strong> (in α' = 1 units). The dm³ limit cycle is the T-self-dual configuration.</p>
+    <p>The stability radii ε₀ = 1/3 and r* ≈ 0.77594058 bound a basin around R = 1. Trajectories outside ε₀ are attracted back (winding and momentum modes are exchanged, but the theory remains equivalent). Trajectories inside r* escape toward R → 0 — the decompactification limit, the color-deconfinement analog.</p>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>ADE Singularities: The F Operator Hierarchy Is Not Accidental</h2>
+  <p>The classification of the dm³ fold operator F by Whitney singularities A₁ → A₂ → A₃ matches exactly the ADE singularity classification that governs gauge groups in superstring compactifications (Type IIA on ℂ²/Γ orbifolds):</p>
+
+  <div class="scale-grid">
+    <div class="scale-panel nano">
+      <div class="scale-label">A₁ Singularity</div>
+      <div class="scale-size">SU(2)</div>
+      <p class="scale-desc">Whitney fold (standard). The dm³ levitation gap r* — the macro-scale observable. At nano scale: SU(2) gauge theory on the worldvolume (McKay correspondence).</p>
+    </div>
+    <div class="scale-panel meso">
+      <div class="scale-label">A₂ Singularity</div>
+      <div class="scale-size">SU(3)</div>
+      <p class="scale-desc">Whitney cusp. Nuclear matter / QCD. SU(3) is the gauge group of the strong force. The Conjecture 3.1 physical identification — confinement/hadronization — is an A₂ fold event. This is the right singularity for the right gauge group.</p>
+    </div>
+    <div class="scale-panel macro">
+      <div class="scale-label">A₃ Singularity</div>
+      <div class="scale-size">SU(4) / Sp(2)</div>
+      <p class="scale-desc">Whitney swallowtail. The next gauge group in the ADE ladder. In dm³ terms: the four-string junction, the transition from three-body to four-body confinement.</p>
+    </div>
+  </div>
+
+  <div class="theorem meso">
+    <div class="theorem-label meso">McKay Correspondence (Theorem — not conjecture)</div>
+    <p>For each finite subgroup Γ ⊂ SU(2), the minimal resolution of ℂ²/Γ gives an ADE Dynkin diagram. The gauge group emerging from Type IIA string theory on ℂ²/Γ is the corresponding ADE Lie group. The dm³ F-operator hierarchy A₁→A₂→A₃ is the same hierarchy. The physical identification of F with the confinement transition in SU(3) QCD (A₂) is therefore not incidental — it follows from the ADE structure.</p>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>Sasakian Geometry: The Unifying Language</h2>
+  <p>A manifold is <strong>Sasakian</strong> if its metric cone is Kähler. This is the odd-dimensional analog of Kähler geometry — and it is the natural home of the contact structure α = dz − r²dθ.</p>
+  <ul style="margin:.8rem 0 1.2rem 1.5rem;line-height:2;">
+    <li>S³ is Sasakian. Its metric cone is ℂ² \ {0}, which is Kähler.</li>
+    <li>The dm³ manifold (ℝ³, α = dz − r²dθ) is a local model of a Sasakian 3-manifold.</li>
+    <li>Superstring compactifications on Sasakian manifolds (especially Sasaki-Einstein spaces S⁵, T^{1,1}) are the backbone of AdS/CFT.</li>
+    <li>The Reeb flow ∂_z in dm³ generates the S¹ action that makes the manifold Sasakian — and is the Hopf fiber direction / M-theory circle.</li>
+  </ul>
+  <div class="theorem">
+    <div class="theorem-label">Sasakian Identification (Open Problem F.5)</div>
+    <p>The QCD vacuum geometry — if Sasakian — connects the dm³ framework directly to the AdS₅ × SE₅ family in AdS/CFT. Showing that the α_QCD construction produces a Sasakian manifold would make the contact geometry of the dm³ limit cycle a literal string background. This is the deepest open problem in the series.</p>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>The g-Series: Nano to Macro in 64 Steps</h2>
+  <p>The g-series g⁰ → g⁶⁴ is the scale ladder. Each step is a renormalization group transformation: the coupling constants {gᵢ} → {gᵢ'} under rescaling by factor b. The fixed point of this flow is G itself — the operator chain is scale-invariant.</p>
+
+  <div class="g-ladder">
+    <div class="g-rung head">
+      <span class="g-n">Level</span>
+      <span class="g-scale">Scale</span>
+      <span class="g-nano">Nano physics</span>
+      <span class="g-macro">Macro physics</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁰ – g⁴</span>
+      <span class="g-scale">10⁻³⁵ – 10⁻³¹ m</span>
+      <span class="g-nano">Planck scale · string worldsheet · Sasakian geometry</span>
+      <span class="g-macro">—</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁵ – g⁸</span>
+      <span class="g-scale">10⁻³¹ – 10⁻²⁵ m</span>
+      <span class="g-nano">ADE singularities · gauge group emergence · T-duality</span>
+      <span class="g-macro">—</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁶ (seed)</span>
+      <span class="g-scale">—</span>
+      <span class="g-nano">Minimum viable seed · cajueiro point · first stable basin</span>
+      <span class="g-macro">—</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g¹⁶ – g³²</span>
+      <span class="g-scale">10⁻¹⁸ – 10⁻¹² m</span>
+      <span class="g-nano">Electroweak / QCD transition · SU(3) A₂ fold</span>
+      <span class="g-meso">Confinement · nuclear force · hadronic matter</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g³² – g⁴⁸</span>
+      <span class="g-scale">10⁻¹² – 10⁻⁶ m</span>
+      <span class="g-nano">—</span>
+      <span class="g-meso">Atomic / molecular · Whitney A₁ appears · r* emerges</span>
+    </div>
+    <div class="g-rung">
+      <span class="g-n">g⁶⁴ (saturated)</span>
+      <span class="g-scale">10⁻³ – 10¹ m</span>
+      <span class="g-nano">—</span>
+      <span class="g-macro">r* = 0.77594058 certified · helical attractor · levitation gap · stable band</span>
+    </div>
+    <div class="g-rung" style="background:rgba(56,189,248,.04);">
+      <span class="g-n" style="color:#38bdf8;">g⁹⁶</span>
+      <span class="g-scale" style="color:#38bdf8;">10⁹ – 10²² m</span>
+      <span class="g-nano" style="color:var(--dim);">—</span>
+      <span class="g-macro" style="color:#38bdf8;">Planetary orbits · Hill sphere = Whitney A₁ fold at galactic scale · Milkomeda merger (~4.5 Gyr) = two g⁹⁶ limit cycles whose basins overlap</span>
+    </div>
+    <div class="g-rung" style="background:rgba(201,168,76,.04);">
+      <span class="g-n" style="color:#f97316;">g⁶⁴ → matrix</span>
+      <span class="g-scale" style="color:var(--dim);">Saturation boundary</span>
+      <span class="g-nano" style="color:#f97316;">Scalar g-series → matrix G_ij where each entry is a full g⁰→g⁶⁴ cycle. Non-commutative. Quantum gravity re-enters.</span>
+      <span class="g-macro" style="color:#f97316;">Open — the saturation boundary is where nano and macro close the loop.</span>
+    </div>
+  </div>
+
+  <div class="open-box">
+    <div class="open-label">Open: The g64 Matrix Extension</div>
+    <p style="font-size:.9rem;">At g64 (saturated form), the scalar g-series can no longer capture the full physics. The next level is matrix-valued: G_matrix = [g_ij] where each entry is a full g⁰→g⁶⁴ scalar cycle. This is the dm³ analog of the BFSS matrix model (D0-brane matrix quantum mechanics), where quantum gravity emerges from the matrix mechanics at Planck scale. The scalar series expands into a matrix at the saturation boundary — the nano and macro scales close the loop.</p>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>From Cajueiros to Nebulas</h2>
+  <p>The cajueiro (cashew tree) grows one seed — then overshoots, hits resistance, finds a new lock point, branches, and each branch becomes a new g⁶ seed. One tree becomes a forest. The pattern is the g-series cycle: seed → overshoot → resistance → lock → branch → new seed.</p>
+  <p>A nebula does the same thing at g⁹⁶. A gas cloud overshoots its self-gravity threshold, collapses, hits radiation pressure resistance, locks into a protostellar core at the Whitney fold, ignites, and the stellar wind seeds new molecular clouds — each a new g⁶ at cosmic scale. Geologists see it in fold mountains. Economists see it in market cycles. Mycologists see it in mycelium branching. Architects see it in load-path bifurcation.</p>
+  <p><strong>Same pattern — different substrate — nobody talking.</strong> The g-series is the translation layer.</p>
+
+  <div class="theorem" style="border-color:#38bdf8;background:rgba(56,189,248,.05);">
+    <div class="theorem-label" style="color:#38bdf8;">The Cosmic Scale: g⁹⁶ and Milkomeda</div>
+    <p>The Milky Way and Andromeda (Milkomeda merger, ~4.5 × 10⁹ years) are two galactic-scale limit cycles at g⁹⁶. Each galaxy is a helical attractor: the spiral arm is the Reeb flow, the galactic plane is the contact surface dz = r²dθ, the bulge is the inner basin (r &lt; r*), the disc is the outer basin (r &gt; r*).</p>
+    <p style="margin-top:.6rem;">The merger is the moment the outer basins of two g⁹⁶ attractors overlap. The two limit cycles begin folding onto a single attractor. The fold event is an A₁ Whitney singularity at galactic scale — the same geometric object as the levitation gap at r* = 0.77594058, magnified by 10²⁵.</p>
+    <p style="margin-top:.6rem;color:var(--dim);font-size:.9rem;"><em>Status: conjecture. The g⁹⁶ identification is mathematically precise; the Milkomeda merger timescale is measured (van der Marel et al., <em>ApJ</em> 2012). The fold event as a Whitney singularity is the conjectured extension.</em></p>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>Gravity: What the Mathematics Says</h2>
+  <p>Brahmagupta (628 CE) described gravity as gurutvākarṣaṇam — attraction due to heaviness, a property of the Earth that pulls heavy objects toward it. Newton (1687) gave it an inverse-square law. Einstein (1915) replaced force with curvature. None of them explained the <em>lock gap</em> — why objects sit at stable distances rather than collapsing or escaping.</p>
+  <p>The dm³ framework's answer: <strong>the lock gap is the Whitney fold of the radial map</strong>. At r* = 0.77594058, the attractive outer basin and the repulsive inner basin balance exactly. This is not a gravitational force law — it is a geometric identity expressed through the contact condition dz = r²dθ. The same identity that locks a disc at r* in a magnetic levitation experiment locks an electron at its orbital radius, locks a quark inside a hadron, and — if the Sasakian identification holds — locks strings at the T-self-dual radius R = 1.</p>
+  <div class="theorem">
+    <div class="theorem-label">The Unification Claim (Stated Honestly)</div>
+    <p><strong>Proved:</strong> The Whitney A₁ fold at r* = 0.77594058 is a geometric consequence of the contact structure. The F operator hierarchy A₁→A₂→A₃ follows the ADE classification. T* = 2π is the T-self-dual radius. The contact manifold is locally Sasakian.</p>
+    <p style="margin-top:.6rem;"><strong>Conjectured:</strong> That these identifications describe the same physical reality at different scales — that the macro levitation gap, the nuclear confinement fold, and the string worldsheet vertex are the same geometric object viewed at different resolutions of the g-series.</p>
+    <p style="margin-top:.6rem;"><strong>Open:</strong> The closed-form expression for r*. The Sasakian identification of the QCD vacuum (Open Problem F.5). The g⁶⁴ matrix extension. The g⁹⁶ closed-form fold radius for galactic attractors (Milkomeda). Lean 4 mechanisation of Theorems B.1–B.5 in AXLE.</p>
+  </div>
+
+  <hr class="gold-rule"/>
+
+  <h2>Empirical Grounding — No Speculative Framework Required</h2>
+  <p>Every claim in this chapter that touches experiment is anchored in peer-reviewed measurement, not in the string mathematical framework:</p>
+  <ul style="margin:.8rem 0 1.2rem 1.5rem;line-height:2.1;font-size:.95rem;">
+    <li><strong>r* = 0.77594058</strong> — certified numerically, reproducible in under 2 minutes (certify_rstar.py)</li>
+    <li><strong>Atom trap stable radius</strong> — Chu, Cohen-Tannoudji, Phillips, Nobel 1997, <em>Science</em></li>
+    <li><strong>Antimatter gravity</strong> — ALPHA Collaboration, <em>Nature</em> 615, 591–595 (2023)</li>
+    <li><strong>ADE gauge groups</strong> — McKay (1980), standard theorem in algebraic geometry</li>
+    <li><strong>Sasakian geometry</strong> — Sparks (2011), <em>Surveys in Differential Geometry</em></li>
+    <li><strong>T-duality</strong> — Buscher (1987), <em>Phys. Lett. B</em> 194; standard result in string mathematics</li>
+  </ul>
+  <p style="font-size:.9rem;color:var(--dim);">The string mathematical framework (not a theory — no confirmed experimental predictions to date) is used here as a source of mathematical structures that happen to match the dm³ operator chain. The physical claims are the contact geometry results, which stand independently.</p>
+
+  <div class="chapter-nav">
+    <a href="chW-wigner.html">← W · Wigner Crystal</a>
+    <a href="chE-gtct.html">E · Galilean Confluence →</a>
+  </div>
+
+</div><!-- /content -->
+
+
+<div style="background:#0e1525;border-top:1px solid #2a3a5a;padding:.55rem 2rem;text-align:right;font-family:sans-serif;font-size:.72rem;color:#666">
+  <a href="https://grossi-ops.github.io/g6/" target="_blank" style="color:#c9a84c;text-decoration:none;letter-spacing:.05em">G6 LLC</a>
+  <span style="color:#333">&nbsp;·&nbsp;</span>
+  <span>g6llc@proton.me</span>
+  <span style="color:#333">&nbsp;·&nbsp;</span>
+  <span>+1 (646) 342-3751</span>
+</div>
+
+
+<!-- ===== cross-reference addendum · WP70 · August 2026 ===== -->
+<section id="xref-wp70" style="max-width:860px;margin:2.5rem auto 0;padding:1.45rem 1.7rem;background:#0c0d16;border-left:3px solid #c9a84c;font-family:'Noto Serif',Georgia,serif;color:#e8e4d8;line-height:1.75;">
+  <div style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:.85rem;">Addendum · August 2026 · WP70</div>
+  <p style="margin:0 0 .95rem;">The reading of <em>r</em>* given here — the radius at which “the attractive outer basin and the repulsive inner basin balance exactly” — is a global claim about a flow, and <a href="book6/wp70-the-function-and-the-exponent.html" style="color:#c9a84c;">WP70</a> marks it as unlicensed pending Open Problem L1. The Whitney A<sub>1</sub> fold reading is unaffected: a fold is a local statement about a map. WP70 also closes a nearby temptation — the black hole merger remnant spin a<sub>f</sub>/M<sub>f</sub> ≈ 0.6864 is derived within standard general relativity and is not available as a dm³ prediction; 0.686 ≠ 0.776.</p>
+  <p style="margin:.4rem 0 0;font-size:.82rem;color:#6b6757;">A Lyapunov exponent is local and asymptotic; a Lyapunov function is global and constructive. Only the second bounds a basin. See <a href="book6/wp70-the-function-and-the-exponent.html" style="color:#c9a84c;">WP70 · The Function and the Exponent</a>.</p>
+</section>
+
+<footer class="prov-foot">
+  <strong>Gravity Across Scales</strong><br>
+  Principia Orthogona &middot; totogt.github.io/geometry<br>
+  G6 LLC &middot; Pablo Nogueira Grossi &middot; Newark NJ &middot; 2026 &middot; ORCID <a href="https://orcid.org/0009-0000-6496-2186" target="_blank" rel="noopener">0009-0000-6496-2186</a><br>
+  Series <a href="https://zenodo.org/communities/principia-orthogona" target="_blank" rel="noopener">Principia Orthogona community</a> &middot; <a href="https://github.com/TOTOGT/geometry">GitHub</a><br>
+  &copy; 2026 Pablo Nogueira Grossi &mdash; G6 LLC &middot; Licence CC BY-NC-ND 4.0
+</footer>
+</body>
+</html>
