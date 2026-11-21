@@ -110,18 +110,18 @@ table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;f
 </head>
 <body>
 <nav><span class="dm3-brand nav-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgn)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span><a href="https://totogt.github.io/DM3-lab/euler/">Euler 1747</a><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">Ledger</a><a href="https://github.com/TOTOGT/DM3-lab">Repo</a></nav>
-<header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">DM3-lab &middot; Lean 4 formalization portfolio &middot; 20 Nov 2026</div><h1>Lean 4 formalization of research mathematics, with a ledger that says what is and is not proven</h1><div class="gold-rule"></div></header>
+<header class="hero"><canvas id="field" aria-hidden="true"></canvas><div class="hero-brand"><span class="dm3-brand hero-size"><span class="dm-wrap"><svg class="wave-svg" data-wave="true" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="wgh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.5"/></linearGradient></defs><path class="wave-path" stroke="url(#wgh)" stroke-width="3" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="dm">dm</span></span><span class="cube">3</span></span></div><div class="hero-sub">DM3-lab &middot; Lean 4 formalization portfolio &middot; 21 Nov 2026</div><h1>Lean 4 formalization of research mathematics, with a ledger that says what is and is not proven</h1><div class="gold-rule"></div></header>
 <main>
 <p class="lede">I turn papers into Lean 4 statements and proofs against current Mathlib. The work is built with AI assistance (Claude) and every result is checked by the Lean kernel, with an axiom report and a status word in a public ledger. Pablo Nogueira Grossi, G6 LLC. <span class="mail">g6llc@proton.me</span></p>
 
 <div class="facts">
-<div class="fact"><b>425</b><span>distinct theorems and lemmas in the Euler formalization</span></div>
-<div class="fact"><b>69</b><span>Lean files, Lean v4.32.0 with Mathlib</span></div>
-<div class="fact"><b>126</b><span>commits, Nov 16 to 19, 2026</span></div>
+<div class="fact"><b>558</b><span>distinct theorems and lemmas in the Euler formalization</span></div>
+<div class="fact"><b>89</b><span>Lean files, Lean v4.32.0 with Mathlib</span></div>
+<div class="fact"><b>133</b><span>commits, Nov 16 to 21, 2026</span></div>
 <div class="fact"><b>0</b><span><code>sorry</code> or <code>axiom</code> declarations in that code</span></div>
 <div class="fact"><b>1</b><span>open hypothesis, named in the ledger</span></div>
 </div>
-<p class="note" style="margin-top:1rem">The 425 counts unique theorem and lemma names in <code>euler/lean/EulerLean</code>. The 69 stage files are cumulative and repeat earlier code, so counting declaration lines would give about 4,500 and overstate the work.</p>
+<p class="note" style="margin-top:1rem">The 558 counts unique theorem and lemma names in the tracked files of <code>euler/lean/EulerLean</code> (89 files, 21 Nov 2026), with no <code>sorry</code> and no <code>axiom</code> declaration in them. The stage files are cumulative and repeat earlier code, so counting declaration lines would overstate the work.</p>
 
 <h2>What is formalized</h2>
 <p>The target is Howe, Huffman, Kohlmeyer and Kruer, &ldquo;Euler&rsquo;s 1747 conjecture on sums of integers with restricted prime factors&rdquo; (2611.00370v1): every n &equiv; 2 (mod 4) is a sum of two positive integers whose prime factors are all &equiv; 1 (mod 4). This is an independent formalization, not the authors&rsquo; own. The analytic step uses Hurwitz quaternions and Hecke operators on a finite quotient of PGL&#8322;(&#120125;&#8346;), and that machinery is now in Lean.</p>
@@ -134,13 +134,17 @@ table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;f
 <tr><td>Hecke operators on functions Y&#8346; &rarr; &#8450;: self-adjoint (A4b), counting identity (A4c, A4d), U&#8344;U&#8343; = 24(U&#8343;&#8344; + l&middot;U&#8344;/&#8343;) (A4e), commuting (A4f)</td><td><code>SectionA4b to A4f</code></td><td><span class="tag ok">kernel, CI</span></td></tr>
 <tr><td>Normalised T&#8345; = U&#8345;/24: T&#8344;T&#8343; = T&#8343;&#8344; + l&middot;T&#8344;/&#8343; (A4g); T&#8321; = id and all odd T&#8345; commute with every T&#8344; (A4h); T&#8344;&#8345; = T&#8344;T&#8345; for coprime m, n (A4i)</td><td><code>SectionA4g to A4i</code></td><td><span class="tag ok">kernel, CI</span></td></tr>
 <tr><td>The two exceptional eigenfunctions: T&#8344;&middot;1 = &sigma;(m)&middot;1 (A4j) and T&#8344;&chi; = (m/p)&sigma;(m)&middot;&chi;, with &chi; the quadratic character of the determinant (A4k)</td><td><code>SectionA4j.Tn_const</code>, <code>SectionA4k.Tn_chi</code></td><td><span class="tag ok">kernel, CI</span></td></tr>
-<tr><td>Euler 1747 for n &equiv; 2 (mod 4), assuming only H31gt3. The finite range n &lt; 64&#8308; uses <code>native_decide</code></td><td><code>Section83.euler_1747_of_H31gt3</code></td><td><span class="tag warn">conditional</span></td></tr>
+<tr><td>Counting layer for H31gt3: |PGL&#8322;(&#120125;&#8346;)| = p(p&sup2;&minus;1), the subgroup bound |O<sub>p</sub>| &le; (p+1)/2, the bound #{&alpha; : &rho;(&alpha;) &isin; K<sub>p</sub>} &le; 8&middot;(T<sub>m</sub>1<sub>O<sub>p</sub></sub>)(base), and b<sub>p</sub>(2m) &le; #{&alpha; &isin; Q<sub>m</sub> : &rho;(&alpha;) &isin; K<sub>p</sub>}</td><td><code>EDa1, EDa3 to EDa9, EDb1 to EDb7</code></td><td><span class="tag ok">kernel, CI</span></td></tr>
+<tr><td>H31gt3 follows from the prime-case bound HPrime (Lemma 3.2 for primes p &equiv; 3 mod 4, p &gt; 3)</td><td><code>EDb8.H31gt3_of_hprime</code></td><td><span class="tag warn">conditional</span></td></tr>
+<tr><td>Euler 1747 for n &equiv; 2 (mod 4), assuming only HPrime. The finite range n &lt; 64&#8308; uses <code>native_decide</code></td><td><code>EDb9.euler_1747_of_hprime</code></td><td><span class="tag warn">conditional, CI</span></td></tr>
+<tr><td>Earlier form of the same result, assuming H31gt3 directly</td><td><code>Section83.euler_1747_of_H31gt3</code></td><td><span class="tag warn">conditional</span></td></tr>
 </tbody></table></div>
 
 <h2>What is not proven</h2>
 <div class="status">
-<p><b>H31gt3</b>, Prop 3.1 for primes p &gt; 3 not dividing m, is the one open hypothesis of the Euler theorem. The paper&rsquo;s route needs a norm bound on T&#8344; away from span{1, &chi;}, which rests on Jacquet&ndash;Langlands and the weight-2 Ramanujan&ndash;Petersson bound. Neither is in Mathlib.</p>
-<p>The eigenvalue results cover the two exceptional modes only, not the rest of the spectrum. The Hecke relations that need a Hecke prime are proved for odd n only. It is not shown that &chi; is nonzero or different from the constant function. The final Euler theorem lists the <code>native_decide</code> axiom for the finite range, so it is not kernel-only.</p>
+<p><b>HPrime</b> is the one open hypothesis of the Euler theorem: for primes p &equiv; 3 (mod 4), p &gt; 3, and odd primes l &ne; p, the Hecke operator satisfies &#8214;T<sub>l</sub> f&#8214; &le; 2&radic;l &#8214;f&#8214; for every f orthogonal to the constant function and to &chi;. It is Lemma 3.2 of the paper for primes. The paper&rsquo;s route needs Jacquet&ndash;Langlands (or the Eichler correspondence), the Eichler&ndash;Shimura relation and the weight-2 Ramanujan&ndash;Petersson bound via Weil. None of these is in Mathlib, and HPrime is not proved here. If HPrime were false for some admissible (p, l), the theorem would be vacuous; it was tested numerically in 82 instances for p = 3, 7, 11, 19, which is evidence, not a proof.</p>
+<p>The eigenvalue results in Lean cover the two exceptional modes only, not the rest of the spectrum. The Hecke relations that need a Hecke prime are proved for odd n only. It is not shown that &chi; is nonzero or different from the constant function. The final Euler theorem lists the <code>native_decide</code> axiom for the finite range, so it is not kernel-only.</p>
+<p>A separate numerical study of the aggregate sum that Proposition 6.1 uses (exact counts at 25 values of m near 10&#8311;, 10&#8312; and 10&#8313;) shows a residual of about &radic;m against room for about m<sup>3/4</sup>. It is evidence that a weaker, aggregate bound could suffice. It is not a proof, and no Lean statement of it is claimed.</p>
 </div>
 
 <h2>How results are checked</h2>
@@ -151,7 +155,7 @@ table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;f
 </div>
 
 <h2>Beyond the Euler chain</h2>
-<p>The same machine-readable count, taken over every git repository on my computer (16 clones, de-duplicated by file content), is a census of declared theorem and lemma names. It does not say that a file compiles. Only the Euler chain above has CI behind it.</p>
+<p><em>As of 20 Nov 2026.</em> The same machine-readable count, taken over every git repository on my computer (16 clones, de-duplicated by file content), is a census of declared theorem and lemma names. It does not say that a file compiles. Only the Euler chain above has CI behind it.</p>
 <div class="facts">
 <div class="fact"><b>3,084</b><span>distinct declared theorem and lemma names across 16 repositories</span></div>
 <div class="fact"><b>2,645</b><span>declared in files with no <code>sorry</code> and no <code>axiom</code> declaration</span></div>
@@ -172,14 +176,16 @@ table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;f
 <p class="foot" style="margin-top:.6rem;border:0;padding:0">Per-clone rows overlap, so they do not sum to the total. The script is <code>scripts/theorems-census.py</code> in DM3-lab. Mathlib itself is excluded.</p>
 
 <h2>Pace</h2>
-<div class="bars" role="img" aria-label="Commits touching the Euler formalization per day: Nov 16, 19; Nov 17, 71; Nov 18, 13; Nov 19, 23">
+<div class="bars" role="img" aria-label="Commits touching the Euler formalization per day: Nov 16, 19; Nov 17, 71; Nov 18, 13; Nov 19, 23; Nov 20, 1; Nov 21, 6">
 <div class="bar"><em>19</em><i style="height:26%"></i></div>
 <div class="bar"><em>71</em><i style="height:100%"></i></div>
 <div class="bar"><em>13</em><i style="height:18%"></i></div>
 <div class="bar"><em>23</em><i style="height:32%"></i></div>
+<div class="bar"><em>1</em><i style="height:2%"></i></div>
+<div class="bar"><em>6</em><i style="height:8%"></i></div>
 </div>
-<div class="barlab"><span>Nov 16</span><span>Nov 17</span><span>Nov 18</span><span>Nov 19</span></div>
-<p>Commits touching <code>euler/lean/EulerLean</code>, 126 in total. The Hecke chain from the self-adjointness stage (A4b) to the character eigenfunction (A4k) was written, compiled and pushed stage by stage on Nov 19.</p>
+<div class="barlab"><span>Nov 16</span><span>Nov 17</span><span>Nov 18</span><span>Nov 19</span><span>Nov 20</span><span>Nov 21</span></div>
+<p>Commits touching <code>euler/lean/EulerLean</code>, 133 in total. The Hecke chain from the self-adjointness stage (A4b) to the character eigenfunction (A4k) was written, compiled and pushed stage by stage on Nov 19. The reduction of H31gt3 to HPrime (EDa1 to EDb9) was built on Nov 21 and has its own CI workflow.</p>
 
 <h2>What I offer</h2>
 <div class="cards">
@@ -194,11 +200,13 @@ table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;f
 <ul class="files">
 <li><a href="https://github.com/TOTOGT/DM3-lab">DM3-lab repository</a></li>
 <li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/LEMMA_LEDGER.md">Lemma ledger: what is and is not proven</a></li>
-<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/StageA4k.lean">Hecke chain, latest stage (StageA4k.lean)</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/ED/EDb9.lean">Euler 1747 from HPrime (EDb9.lean)</a></li>
+<li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/StageA4k.lean">Hecke chain (StageA4k.lean)</a></li>
+<li><a href="https://totogt.github.io/DM3-lab/euler/Euler1747-referee-brief-v8.pdf">Referee brief v8 (PDF)</a></li>
 <li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/euler/lean/EulerLean/Stage80a.lean">Jacobi four-square count (Stage80a.lean)</a></li>
 <li><a href="https://github.com/TOTOGT/DM3-lab/blob/main/scripts/theorems-census.py">Theorem census script</a></li>
 </ul>
-<p class="foot">Counts taken 20 Nov 2026 from the repositories. The Euler chain is checked by the &ldquo;Euler layer A&rdquo; workflow; the wider census records declarations only.</p>
+<p class="foot">Euler counts taken 21 Nov 2026 from the tracked files. The wider census above was taken on 20 Nov 2026 and has not been re-run. The Euler chain is checked by the &ldquo;Euler layer A&rdquo; and &ldquo;Euler ED layer (lake build)&rdquo; workflows; the wider census records declarations only.</p>
 </main>
 <script>
 /* dm3 brand animation: travelling sine wave and hero phase portrait.
