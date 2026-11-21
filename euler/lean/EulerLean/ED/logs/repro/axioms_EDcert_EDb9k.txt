@@ -1,0 +1,13 @@
+'EDcert.good_of_sq_add_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'EDcert.chunk_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'EDcert.euler_finite_k' depends on axioms: [propext, Classical.choice, Quot.sound]
+'EDcert.euler_1747_of_H31gt3_k' depends on axioms: [propext, Classical.choice, Quot.sound]
+'EDb9k.euler_1747_of_hprime_k' depends on axioms: [propext, Classical.choice, Quot.sound]
+'EDb9.euler_1747_of_hprime' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ Euler1747.allOk_true._native.native_decide.ax_1_1]
+
+real	0m12.508s
+user	0m3.055s
+sys	0m4.799s

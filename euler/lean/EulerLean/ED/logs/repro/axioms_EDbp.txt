@@ -1,0 +1,5 @@
+'EDbp.bp_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+real	0m24.710s
+user	0m3.513s
+sys	0m6.321s

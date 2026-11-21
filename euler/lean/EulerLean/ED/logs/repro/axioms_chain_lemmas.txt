@@ -1,0 +1,12 @@
+'Section70.hmix_of_hjac' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Section80.hjac' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Section81.hjac' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FourSq.mixed_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Section69.bp_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Section69.bp_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Section83.bp3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Section83.h31ndvd_of' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+real	0m3.828s
+user	0m2.709s
+sys	0m1.084s
