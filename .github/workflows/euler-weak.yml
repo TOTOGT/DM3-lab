@@ -1,0 +1,70 @@
+# MANUAL ONLY. Compiles the ED chain up to EDb8 plus the DRAFT euler/lean/EulerLean/EDweak/EDweak.lean
+# (H31gt3_of_weak, weak_of_hprime) and prints axiom reports. Not triggered by push; a failure here cannot affect any other workflow.
+# Run: Actions > "Euler EDweak draft (manual)" > Run workflow.
+name: Euler EDweak draft (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  weak:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Compile chain up to EDb8, then EDweak
+        run: |
+          set -uxo pipefail
+          W=$GITHUB_WORKSPACE/ci_weak
+          mkdir -p $W
+          cp EulerLean/StageA4o.lean $W/
+          cp EulerLean/ED/*.lean $W/
+          cp EulerLean/EDweak/EDweak.lean $W/
+          rm -f $W/EDa2.lean $W/EDb6test.lean
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
+          for m in StageA4o EDa1 EDa3 EDa4 EDa5 EDa6 EDa7 EDa8 EDa9 EDb1 EDb2 EDb3 EDb4 EDb5 EDb6 Stage83cut EDb7 EDb8 EDweak; do
+            echo "::group::$m"
+            lean -R $W -o $W/$m.olean $W/$m.lean 2>&1 | tee $W/$m.out
+            rc=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            if [ $rc -ne 0 ]; then echo "::error::$m failed (exit $rc)"; exit 1; fi
+          done
+
+      - name: Axiom report (no sorry allowed)
+        run: |
+          set -uxo pipefail
+          W=$GITHUB_WORKSPACE/ci_weak
+          cat > $W/Axioms.lean <<'LEAN'
+          import EDweak
+          #print axioms EDweak.H31gt3_of_weak
+          #print axioms EDweak.weak_of_hprime
+          LEAN
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
+          lean -R $W $W/Axioms.lean 2>&1 | tee $W/axioms.txt
+          if grep -l "sorry" $W/EDweak.out $W/EDb8.out 2>/dev/null; then echo "::error::sorry"; exit 1; fi
+          python3 - <<'PY'
+          import re, os, sys
+          t = open(os.environ['GITHUB_WORKSPACE'] + '/ci_weak/axioms.txt').read()
+          ok = {'propext', 'Classical.choice', 'Quot.sound'}
+          reps = re.findall(r"'([^']+)' depends on axioms: \[(.*?)\]", t, re.S)
+          if len(reps) != 2: print("::error::expected 2 axiom reports"); sys.exit(1)
+          for name, ax in reps:
+              bad = [a.strip() for a in ax.split(',') if a.strip() not in ok]
+              print(name, 'axioms:', ax.strip(), '| BAD:' if bad else '| ok', bad if bad else '')
+              if bad: sys.exit(1)
+          PY
