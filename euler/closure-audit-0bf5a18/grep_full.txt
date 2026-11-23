@@ -1,0 +1,154 @@
+### euler/lean/EulerLean/ED/EDb8.lean
+12:def HPrime : Prop :=
+15:      inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+16:      ‖Tl p h2 xs ys hxy l f‖ ≤ 2 * Real.sqrt l * ‖f‖
+27:/-- E-D1c: H31gt3 follows from the prime-case Ramanujan-type bound. -/
+28:theorem H31gt3_of_hprime (hP : HPrime) : Section83.H31gt3 := by
+### euler/lean/EulerLean/StageA4o.lean
+803:/-! # StageA1 (layer A for H31gt3): conjugation and invertibility of the reduction map (UNTESTED when written)
+821:constancy.  Those are stages A2-A4.  Nothing here is about H31gt3 itself. -/
+870:/-! # StageA2 (layer A for H31gt3): the projective inverse identity (UNTESTED when written)
+885:Gamma_p, the quotient Y_p, the operator T_m, or anything about H31gt3.  It is the algebraic input for the
+942:/-! # StageA3a (layer A for H31gt3): the kernel of the projective reduction on Hurwitz units (UNTESTED when written)
+957:the image has order 12.  Those are A3a-ii.  Nothing here is about Y_p, T_m or H31gt3. -/
+1125:/-! # StageA3a2 (layer A for H31gt3): the Hurwitz unit group, the homomorphism to PGL2, kernel of size 2 (UNTESTED when written)
+1142:about Y_p, T_m or H31gt3. -/
+1264:/-! # StageA3a3 (layer A for H31gt3): |HurU| = 24 and the image of rho has order 12 (UNTESTED when written)
+1281:DOES NOT PROVE: anything about Y_p, T_m or H31gt3.  The action of Gamma_p and the quotient are A3b. -/
+1466:DOES NOT PROVE: a closed form for |PGL2 p|, functions on Y_p, the counting inner product, T_m, or H31gt3. -/
+1500:Does NOT prove: self-adjointness, T_m, the recurrence, or H31gt3. -/
+1576:bound; H31gt3.  Those are the next stage. -/
+1727:Hm m is nonempty or has size 24 sigma(m) for odd m (Stage80a, not in this chain); anything about H31gt3 or Lemma 3.2.
+2678:/-! # StageA4c (layer A for H31gt3): the weighted Hecke counting identity (compiled in the cloud before commit)
+2687:eigenvalue bounds, the size 24 σ(m), or H31gt3. -/
+3065:/-! # StageA4d (layer A for H31gt3): the Hecke count with the full norm-l family, factor 24 (compiled in the cloud before commit)
+3074:commutation, eigenvalue bounds, the size 24 σ(m), or H31gt3. -/
+3219:/-! # StageA4e (layer A for H31gt3): the Hecke relation on functions on Y_p (compiled in the cloud before commit)
+3228:or H31gt3.  The normalisation (dividing by 24) is not done here. -/
+3410:m, n, eigenvalue bounds, the size 24 sigma(m), the normalisation by 24, or H31gt3. -/
+3490:operators is nonzero (the size 24 sigma(m) of Hm m, Stage80a, is not in this chain), or H31gt3. -/
+3505:noncomputable def Tn (n : ℕ) (hn : ¬ p ∣ n) (f : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+3512:    Tn p h2 xs ys hxy m hpm (Tn p h2 xs ys hxy l hpl f) y
+3513:      = Tn p h2 xs ys hxy (l * m) (fun h => (Nat.Prime.dvd_mul (Fact.out : p.Prime)).1 h |>.elim hpl hpm) f y
+3515:            Tn p h2 xs ys hxy (m / l) (fun h => hpm (dvd_trans h (Nat.div_dvd_of_dvd hd))) f y else 0) := by
+3516:  unfold Tn
+3527:    Tn p h2 xs ys hxy m hpm (Tn p h2 xs ys hxy l hpl f)
+3528:      = Tn p h2 xs ys hxy l hpl (Tn p h2 xs ys hxy m hpm f) := by
+3530:  unfold Tn
+3543:DOES NOT PROVE: coprime multiplicativity T_{mn} = T_m T_n, eigenvalue bounds, that T_n is nonzero (size of Hm n), or H31gt3.
+3565:    SectionA4g.Tn p h2 xs ys hxy n hn (fun z => a z - c * b z) y
+3566:      = SectionA4g.Tn p h2 xs ys hxy n hn a y - c * SectionA4g.Tn p h2 xs ys hxy n hn b y := by
+3567:  unfold SectionA4g.Tn
+3571:    SectionA4g.Tn p h2 xs ys hxy n hn (fun _ => 0) y = 0 := by
+3572:  unfold SectionA4g.Tn
+3615:    SectionA4g.Tn p h2 xs ys hxy 1 hp1 f = f := by
+3617:  unfold SectionA4g.Tn
+3623:      SectionA4g.Tn p h2 xs ys hxy m hpm (SectionA4g.Tn p h2 xs ys hxy n hpn f)
+3624:        = SectionA4g.Tn p h2 xs ys hxy n hpn (SectionA4g.Tn p h2 xs ys hxy m hpm f) := by
+3655:        SectionA4g.Tn p h2 xs ys hxy n hpn g = fun y =>
+3656:          SectionA4g.Tn p h2 xs ys hxy m' hpm' (SectionA4g.Tn p h2 xs ys hxy l hpl g) y
+3658:                SectionA4g.Tn p h2 xs ys hxy (m' / l) (fun h => hpm' (dvd_trans h (Nat.div_dvd_of_dvd hd))) g y
+3663:      have e : (SectionA4g.Tn p h2 xs ys hxy (l * m') (fun h => (Nat.Prime.dvd_mul (Fact.out : p.Prime)).1 h |>.elim hpl hpm') g y)
+3664:          = SectionA4g.Tn p h2 xs ys hxy n hpn g y := by
+3665:        have key : ∀ k (hk : ¬ p ∣ k), k = n → SectionA4g.Tn p h2 xs ys hxy k hk g y
+3666:            = SectionA4g.Tn p h2 xs ys hxy n hpn g y := by
+3672:        SectionA4g.Tn p h2 xs ys hxy m hpm (fun z => if hd : l ∣ m' then
+3673:          SectionA4g.Tn p h2 xs ys hxy (m' / l) (fun h => hpm' (dvd_trans h (Nat.div_dvd_of_dvd hd))) g z else 0) y
+3675:          SectionA4g.Tn p h2 xs ys hxy (m' / l) (fun h => hpm' (dvd_trans h (Nat.div_dvd_of_dvd hd)))
+3676:            (SectionA4g.Tn p h2 xs ys hxy m hpm g) y else 0) := by
+3685:    have e1 := ih m' hlt hodd' hpm' m hpm (SectionA4g.Tn p h2 xs ys hxy l hpl f)
+3690:    rw [hE (SectionA4g.Tn p h2 xs ys hxy m hpm f)]
+3701:DOES NOT PROVE: eigenvalue bounds, that T_n is nonzero (size of Hm n, Stage80a), the case of even n, or H31gt3. -/
+3710:    SectionA4g.Tn p h2 xs ys hxy k hk g = SectionA4g.Tn p h2 xs ys hxy n hn g := by
+3717:    SectionA4g.Tn p h2 xs ys hxy n hpn g = fun y =>
+3718:      SectionA4g.Tn p h2 xs ys hxy m' hpm' (SectionA4g.Tn p h2 xs ys hxy l hpl g) y
+3720:            SectionA4g.Tn p h2 xs ys hxy (m' / l) (fun h => hpm' (dvd_trans h (Nat.div_dvd_of_dvd hd))) g y
+3733:      SectionA4g.Tn p h2 xs ys hxy (m * n) hpmn f
+3734:        = SectionA4g.Tn p h2 xs ys hxy m hpm (SectionA4g.Tn p h2 xs ys hxy n hpn f) := by
+3773:    have ihA := ih n' hlt hodd' m hcn' hpn' hpm hpmn' (SectionA4g.Tn p h2 xs ys hxy l hpl f)
+3963:Mathlib), the chi eigenvalue, or H31gt3. -/
+3983:    SectionA4g.Tn p h2 xs ys hxy m hpm (fun _ => (1 : ℂ)) y = (Section79a.sg m : ℂ) := by
+3984:  unfold SectionA4g.Tn
+3997:not in Mathlib), that chi is nonzero or distinct from the constant, or H31gt3. -/
+4094:    SectionA4g.Tn p h2 xs ys hxy m hpm (chiY p h2 xs ys hxy) y
+4096:  unfold SectionA4g.Tn
+4624:    SectionA4g.Tn p h2 xs ys hxy n hn (fun z => a z + b z) y
+4625:      = SectionA4g.Tn p h2 xs ys hxy n hn a y + SectionA4g.Tn p h2 xs ys hxy n hn b y := by
+4631:    SectionA4g.Tn p h2 xs ys hxy n hn (fun z => c * a z) y
+4632:      = c * SectionA4g.Tn p h2 xs ys hxy n hn a y := by
+4638:noncomputable def Tl (n : ℕ) : EY p h2 xs ys hxy →ₗ[ℂ] EY p h2 xs ys hxy :=
+4640:    { toFun := fun f => WithLp.toLp 2 (fun y => SectionA4g.Tn p h2 xs ys hxy n h.2 f.ofLp y)
+4652:    (Tl p h2 xs ys hxy n f).ofLp y = SectionA4g.Tn p h2 xs ys hxy n h.2 f.ofLp y := by
+4653:  simp [Tl, dif_pos h]
+4660:noncomputable def oneY : EY p h2 xs ys hxy := WithLp.toLp 2 (fun _ => (1 : ℂ))
+4661:noncomputable def chiE : EY p h2 xs ys hxy := WithLp.toLp 2 (SectionA4k.chiY p h2 xs ys hxy)
+4663:theorem Tl_one_eig (n : ℕ) (h : Adm p n) :
+4664:    ∃ a : ℝ, Tl p h2 xs ys hxy n (oneY p h2 xs ys hxy) = (a : ℂ) • oneY p h2 xs ys hxy := by
+4668:  simp only [oneY, PiLp.smul_apply, smul_eq_mul, mul_one]
+4672:theorem Tl_chi_eig (n : ℕ) (h : Adm p n) :
+4673:    ∃ a : ℝ, Tl p h2 xs ys hxy n (chiE p h2 xs ys hxy) = (a : ℂ) • chiE p h2 xs ys hxy := by
+4677:  simp only [chiE, PiLp.smul_apply, smul_eq_mul]
+4681:theorem Tl_symm (n : ℕ) (h : Adm p n) : (Tl p h2 xs ys hxy n).IsSymmetric := by
+4685:  unfold SectionA4g.Tn
+4700:    (Tl p h2 xs ys hxy n f).ofLp = SectionA4g.Tn p h2 xs ys hxy n h.2 f.ofLp :=
+4703:theorem Tl_one : Tl p h2 xs ys hxy 1 = LinearMap.id := by
+4710:    Tl p h2 xs ys hxy (m * n) = Tl p h2 xs ys hxy m ∘ₗ Tl p h2 xs ys hxy n := by
+4731:    Tl p h2 xs ys hxy (l ^ (k + 2))
+4732:      = Tl p h2 xs ys hxy l ∘ₗ Tl p h2 xs ys hxy (l ^ (k + 1)) - (l : ℂ) • Tl p h2 xs ys hxy (l ^ k) := by
+4750:  have e1 : SectionA4g.Tn p h2 xs ys hxy (l * l ^ (k + 1)) (fun h => (Nat.Prime.dvd_mul (Fact.out : p.Prime)).1 h |>.elim hAl.2 A1.2) f.ofLp
+4751:      = SectionA4g.Tn p h2 xs ys hxy (l ^ (k + 2)) A2.2 f.ofLp :=
+4754:  have e2 : SectionA4g.Tn p h2 xs ys hxy (l ^ (k + 1) / l) (fun h => A1.2 (dvd_trans h (Nat.div_dvd_of_dvd hd))) f.ofLp
+4755:      = SectionA4g.Tn p h2 xs ys hxy (l ^ k) A0.2 f.ofLp :=
+4767:      inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+4768:      ‖Tl p h2 xs ys hxy l f‖ ≤ 2 * Real.sqrt l * ‖f‖) :
+4770:      inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+4771:      ‖Tl p h2 xs ys hxy n f‖ ≤ ((ArithmeticFunction.sigma 0 n : ℕ) : ℝ) * Real.sqrt n * ‖f‖ :=
+4772:  lemma32_of_prime_case p (Fact.out) (oneY p h2 xs ys hxy) (chiE p h2 xs ys hxy) (Tl p h2 xs ys hxy)
+4776:    (fun n h => Tl_symm p h2 xs ys hxy n h)
+4777:    (fun n h => Tl_one_eig p h2 xs ys hxy n h)
+4778:    (fun n h => Tl_chi_eig p h2 xs ys hxy n h)
+4804:theorem Tn_adj (n : ℕ) (hn : ¬ p ∣ n) (f g : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+4805:    ∑ y, SectionA4g.Tn p h2 xs ys hxy n hn f y * (starRingEnd ℂ) (g y)
+4806:      = ∑ y, f y * (starRingEnd ℂ) (SectionA4g.Tn p h2 xs ys hxy n hn g y) := by
+4808:  unfold SectionA4g.Tn
+4853:  have e := Tn_adj p h2 xs ys hxy m hm.2 (fun _ => (1 : ℂ)) (SectionA4k.chiY p h2 xs ys hxy)
+4866:  toFun g := fun y => (SectionA4g.Tn p h2 xs ys hxy m hm (fun z => (g z : ℂ)) y).re
+4882:      inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+4883:      ‖Tl p h2 xs ys hxy l f‖ ≤ 2 * Real.sqrt l * ‖f‖)
+4893:  have h1 : inner ℂ (oneY p h2 xs ys hxy) H = 0 := by
+4894:    simp only [PiLp.inner_apply, RCLike.inner_apply, oneY, hH, map_one, mul_one]
+4896:  have h2' : inner ℂ (chiE p h2 xs ys hxy) H = 0 := by
+4897:    simp only [PiLp.inner_apply, RCLike.inner_apply, chiE, hH, hreal]
+4904:  have hre : ∑ y, h y * TR p h2 xs ys hxy m hm.2 h y = (inner ℂ H (Tl p h2 xs ys hxy m H)).re := by
+4909:  have hcs : (inner ℂ H (Tl p h2 xs ys hxy m H)).re ≤ ‖H‖ * ‖Tl p h2 xs ys hxy m H‖ :=
+4912:  calc _ ≤ ‖H‖ * ‖Tl p h2 xs ys hxy m H‖ := hcs
+4925:      inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+4926:      ‖Tl p h2 xs ys hxy l f‖ ≤ 2 * Real.sqrt l * ‖f‖)
+4950:    have e := Tn_adj p h2 xs ys hxy m hm.2 (fun z => (u z : ℂ)) (fun z => (v z : ℂ))
+4952:    have L : ∀ y, (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (u z : ℂ)) y * (starRingEnd ℂ) (v y : ℂ)).re
+4953:        = (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (u z : ℂ)) y).re * v y := by
+4955:    have R : ∀ y, ((u y : ℂ) * (starRingEnd ℂ) (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (v z : ℂ)) y)).re
+4956:        = u y * (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (v z : ℂ)) y).re := by
+5096:    SectionA4g.Tn p h2 xs ys hxy n hn f (rt p h2 xs ys hxy k y) = SectionA4g.Tn p h2 xs ys hxy n hn f y := by
+5099:  unfold SectionA4g.Tn
+5132:      inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+5133:      ‖Tl p h2 xs ys hxy l f‖ ≤ 2 * Real.sqrt l * ‖f‖)
+5181:      inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+5182:      ‖Tl p h2 xs ys hxy l f‖ ≤ 2 * Real.sqrt l * ‖f‖)
+### euler/lean/EulerLean/EDweak/EDweak.lean
+8:Purpose: replace the spectral hypothesis `EDb8.HPrime` (a norm bound for every admissible prime l on every f orthogonal
+18:  R3  name resolution of `Tn_adj`, `sum_chi`, `const_OK`, `OK`, `mkY`, `Kp`, `TR` through the `open` line;
+44:H31gt3 quantifies over (odd, all prime factors = 3 mod 4, 64^4 <= 2m, p not dividing m, p <= Pn(2m)). -/
+52:/-- the replacement hypothesis, uniform in the same data as HPrime (no l, no f, no inner products with 1, chi) -/
+53:def HWeak : Prop :=
+88:    have e := Tn_adj p h2 xs ys hxy m hm.2 (fun z => (u z : ℂ)) (fun z => (v z : ℂ))
+90:    have L : ∀ y, (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (u z : ℂ)) y * (starRingEnd ℂ) (v y : ℂ)).re
+91:        = (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (u z : ℂ)) y).re * v y := by
+93:    have R : ∀ y, ((u y : ℂ) * (starRingEnd ℂ) (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (v z : ℂ)) y)).re
+94:        = u y * (SectionA4g.Tn p h2 xs ys hxy m hm.2 (fun z => (v z : ℂ)) y).re := by
+121:theorem H31gt3_of_weak (hW : HWeak) : Section83.H31gt3 := by
+186:/-- VALIDATION ONLY (not used by the two theorems above): `HPrime → HWeak`.  Shows HWeak is implied by HPrime using the
+189:theorem weak_of_hprime (hP : EDb8.HPrime) : HWeak := by
+### euler/lean/EulerLean/ED/EDb9.lean
+6:/-- Euler's 1747 conjecture for n ≡ 2 (mod 4), conditional ONLY on the prime-case bound `HPrime`
+9:theorem euler_1747_of_hprime (hP : EDb8.HPrime) (n : ℕ) (hn4 : n % 4 = 2) :

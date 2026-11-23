@@ -1,0 +1,214 @@
+
+===== STEP 0: environment =====
+Mon Nov 23 16:43:18 UTC 2026
+Linux claude 6.8.0-149-generic #149~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Oct 28 21:13:09 UTC  aarch64 aarch64 aarch64 GNU/Linux
+lean: NOT FOUND  lake: NOT FOUND
+
+===== STEP 1: commit identity and working tree (read-only git) =====
+0bf5a1846287d8b429136813b68c516b1c44665d
+commit 0bf5a1846287d8b429136813b68c516b1c44665d
+Author:     Pablo N Grossi <brodananda@gmail.com>
+AuthorDate: Mon Nov 23 00:17:52 2026 -0500
+Commit:     Pablo N Grossi <brodananda@gmail.com>
+CommitDate: Mon Nov 23 00:17:52 2026 -0500
+
+    Euler: manual workflow for the EDweak draft
+--- HEAD:
+efea56a45486c372d588cb5e75600f396fe44c01
+--- commits after 0bf5a18 (max 30):
+efea56a Euler page: pointer from Short version to 23 Nov status box (sluhcdf@gmail.com + Sonnet 5.5)
+69e540a Euler page: status update 23 Nov 2026, HPrime chain and manuscript (sluhcdf@gmail.com + Sonnet 5.5)
+--- Lean files changed between 0bf5a18 and HEAD:
+--- git status --short:
+ M referee/mueller-2026-11/index.html
+?? euler/StageA4l.lean
+?? euler/StageA4m.lean
+?? euler/StageA4m_generic.lean
+?? euler/StageA4n.lean
+?? euler/StageA4o.lean
+?? euler/lean/EulerLean/ED/logs/.adj_tmp
+?? referee/rh-compare/
+?? scripts/__pycache__/
+
+===== STEP 2: definitions and statements at 0bf5a18 (git show; full grep in grep_full.txt) =====
+--- euler/lean/EulerLean/ED/EDb8.lean : matching lines = 5
+--- declarations mentioning the names:
+12:def HPrime : Prop :=
+28:theorem H31gt3_of_hprime (hP : HPrime) : Section83.H31gt3 := by
+--- euler/lean/EulerLean/StageA4o.lean : matching lines = 130
+--- declarations mentioning the names:
+3505:noncomputable def Tn (n : ℕ) (hn : ¬ p ∣ n) (f : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+3509:theorem Tn_rel (l : ℕ) [Fact l.Prime] (h2l : (2 : ZMod l) ≠ 0) (xsl ysl : ZMod l)
+3522:theorem Tn_comm (l : ℕ) [Fact l.Prime] (h2l : (2 : ZMod l) ≠ 0) (xsl ysl : ZMod l)
+3563:theorem Tn_sub (n : ℕ) (hn : ¬ p ∣ n) (a b : SectionA3b.Yp p h2 xs ys hxy → ℂ) (c : ℂ)
+3570:theorem Tn_zero (n : ℕ) (hn : ¬ p ∣ n) (y : SectionA3b.Yp p h2 xs ys hxy) :
+3614:theorem Tn_one (hp1 : ¬ p ∣ 1) (f : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+3708:theorem Tn_congr {k n : ℕ} (hk : ¬ p ∣ k) (hn : ¬ p ∣ n) (h : k = n)
+3714:theorem Tn_split (l : ℕ) [Fact l.Prime] (h2l : (2 : ZMod l) ≠ 0) (xsl ysl : ZMod l)
+3982:theorem Tn_const (m : ℕ) (hm : m % 2 = 1) (hpm : ¬ p ∣ m) (y : SectionA3b.Yp p h2 xs ys hxy) :
+4093:theorem Tn_chi (m : ℕ) (hm : m % 2 = 1) (hpm : ¬ p ∣ m) (y : SectionA3b.Yp p h2 xs ys hxy) :
+4622:theorem Tn_add' (n : ℕ) (hn : ¬ p ∣ n) (a b : SectionA3b.Yp p h2 xs ys hxy → ℂ)
+4629:theorem Tn_smul' (n : ℕ) (hn : ¬ p ∣ n) (c : ℂ) (a : SectionA3b.Yp p h2 xs ys hxy → ℂ)
+4638:noncomputable def Tl (n : ℕ) : EY p h2 xs ys hxy →ₗ[ℂ] EY p h2 xs ys hxy :=
+4651:theorem Tl_apply (n : ℕ) (h : Adm p n) (f : EY p h2 xs ys hxy) (y : SectionA3b.Yp p h2 xs ys hxy) :
+4660:noncomputable def oneY : EY p h2 xs ys hxy := WithLp.toLp 2 (fun _ => (1 : ℂ))
+4661:noncomputable def chiE : EY p h2 xs ys hxy := WithLp.toLp 2 (SectionA4k.chiY p h2 xs ys hxy)
+4663:theorem Tl_one_eig (n : ℕ) (h : Adm p n) :
+4672:theorem Tl_chi_eig (n : ℕ) (h : Adm p n) :
+4681:theorem Tl_symm (n : ℕ) (h : Adm p n) : (Tl p h2 xs ys hxy n).IsSymmetric := by
+4699:theorem Tl_fun (n : ℕ) (h : Adm p n) (f : EY p h2 xs ys hxy) :
+4703:theorem Tl_one : Tl p h2 xs ys hxy 1 = LinearMap.id := by
+4709:theorem Tl_mul (m n : ℕ) (hm : Adm p m) (hn : Adm p n) (hmn : Nat.Coprime m n) :
+4730:theorem Tl_rec (l : ℕ) (hl : l.Prime) (hAl : Adm p l) (k : ℕ) :
+4804:theorem Tn_adj (n : ℕ) (hn : ¬ p ∣ n) (f g : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+5093:theorem Tn_rt (n : ℕ) (hn : ¬ p ∣ n) (k : SectionA2.PGL2 p)
+--- euler/lean/EulerLean/EDweak/EDweak.lean : matching lines = 13
+--- declarations mentioning the names:
+53:def HWeak : Prop :=
+121:theorem H31gt3_of_weak (hW : HWeak) : Section83.H31gt3 := by
+--- euler/lean/EulerLean/ED/EDb9.lean : matching lines = 2
+--- declarations mentioning the names:
+--- full text of key declarations (up to 25 lines each):
+### euler/lean/EulerLean/ED/EDb8.lean :: def HPrime
+12: def HPrime : Prop :=
+13:   ∀ (p : ℕ) [Fact p.Prime] (_hp3 : p % 4 = 3) (_hp4 : 3 < p) (h2 : (2 : ZMod p) ≠ 0) (xs ys : ZMod p) (hxy : xs ^ 2 + ys ^ 2 = -1)
+14:     (l : ℕ), l.Prime → Adm p l → ∀ f : EY p h2 xs ys hxy,
+15:       inner ℂ (oneY p h2 xs ys hxy) f = 0 → inner ℂ (chiE p h2 xs ys hxy) f = 0 →
+16:       ‖Tl p h2 xs ys hxy l f‖ ≤ 2 * Real.sqrt l * ‖f‖
+17: 
+### euler/lean/EulerLean/StageA4o.lean :: def Tn 
+3505: noncomputable def Tn (n : ℕ) (hn : ¬ p ∣ n) (f : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+3506:     SectionA3b.Yp p h2 xs ys hxy → ℂ := fun y => U p h2 xs ys hxy n hn f y / 24
+3507: 
+### euler/lean/EulerLean/StageA4o.lean :: def U (n
+3334: noncomputable def U (n : ℕ) (hpn : ¬ p ∣ n) (f : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+3335:     SectionA3b.Yp p h2 xs ys hxy → ℂ :=
+3336:   SectionA4a.TY (SectionA3b.Gam p h2 xs ys hxy) (SectionA4b.aH p h2 xs ys hxy n hpn) f
+3337: 
+### euler/lean/EulerLean/StageA4o.lean :: theorem U_mk
+3338: theorem U_mk (n : ℕ) (hpn : ¬ p ∣ n) (f : SectionA3b.Yp p h2 xs ys hxy → ℂ) (g : SectionA2.PGL2 p) :
+3339:     U p h2 xs ys hxy n hpn f (Quotient.mk (QuotientGroup.rightRel (SectionA3b.Gam p h2 xs ys hxy)) g)
+3340:       = ∑ x ∈ (Section77a.Hn_finite n).toFinset,
+3341:           f (Quotient.mk (QuotientGroup.rightRel (SectionA3b.Gam p h2 xs ys hxy)) (rhoT p xs ys x * g)) := by
+3342:   unfold U
+3343:   rw [SectionA4a.TY_mk _ _ (SectionA4b.aH_stable p h2 xs ys hxy n hpn) f g]
+3344:   rw [← sum_Hm n (fun x => f (Quotient.mk (QuotientGroup.rightRel (SectionA3b.Gam p h2 xs ys hxy)) (rhoT p xs ys x * g)))]
+3345:   refine Finset.sum_congr rfl (fun α _ => ?_)
+3346:   rw [rhoT_aH p h2 xs ys hxy n hpn α]
+3347: 
+### euler/lean/EulerLean/StageA4o.lean :: def Tl 
+4638: noncomputable def Tl (n : ℕ) : EY p h2 xs ys hxy →ₗ[ℂ] EY p h2 xs ys hxy :=
+4639:   if h : Adm p n then
+4640:     { toFun := fun f => WithLp.toLp 2 (fun y => SectionA4g.Tn p h2 xs ys hxy n h.2 f.ofLp y)
+4641:       map_add' := fun f g => by
+4642:         ext y
+4643:         simp only [PiLp.add_apply, WithLp.ofLp_add]
+4644:         exact Tn_add' p h2 xs ys hxy n h.2 f.ofLp g.ofLp y
+4645:       map_smul' := fun c f => by
+4646:         ext y
+4647:         simp only [PiLp.smul_apply, WithLp.ofLp_smul, RingHom.id_apply, smul_eq_mul]
+4648:         exact Tn_smul' p h2 xs ys hxy n h.2 c f.ofLp y }
+4649:   else 0
+4650: 
+### euler/lean/EulerLean/StageA4o.lean :: def oneY
+4660: noncomputable def oneY : EY p h2 xs ys hxy := WithLp.toLp 2 (fun _ => (1 : ℂ))
+4661: noncomputable def chiE : EY p h2 xs ys hxy := WithLp.toLp 2 (SectionA4k.chiY p h2 xs ys hxy)
+4662: 
+### euler/lean/EulerLean/StageA4o.lean :: def chiE
+4661: noncomputable def chiE : EY p h2 xs ys hxy := WithLp.toLp 2 (SectionA4k.chiY p h2 xs ys hxy)
+4662: 
+### euler/lean/EulerLean/StageA4o.lean :: def chiY
+4050: noncomputable def chiY : SectionA3b.Yp p h2 xs ys hxy → ℂ :=
+4051:   Quotient.lift (fun g => (((chiP p g : ℤˣ) : ℤ) : ℂ)) (by
+4052:     intro a b hab
+4053:     have h := QuotientGroup.rightRel_apply.1 hab
+4054:     have h1 := chiP_Gam p h2 xs ys hxy _ h
+4055:     rw [map_mul, map_inv] at h1
+4056:     have : chiP p b = chiP p a := mul_inv_eq_one.1 h1
+4057:     simp [this])
+4058: 
+### euler/lean/EulerLean/StageA4o.lean :: theorem Tl_one_eig
+4663: theorem Tl_one_eig (n : ℕ) (h : Adm p n) :
+4664:     ∃ a : ℝ, Tl p h2 xs ys hxy n (oneY p h2 xs ys hxy) = (a : ℂ) • oneY p h2 xs ys hxy := by
+4665:   refine ⟨(Section79a.sg n : ℝ), ?_⟩
+4666:   ext y
+4667:   rw [Tl_apply p h2 xs ys hxy n h]
+4668:   simp only [oneY, PiLp.smul_apply, smul_eq_mul, mul_one]
+4669:   rw [SectionA4j.Tn_const p h2 xs ys hxy n (Nat.odd_iff.1 h.1) h.2 y]
+4670:   push_cast; rfl
+4671: 
+### euler/lean/EulerLean/StageA4o.lean :: theorem Tn_adj
+4804: theorem Tn_adj (n : ℕ) (hn : ¬ p ∣ n) (f g : SectionA3b.Yp p h2 xs ys hxy → ℂ) :
+4805:     ∑ y, SectionA4g.Tn p h2 xs ys hxy n hn f y * (starRingEnd ℂ) (g y)
+4806:       = ∑ y, f y * (starRingEnd ℂ) (SectionA4g.Tn p h2 xs ys hxy n hn g y) := by
+4807:   have e := SectionA4f.U_adj p h2 xs ys hxy n hn f g
+4808:   unfold SectionA4g.Tn
+4809:   have c24 : (starRingEnd ℂ) (24 : ℂ) = 24 := map_ofNat (starRingEnd ℂ) 24
+4810:   have cdiv : ∀ x : ℂ, (starRingEnd ℂ) (x / 24) = (starRingEnd ℂ) x / 24 := fun x => by rw [map_div₀, c24]
+4811:   simp only [cdiv]
+4812:   have l1 : ∑ x, SectionA4e.U p h2 xs ys hxy n hn f x / 24 * (starRingEnd ℂ) (g x)
+4813:       = (∑ x, SectionA4e.U p h2 xs ys hxy n hn f x * (starRingEnd ℂ) (g x)) / 24 := by
+4814:     rw [Finset.sum_div]; exact Finset.sum_congr rfl (fun x _ => by ring)
+4815:   have l2 : ∑ x, f x * ((starRingEnd ℂ) (SectionA4e.U p h2 xs ys hxy n hn g x) / 24)
+4816:       = (∑ x, f x * (starRingEnd ℂ) (SectionA4e.U p h2 xs ys hxy n hn g x)) / 24 := by
+4817:     rw [Finset.sum_div]; exact Finset.sum_congr rfl (fun x _ => by ring)
+4818:   rw [l1, l2, e]
+4819: 
+### euler/lean/EulerLean/StageA4o.lean :: def Adm
+4308: def Adm (p n : ℕ) : Prop := Odd n ∧ ¬ p ∣ n
+4309: 
+### euler/lean/EulerLean/EDweak/EDweak.lean :: def WeakAt
+45: def WeakAt : Prop :=
+46:   ∀ m : ℕ, m % 2 = 1 → (∀ q : ℕ, q.Prime → q ∣ m → q % 4 = 3) → 64 ^ 4 ≤ 2 * m →
+47:     ∀ hpm : ¬ p ∣ m, p ≤ Section63b.Pn (2 * m) →
+48:       ∑ y, uP p h2 xs ys hxy y * TR p h2 xs ys hxy m hpm (uP p h2 xs ys hxy) y
+49:         ≤ ((ArithmeticFunction.sigma 0 m : ℕ) : ℝ) * Real.sqrt m * ∑ y, (uP p h2 xs ys hxy y) ^ 2
+50: 
+### euler/lean/EulerLean/EDweak/EDweak.lean :: def HWeak
+53: def HWeak : Prop :=
+54:   ∀ (p : ℕ) [Fact p.Prime] (_ : p % 4 = 3) (_ : 3 < p) (h2 : (2 : ZMod p) ≠ 0)
+55:     (xs ys : ZMod p) (hxy : xs ^ 2 + ys ^ 2 = -1), WeakAt p h2 xs ys hxy
+56: 
+### euler/lean/EulerLean/ED/EDb9.lean :: theorem euler_1747_of_hprime
+9: theorem euler_1747_of_hprime (hP : EDb8.HPrime) (n : ℕ) (hn4 : n % 4 = 2) :
+10:     ∃ a b : ℕ, Euler1747.EulerGood a ∧ Euler1747.EulerGood b ∧ a + b = n :=
+11:   Section83.euler_1747_of_H31gt3 (EDb8.H31gt3_of_hprime hP) n hn4
+12: 
+
+===== STEP 2b: Section83.H31gt3 statement at 0bf5a18 =====
+4132: def H31gt3 : Prop := ∀ m : ℕ, m % 2 = 1 → (∀ p : ℕ, p.Prime → p ∣ m → p % 4 = 3) → 64 ^ 4 ≤ 2 * m →
+4133:   ∀ p : ℕ, p.Prime → p % 4 = 3 → ¬ p ∣ m → p ≤ Section63b.Pn (2 * m) → 3 < p →
+4134:     (Section42.bp p (2 * m) : ℝ) / (24 * (Section51.sig m : ℝ))
+4135:       ≤ 2 / ((p : ℝ) * ((p : ℝ) - 1))
+4136:         + (Section51.tau m : ℝ) * Real.sqrt m / (3 * (Section51.sig m : ℝ))
+4137: 
+4138: theorem bp3 (m : ℕ) (hm2 : m % 2 = 1) (hm3 : ¬ 3 ∣ m) :
+4139:     Section42.bp 3 (2 * m) ≤ 8 * Section79a.sg m := by
+
+===== STEP 3: sorry / admit / axiom / native_decide / implemented_by at 0bf5a18 (text search, includes comments) =====
+StageA4o : sorry=1 admit=0 native_decide=1 implemented_by/extern=0
+   sorry-line in StageA4o: 4506:(2026-11-19), no errors, no sorry;
+EDa1 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDa3 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDa4 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDa5 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDa6 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDa7 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDa8 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDa9 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb1 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb2 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb3 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb4 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb5 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb6 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+Stage83cut : sorry=0 admit=0 native_decide=6 implemented_by/extern=0
+EDb7 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb8 : sorry=0 admit=0 native_decide=0 implemented_by/extern=0
+EDb9 : sorry=0 admit=0 native_decide=1 implemented_by/extern=0
+EDweak : sorry=1 admit=1 native_decide=0 implemented_by/extern=0
+   sorry-line in EDweak: 13:comments).  No new Mathlib lemma is invoked.  No sorry / admit / axiom.  Every line is UNTESTED.
+
+===== STEP 4 SKIPPED (BUILD=0): no kernel check. =====
+
+===== DONE. Report at /tmp/closure-audit/report.txt =====
