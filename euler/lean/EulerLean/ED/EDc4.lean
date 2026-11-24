@@ -119,7 +119,7 @@ theorem hprime204_of_rpeigen (hR : RPEigen) : EDcDefs.HPrime204Restricted := by
     · have e := hsymm (chiE p h2 xs ys hxy) v
       rw [hb, inner_smul_left, hv2, mul_zero] at e
       exact e.symm
-  have hT' : ((Tl p h2 xs ys hxy l).restrict hinv).IsSymmetric := hsymm.restrict_invariant hinv
+  have hT' := hsymm.restrict_invariant hinv
   have hfW : f ∈ W := (hmem f).2 ⟨h1, hchi⟩
   have hB : (0 : ℝ) ≤ 2 * Real.sqrt l := by positivity
   have hev : ∀ (μ : ℝ) (v : W), v ≠ 0 →
