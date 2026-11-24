@@ -1,0 +1,70 @@
+# EDc4 (interface): RPEigen (eigenvalue-level Ramanujan hypothesis) => HPrime204Restricted, via spectral theorem. Does NOT prove RPEigen or HPrime204Restricted.
+# Chain: StageA4o Stage83cut EDc0 EDcDefs EDc4 (tracked sources). Does not touch other workflows.
+# Gate: Lean 4.32.0 + Mathlib pin, both modules exit 0, no sorry/error, EDc4 axioms within {propext, Classical.choice, Quot.sound}.
+name: Euler EDc4 (Lean)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'euler/lean/EulerLean/ED/EDc4.lean'
+      - '.github/workflows/euler-edc4.yml'
+
+jobs:
+  edc4:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Assert pins
+        run: |
+          set -uxo pipefail
+          lake env lean --version | tee /tmp/ver.txt
+          grep -q 'version 4.32.0' /tmp/ver.txt || { echo "::error::Lean is not 4.32.0"; exit 1; }
+          rev=$(git -C .lake/packages/mathlib rev-parse HEAD)
+          [ "$rev" = "81a5d257c8e410db227a6665ed08f64fea08e997" ] || { echo "::error::Mathlib rev mismatch"; exit 1; }
+
+      - name: Compile chain and gate
+        run: |
+          set -uxo pipefail
+          W=$GITHUB_WORKSPACE/ci_edc4
+          mkdir -p $W
+          MODS="StageA4o Stage83cut EDc0 EDcDefs EDc4"
+          cp EulerLean/StageA4o.lean $W/
+          for m in $MODS; do [ "$m" = StageA4o ] || cp EulerLean/ED/$m.lean $W/; done
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
+          for m in $MODS; do
+            echo "::group::$m"
+            lean -R $W -o $W/$m.olean $W/$m.lean 2>&1 | tee $W/$m.out
+            rc=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            [ "$rc" -eq 0 ] || { echo "::error::$m exited $rc"; exit 1; }
+            if grep -nE ": error" $W/$m.out; then echo "::error::error in $m"; exit 1; fi
+          done
+          # sorry / sorryAx must not appear in the EDc modules' own output
+          for m in EDc4; do
+            if grep -nE "(^|[^a-zA-Z_])sorry" $W/$m.out; then echo "::error::sorry in $m"; exit 1; fi
+          done
+          for thm in EDc4.norm_le_of_eigen_bound EDc4.hprime204_of_rpeigen; do
+            line=$(grep -A2 "$thm' depends on axioms" $W/EDc4.out | tr '\n' ' ')
+            echo "$line"
+            [ -n "$line" ] || { echo "::error::axiom report missing for $thm"; exit 1; }
+            rest=$(echo "$line" | sed -E "s/.*depends on axioms: \[//; s/\].*//; s/propext//; s/Classical.choice//; s/Quot.sound//; s/[, ]//g")
+            [ -z "$rest" ] || { echo "::error::unexpected axioms in $thm: $rest"; exit 1; }
+            echo "$line" >> $GITHUB_STEP_SUMMARY
+          done
