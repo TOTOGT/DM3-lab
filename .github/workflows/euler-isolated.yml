@@ -1,0 +1,65 @@
+# Isolated, standalone Lean files (each imports only Mathlib; none is part of the production chain).
+#   DivCert_isolated.lean    exact divisor certificate, E <= (5/6)/u^6, revised numeric_core
+#   ChebMajorant_isolated.lean   |U_k(t)| <= U_k(X) for |t| <= X, X >= 1 (+ transport to u)
+#   SNormCheb_isolated.lean  S_norm_le generalised over the spectral constant X (UNTESTED until this run)
+# Gate: lean exit code 0, no 'sorry', no 'error', and every axiom report contained in
+# {propext, Classical.choice, Quot.sound}.  No native_decide.  Does NOT touch euler-ed.yml.
+name: Euler isolated files (Lean)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/euler-isolated.yml'
+
+jobs:
+  isolated:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Compile and gate
+        run: |
+          set -uxo pipefail
+          mkdir -p /tmp/iso
+          for m in DivCert_isolated ChebMajorant_isolated SNormCheb_isolated; do
+            echo "::group::$m"
+            lake env lean EulerLean/ED/$m.lean 2>&1 | tee /tmp/iso/$m.out
+            rc=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            [ "$rc" -eq 0 ] || { echo "::error::$m exited $rc"; exit 1; }
+            if grep -nE "(^|[^a-zA-Z_])sorry" /tmp/iso/$m.out; then echo "::error::sorry in $m"; exit 1; fi
+            if grep -nE ": error" /tmp/iso/$m.out; then echo "::error::error in $m"; exit 1; fi
+          done
+          python3 - <<'PY'
+          import re, sys
+          ok = {'propext', 'Classical.choice', 'Quot.sound'}
+          out, bad, n = [], [], 0
+          for m in ('DivCert_isolated', 'ChebMajorant_isolated', 'SNormCheb_isolated'):
+              t = open(f'/tmp/iso/{m}.out').read()
+              reps = re.findall(r"'([^']+)' depends on axioms: \[(.*?)\]", t, re.S)
+              n += len(reps)
+              for name, a in reps:
+                  s = {x.strip() for x in a.replace('\n', ' ').split(',')}
+                  out.append(f'- `{name}`: {a.strip()}')
+                  if not s <= ok: bad.append(name)
+          import os
+          open(os.environ['GITHUB_STEP_SUMMARY'], 'a').write('### Isolated Lean files\n' + f'axiom reports: {n}; non-allowed: {len(bad)}\n\n' + '\n'.join(out) + '\n')
+          if n < 12 or bad:
+              print('::error::axiom gate failed', n, bad); sys.exit(1)
+          PY
