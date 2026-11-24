@@ -1,0 +1,89 @@
+# EDc modules (generalised Chebyshev route), compiled one module at a time against the TRACKED production sources.
+# Currently: EDc0 only (imports StageA4o).  EDcert is NOT built here.  Does not touch euler-ed.yml.
+# Gate: pinned Lean 4.32.0 and Mathlib rev from lake-manifest, lean exit code 0, no sorry / error,
+#       all nine required axiom reports present and contained in {propext, Classical.choice, Quot.sound}.
+name: Euler EDc modules (Lean)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'euler/lean/EulerLean/ED/EDc*.lean'
+      - '.github/workflows/euler-edc.yml'
+
+jobs:
+  edc:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+
+      - name: Assert pins
+        run: |
+          set -uxo pipefail
+          lake env lean --version | tee /tmp/ver.txt
+          grep -q 'version 4.32.0' /tmp/ver.txt || { echo "::error::Lean is not 4.32.0"; exit 1; }
+          rev=$(git -C .lake/packages/mathlib rev-parse HEAD)
+          echo "mathlib $rev"
+          [ "$rev" = "81a5d257c8e410db227a6665ed08f64fea08e997" ] || { echo "::error::Mathlib rev mismatch"; exit 1; }
+
+      - name: Compile StageA4o and EDc0, gate
+        run: |
+          set -uxo pipefail
+          W=$GITHUB_WORKSPACE/ci_edc
+          mkdir -p $W
+          cp EulerLean/StageA4o.lean $W/
+          cp EulerLean/ED/EDc0.lean $W/
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
+          for m in StageA4o EDc0; do
+            echo "::group::$m"
+            lean -R $W -o $W/$m.olean $W/$m.lean 2>&1 | tee $W/$m.out
+            rc=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            [ "$rc" -eq 0 ] || { echo "::error::$m exited $rc"; exit 1; }
+            if grep -nE "(^|[^a-zA-Z_])sorry" $W/$m.out; then echo "::error::sorry in $m"; exit 1; fi
+            if grep -nE ": error" $W/$m.out; then echo "::error::error in $m"; exit 1; fi
+          done
+          cat > $W/Ax.lean <<'LEAN'
+          import EDc0
+          #print axioms EDc0.w_ge_succ
+          #print axioms EDc0.tau_le_Amaj
+          #print axioms EDc0.S_norm_le_cheb
+          #print axioms EDc0.S_norm_le_via_cheb
+          #print axioms EDc0.S_norm_le_51_50
+          #print axioms EDc0.Amaj_pp
+          #print axioms EDc0.Amaj_mul
+          #print axioms EDc0.Amaj_pos
+          #print axioms EDc0.reduction_cheb
+          LEAN
+          lean -R $W $W/Ax.lean 2>&1 | tee $W/Ax.out
+          [ "${PIPESTATUS[0]}" -eq 0 ] || { echo "::error::axiom check failed"; exit 1; }
+          python3 - <<'PY'
+          import re, os, sys
+          w = os.environ['GITHUB_WORKSPACE'] + '/ci_edc'
+          t = open(w + '/Ax.out').read()
+          ok = {'propext', 'Classical.choice', 'Quot.sound'}
+          req = ['w_ge_succ', 'tau_le_Amaj', 'S_norm_le_cheb', 'S_norm_le_via_cheb', 'S_norm_le_51_50',
+                 'Amaj_pp', 'Amaj_mul', 'Amaj_pos', 'reduction_cheb']
+          reps = dict(re.findall(r"'([^']+)' depends on axioms: \[(.*?)\]", t, re.S))
+          miss = [r for r in req if 'EDc0.' + r not in reps]
+          bad = [n for n, a in reps.items() if not {x.strip() for x in a.replace('\n', ' ').split(',')} <= ok]
+          out = ['### EDc0', f'reports: {len(reps)}; missing: {miss}; non-allowed: {bad}', ''] + [f'- `{n}`: {a.strip()}' for n, a in reps.items()]
+          open(os.environ['GITHUB_STEP_SUMMARY'], 'a').write('\n'.join(out) + '\n')
+          if miss or bad:
+              print('::error::axiom gate failed', miss, bad); sys.exit(1)
+          PY
