@@ -84,7 +84,7 @@ theorem H31gt3A_of_hprime204 (hP : EDcDefs.HPrime204Restricted) : EDcDefs.H31gt3
     have h5 := mul_le_mul_of_nonneg_right haO hq.le
     nlinarith [h5, hYr]
   have hrho0 : 0 ≤ a / Y := div_nonneg ha0 hYpos.le
-  have hsig := sig_pos hm0
+  have hsig := EDb8.sig_pos hm0
   have hA0 : 0 ≤ EDc0.Amaj (51 / 50) m := EDc0.Amaj_nonneg (by norm_num) m
   have hSg : (Section79a.sg m : ℝ) = (Section51.sig m : ℝ) := rfl
   rw [hSg] at h3
