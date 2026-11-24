@@ -146,3 +146,24 @@ Added 2026-11-21. Files ED/EDa1, EDa3 to EDa9, EDb1 to EDb9 compiled one by one 
 | EDb9 | HPrime implies Euler's conjecture for n = 2 mod 4 | EDb9.euler_1747_of_hprime | Compiled; conditional on HPrime plus native_decide for n < 64^4 |
 
 What this does NOT establish. HPrime itself (Lemma 3.2 for primes) is unproved and not in Mathlib; it needs the Brandt/Eichler identification with S_2(Gamma_0(p)), Eichler-Shimura and the Weil bound. If HPrime were false for an admissible (p, l) the theorem is vacuous. The hypothesis is restricted to p = 3 mod 4, p > 3, which is exactly the range H31gt3 itself quantifies over (p = 3 mod 4, p not dividing m), so nothing further is lost in the reduction. The finite range still rests on native_decide.
+
+
+## Layer EDc: the Chebyshev (2.04) route, and what is and is not proved about HPrime204Restricted
+
+Added 2026-11-24. Each module compiled in CI on pinned Lean 4.32.0 and Mathlib (rev 81a5d257); the gate fails on any `: error`, any `sorry` in the EDc modules, or any axiom outside {propext, Classical.choice, Quot.sound} in the gated theorems.
+
+| Stage | Compiled statement | Declaration | Tested commit / run | Status |
+|---|---|---|---|---|
+| EDc2 | `EDb8.HPrime -> EDcDefs.HPrime204Restricted` (bound 2 sqrt(l) implies the relaxed (51/25) sqrt(l), primes l = 3 mod 4) | `EDc2.hprime204_of_hprime` | d35244f, Actions run 45498404409 (Euler EDc2), 21m 12s | Compiled; axioms [propext, Classical.choice, Quot.sound]. An IMPLICATION: it assumes HPrime. |
+| EDc2 | `EDcDefs.HPrime204Restricted -> EDcDefs.H31gt3A` (the A-shaped H31gt3, tau(m) replaced by Amaj (51/50) m) | `EDc2.H31gt3A_of_hprime204` | d35244f, run 45498404409 | Compiled; axioms [propext, Classical.choice, Quot.sound]. An IMPLICATION: it assumes HPrime204Restricted. |
+| EDc3 | for every admissible n and every f in L^2(Y_p): `||Tl n f|| <= sigma(n) * ||f||`, no hypothesis | `EDc3.Tl_norm_le` | 2609aaf, Actions run 45505211132 (Euler EDc3), 2m 21s | Compiled; axioms [propext, Classical.choice, Quot.sound]. UNCONDITIONAL. |
+| EDc3 | for a prime l with Adm p l and every f: `||Tl l f|| <= (l + 1) * ||f||` | `EDc3.Tl_prime_norm_le` | 2609aaf, run 45505211132 | Compiled; axioms [propext, Classical.choice, Quot.sound]. UNCONDITIONAL. |
+| EDc3 | helpers: `sq_norm_sum_le` (Cauchy-Schwarz for a finite complex sum), `U_sq_le` and `Tn_sq_le` (pointwise Cauchy-Schwarz for U_n and T_n = U_n / 24), `sg_prime` (sigma(l) = l + 1) | `EDc3.*` | 2609aaf | Compiled; each is a dependency of the two theorems above, so its axioms are contained in theirs. |
+
+Proof of EDc3 (Schur test), on declarations already checked in StageA4o: `U_mk` writes U_n f at a coset as a sum over the 24 sigma(n) Hurwitz elements of norm n; Cauchy-Schwarz gives |T_n f(y)|^2 <= sigma(n) T_n(|f|^2)(y); summing over Y_p with `Tl_symm` (self-adjoint) and `T_n 1 = sigma(n) 1` (`Tn_const`) gives ||T_n f||^2 <= sigma(n)^2 ||f||^2.
+
+What is proved about HPrime204Restricted. Nothing about its conclusion. HPrime204Restricted says: for every prime p = 3 mod 4 with p > 3, every prime l = 3 mod 4 with Adm p l, and every f orthogonal to span{1, chi} in L^2(Y_p): ||T_l f|| <= (51/25) sqrt(l) ||f||. EDc3 proves only ||T_l f|| <= (l + 1) ||f||, which holds for ALL f and is strictly weaker: (l + 1) > (51/25) sqrt(l) for every prime l >= 3 (at l = 3, 4 against about 3.53). It therefore discharges HPrime204Restricted for no (p, l). EDc2 is implications only. Self-adjointness, the eigenvalues on 1 and chi, multiplicativity and the prime-power recursion (`Tl_symm`, `Tl_one_eig`, `Tl_chi_eig`, `Tl_mul`, `Tl_rec`, StageA4o) are the elementary part and are checked.
+
+What is still ASSUMED, exactly. The size of the eigenvalues of T_l on the orthogonal complement of span{1, chi}. By Jacquet-Langlands these are Hecke eigenvalues a_l of weight-2 cusp forms with trivial character and level dividing 2 p^2, and the missing input is |a_l| <= 2 sqrt(l) for primes l not dividing 2p (Eichler-Shimura plus Weil/Deligne). Mathlib has neither Jacquet-Langlands nor Ramanujan-Petersson. HPrime204Restricted is OPEN; the remaining gap is the factor from (l + 1) down to (51/25) sqrt(l).
+
+Housekeeping. The CI summary prints the EDc3 and EDc2 last axiom line twice (the gate's `grep -A2` captures the next report); cosmetic. EDc2.lean.bak is untracked in the working copy and has not been compared with the tracked file.
