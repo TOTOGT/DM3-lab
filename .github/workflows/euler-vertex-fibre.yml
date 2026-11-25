@@ -1,4 +1,4 @@
-name: Euler vertex and fibre transport (Lean)
+name: Euler vertex, edge and fibre transport (Lean)
 on:
   pull_request:
     paths: &inputs
@@ -7,6 +7,9 @@ on:
       - euler/lean/EulerLean/ED/EDc10.lean
       - euler/lean/EulerLean/ED/FibrePushforward.lean
       - euler/lean/EulerLean/ED/VertexDoubleOrbit.lean
+      - euler/lean/EulerLean/ED/EDc11.lean
+      - euler/lean/EulerLean/ED/UnitEndpointOrbits.lean
+      - .github/workflows/euler-proof-cache.yml
       - euler/lean/lean-toolchain
       - euler/lean/lakefile.toml
       - euler/lean/lake-manifest.json
@@ -24,44 +27,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    defaults:
-      run:
-        working-directory: euler/lean
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Lean
-        run: |
-          set -euo pipefail
-          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Prepare pinned packages
-        run: |
-          set -euo pipefail
-          lake exe cache get
-          git diff --exit-code HEAD -- lake-manifest.json lakefile.toml lean-toolchain
-      - uses: actions/cache@v4
-        with:
-          path: euler/lean/.ci-module-cache
-          key: euler-vf-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-${{ hashFiles('euler/lean/EulerLean/StageA4o.lean','euler/lean/EulerLean/ED/EDc6.lean','euler/lean/EulerLean/ED/EDc10.lean','euler/lean/EulerLean/ED/FibrePushforward.lean','euler/lean/EulerLean/ED/VertexDoubleOrbit.lean') }}
-          restore-keys: |
-            euler-vf-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-
-      - name: Verify both targets and gate each declaration
-        run: |
-          set -euo pipefail
-          verify() {
-            local module=$1
-            shift
-            local report="$RUNNER_TEMP/$module.json"
-            if ! python3 agents/build_cached.py --project . --target "$module" > "$report"; then
-              cat "$report"
-              python3 -c 'import json,pathlib,sys; p=json.load(open(sys.argv[1])).get("log"); print(pathlib.Path(p).read_text() if p else "Setup failure before target")' "$report"
-              return 1
-            fi
-            local log
-            log=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["target_log"])' "$report")
-            python3 agents/check_axioms.py "$log" "$@" | tee -a "$GITHUB_STEP_SUMMARY"
-          }
-          verify FibrePushforward EulerWeilFibre.{mem_ker_fibrePush,fibre_sum_reindex,fibrePush_relabel,ker_fibrePush_relabel,orth_iff_mem_ker_fibrePush,orth_iff_mem_ker_fibrePush_swap}
-          verify VertexDoubleOrbit EulerVertexOrbit.{doubleOrbitRel_iff,doubleOrbitEquiv,doubleOrbitEquiv_mk,stabilizer_eq_kernel,stabilizer_card}
+    uses: ./.github/workflows/euler-proof-cache.yml
+    with:
+      targets: |
+        VertexDoubleOrbit EulerVertexOrbit.doubleOrbitRel_iff EulerVertexOrbit.doubleOrbitEquiv EulerVertexOrbit.doubleOrbitEquiv_mk EulerVertexOrbit.stabilizer_eq_kernel EulerVertexOrbit.stabilizer_card
+        FibrePushforward EulerWeilFibre.fibre_sum_reindex EulerWeilFibre.fibrePush_relabel EulerWeilFibre.ker_fibrePush_relabel EulerWeilFibre.orth_iff_mem_ker_fibrePush EulerWeilFibre.orth_iff_mem_ker_fibrePush_swap EulerWeilFibre.mem_ker_fibrePush
+        UnitEndpointOrbits EdgeUnitOrbits.residual_iff EdgeUnitOrbits.orbitMap_injective EdgeUnitOrbits.orbitMap_surjective EdgeUnitOrbits.orbitEquiv

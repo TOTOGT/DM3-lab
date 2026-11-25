@@ -8,7 +8,14 @@ name: Euler ED layer (lake build)
 on:
   push:
     paths:
-      - 'euler/lean/EulerLean/ED/**'
+      - 'euler/lean/EulerLean/StageA4o.lean'
+      - 'euler/lean/EulerLean/ED/EDa*.lean'
+      - 'euler/lean/EulerLean/ED/EDb*.lean'
+      - 'euler/lean/EulerLean/ED/Stage83cut.lean'
+      - 'euler/lean/lean-toolchain'
+      - 'euler/lean/lakefile.toml'
+      - 'euler/lean/lake-manifest.json'
+      - 'euler/lean/agents/check_axioms.py'
       - '.github/workflows/euler-ed.yml'
   workflow_dispatch:
 
@@ -60,17 +67,7 @@ jobs:
           #print axioms EDb8.H31gt3_of_hprime
           LEAN
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
-          lean -R $W $W/Axioms.lean 2>&1 | tee $W/axioms.txt
+          lean -R $W $W/Axioms.lean 2>&1 | tee $W/axioms.txt || exit 1
           if grep -l "sorry" $W/ED*.out $W/Stage83cut.out 2>/dev/null; then echo "::error::sorry in chain"; exit 1; fi
-          python3 - <<'PY'
-          import re, os, sys
-          w = os.environ['GITHUB_WORKSPACE'] + '/ci_ed'
-          t = open(w + '/axioms.txt').read()
-          ok = {'propext', 'Classical.choice', 'Quot.sound', 'Euler1747.allOk_true._native.native_decide.ax_1_1'}
-          reps = re.findall(r"'([^']+)' depends on axioms: \[(.*?)\]", t, re.S)
-          bad = [(n, a) for n, a in reps if not {x.strip() for x in a.replace('\n', ' ').split(',')} <= ok]
-          out = ['### Euler ED layer', f'axiom reports: {len(reps)}; non-allowed: {len(bad)}', ''] + [f'- `{n}`: {a.strip()}' for n, a in reps]
-          open(os.environ['GITHUB_STEP_SUMMARY'], 'a').write('\n'.join(out) + '\n')
-          if len(reps) < 2 or bad:
-              print('::error::axiom gate failed'); sys.exit(1)
-          PY
+          python3 agents/check_axioms.py "$W/axioms.txt" EDb8.H31gt3_of_hprime | tee -a "$GITHUB_STEP_SUMMARY" || exit 1
+          python3 agents/check_axioms.py "$W/axioms.txt" EDb9.euler_1747_of_hprime --allow propext --allow Classical.choice --allow Quot.sound --allow Euler1747.allOk_true._native.native_decide.ax_1_1 | tee -a "$GITHUB_STEP_SUMMARY"
