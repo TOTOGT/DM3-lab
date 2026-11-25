@@ -1,0 +1,53 @@
+# EDc11: promoted from drafts/edge_count. UNTESTED until this run is green. Does NOT prove RPEigen.
+name: Euler EDc11 (Lean)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'euler/lean/EulerLean/ED/EDc11.lean'
+      - '.github/workflows/euler-edc11.yml'
+      - 'euler/lean/agents/check_axioms.py'
+jobs:
+  edc11:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: euler/lean
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+      - name: Fetch Mathlib cache
+        run: |
+          set -euxo pipefail
+          lake update
+          lake exe cache get || echo "::warning::cache get failed; Mathlib will build from source"
+      - name: Assert pins
+        run: |
+          set -uxo pipefail
+          lake env lean --version | tee /tmp/ver.txt
+          grep -q 'version 4.32.0' /tmp/ver.txt || { echo "::error::Lean is not 4.32.0"; exit 1; }
+          rev=$(git -C .lake/packages/mathlib rev-parse HEAD)
+          [ "$rev" = "81a5d257c8e410db227a6665ed08f64fea08e997" ] || { echo "::error::Mathlib rev mismatch"; exit 1; }
+      - name: Compile chain and gate
+        run: |
+          set -uxo pipefail
+          W=$GITHUB_WORKSPACE/ci_edc11
+          mkdir -p $W
+          MODS="StageA4o Stage83cut EDa1 EDa6 EDa7 EDa8 EDa9 EDb1 EDb2 EDb3 EDb4 EDb5 EDb6 EDb7 EDb8 EDc0 EDcDefs EDc1 EDc2 EDc4 EDc11"
+          cp EulerLean/StageA4o.lean $W/
+          for m in $MODS; do [ "$m" = StageA4o ] || cp EulerLean/ED/$m.lean $W/ 2>/dev/null || cp EulerLean/$m.lean $W/; done
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$W"
+          for m in $MODS; do
+            echo "::group::$m"
+            lean -R $W -o $W/$m.olean $W/$m.lean 2>&1 | tee $W/$m.out
+            rc=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            [ "$rc" -eq 0 ] || { echo "::error::$m exited $rc"; exit 1; }
+            if grep -nE ": error" $W/$m.out; then echo "::error::error in $m"; exit 1; fi
+          done
+          if grep -nE "(^|[^a-zA-Z_])sorry" $W/EDc11.out; then echo "::error::sorry in EDc11"; exit 1; fi
+          python3 $GITHUB_WORKSPACE/euler/lean/agents/check_axioms.py $W/EDc11.out EdgeCount.card_cos_eq EdgeCount.card_end_symm EdgeCount.Tmat_symm EdgeCount.U_matrix EdgeCount.Tn_matrix | tee -a $GITHUB_STEP_SUMMARY

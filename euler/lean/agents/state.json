@@ -1,0 +1,62 @@
+{
+ "promoted": {
+  "splitting_transport": {
+   "module": "EDc8",
+   "gates": [
+    "EDcSplitTransport.exists_red_conjugator",
+    "EDcSplitTransport.conj_of_splittings",
+    "EDcSplitTransport.Lmap_inner",
+    "EDcSplitTransport.Lmap_Tl",
+    "EDcSplitTransport.rpeigenAt_transport",
+    "EDcSplitTransport.rpeigenAt_all",
+    "EDcSplitTransport.rpeigen_of_one_splitting"
+   ],
+   "sha256": "eda63c5d571994f4",
+   "time": "2026-11-25T02:37:17Z"
+  },
+  "weil_fibre": {
+   "module": "EDc9",
+   "gates": [
+    "WeilFibre.chiY_rhoT_mul",
+    "WeilFibre.Tl_support_shift",
+    "WeilFibre.Tl_preserves_orth",
+    "WeilFibre.Tl_preserves_fibre_sums_zero"
+   ],
+   "sha256": "0887d84e317bd557",
+   "time": "2026-11-25T02:37:17Z"
+  },
+  "vertex_quotient": {
+   "module": "EDc10",
+   "gates": [
+    "EulerVertexDraft.linearLevelVertexEquiv",
+    "EulerVertexDraft.mem_liftedGamma_iff",
+    "EulerVertexDraft.unit_stabilizer_iff",
+    "EulerVertexDraft.mem_ker_rho_iff",
+    "EulerVertexDraft.unitRed_central_iff",
+    "EulerVertexDraft.card_HurU_eq_card_Gam_mul_card_ker",
+    "EulerVertexDraft.card_HurU_twelve_two"
+   ],
+   "sha256": "79b98addad1e0f16",
+   "time": "2026-11-25T02:37:17Z"
+  },
+  "edge_count": {
+   "module": "EDc11",
+   "gates": [
+    "EdgeCount.card_cos_eq",
+    "EdgeCount.card_end_symm",
+    "EdgeCount.Tmat_symm",
+    "EdgeCount.U_matrix",
+    "EdgeCount.Tn_matrix"
+   ],
+   "sha256": "b51cdbea783eab68",
+   "time": "2026-11-25T02:37:17Z"
+  }
+ },
+ "next": 12,
+ "log": [
+  "splitting_transport: promoted as EDc8 with 7 axiom gates",
+  "weil_fibre: promoted as EDc9 with 4 axiom gates",
+  "vertex_quotient: promoted as EDc10 with 7 axiom gates",
+  "edge_count: promoted as EDc11 with 5 axiom gates"
+ ]
+}

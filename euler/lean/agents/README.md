@@ -1,0 +1,3 @@
+# Euler Lean proof-agent workflow
+
+Roles: four author workers (splitting transport, vertex quotient, edge count, Weil fibres) write drafts in `EulerLean/ED/drafts/` (untracked) with a `.status.md` whose first line is `STATE: ...`. The integration lane (`supervisor.py`) promotes `ready-for-CI` drafts to `EDc<N>.lean`, generates `.github/workflows/euler-edc<N>.yml`, and CI compiles them and parses declaration-specific axiom reports with `check_axioms.py` (allowed: propext, Classical.choice, Quot.sound; rejects missing, duplicate, or other axioms). `supervisor.py` rejects drafts containing `sorry`, `axiom` declarations, `: True :=` statements. `state.json` records promotions. Nothing here is tested until a CI run is green; RPEigen is open. Only the user pushes.
