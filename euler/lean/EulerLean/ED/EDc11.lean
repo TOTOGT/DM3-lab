@@ -163,6 +163,7 @@ theorem card_cos_eq (l : ℕ) (hpl : ¬ p ∣ l) (g h : SectionA2.PGL2 p) :
 theorem star_mem_Hn (l : ℕ) {x : Quaternion ℚ} (hx : x ∈ Section75a.Hn l) : star x ∈ Section75a.Hn l :=
   ⟨Section73a.QH_star hx.1, by rw [Section73a.normSq_star']; exact hx.2⟩
 
+include h2 hxy in
 theorem rhoT_star (l : ℕ) (hpl : ¬ p ∣ l) {x : Quaternion ℚ} (hx : x ∈ Section75a.Hn l) :
     rhoT p xs ys (star x) = (rhoT p xs ys x)⁻¹ := by
   have e1 := rhoT_aH p h2 xs ys hxy l hpl (⟨x, hx.1, hx.2⟩ : SectionA4b.Hm l)
@@ -178,12 +179,17 @@ theorem rhoT_star (l : ℕ) (hpl : ¬ p ∣ l) {x : Quaternion ℚ} (hx : x ∈ 
 noncomputable def endEquiv (l : ℕ) (hpl : ¬ p ∣ l) (g h : SectionA2.PGL2 p) :
     NEnd p xs ys l g h ≃ NEnd p xs ys l h g where
   toFun α := ⟨star α.1, star_mem_Hn l α.2.1, by
-    rw [rhoT_star p h2 xs ys hxy l hpl α.2.1, ← α.2.2, ← mul_assoc, inv_mul_cancel, one_mul]⟩
+    rw [rhoT_star p h2 xs ys hxy l hpl α.2.1]
+    have hrev := congrArg (fun z : SectionA2.PGL2 p => (rhoT p xs ys α.1)⁻¹ * z) α.2.2
+    simpa only [inv_mul_cancel_left] using hrev.symm⟩
   invFun α := ⟨star α.1, star_mem_Hn l α.2.1, by
-    rw [rhoT_star p h2 xs ys hxy l hpl α.2.1, ← α.2.2, ← mul_assoc, inv_mul_cancel, one_mul]⟩
+    rw [rhoT_star p h2 xs ys hxy l hpl α.2.1]
+    have hrev := congrArg (fun z : SectionA2.PGL2 p => (rhoT p xs ys α.1)⁻¹ * z) α.2.2
+    simpa only [inv_mul_cancel_left] using hrev.symm⟩
   left_inv α := Subtype.ext (star_star α.1)
   right_inv α := Subtype.ext (star_star α.1)
 
+include h2 hxy in
 /-- (2) `N_ij = N_ji` for exact endpoints.  FINITE BOOKKEEPING. -/
 theorem card_end_symm (l : ℕ) (hpl : ¬ p ∣ l) (g h : SectionA2.PGL2 p) :
     Nat.card (NEnd p xs ys l g h) = Nat.card (NEnd p xs ys l h g) :=
