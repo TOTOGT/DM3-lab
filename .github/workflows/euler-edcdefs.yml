@@ -58,9 +58,4 @@ jobs:
           for m in EDc0 EDcDefs; do
             if grep -nE "(^|[^a-zA-Z_])sorry" $W/$m.out; then echo "::error::sorry in $m"; exit 1; fi
           done
-          line=$(grep -A2 "EDcDefs.H31gt3A_of_H31gt3' depends on axioms" $W/EDcDefs.out | tr '\n' ' ')
-          echo "$line"
-          [ -n "$line" ] || { echo "::error::axiom report missing"; exit 1; }
-          rest=$(echo "$line" | sed -E "s/.*depends on axioms: \[//; s/\].*//; s/propext//; s/Classical.choice//; s/Quot.sound//; s/[, ]//g")
-          [ -z "$rest" ] || { echo "::error::unexpected axioms: $rest"; exit 1; }
-          echo "### EDcDefs\n$line" >> $GITHUB_STEP_SUMMARY
+          python3 "$GITHUB_WORKSPACE/euler/lean/agents/check_axioms.py" "$W/EDcDefs.out" EDcDefs.H31gt3A_of_H31gt3 | tee -a "$GITHUB_STEP_SUMMARY"
