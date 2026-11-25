@@ -38,6 +38,7 @@ def cosetSetoid : Setoid (NCos p h2 xs ys hxy l g h) :=
 def residualSetoid : Setoid (NEnd p xs ys l g h) :=
   Setoid.comap Subtype.val unitSetoid
 
+include hpl in
 /-- Between exact endpoints, precisely the units in ker rho can act. -/
 theorem residual_iff (a b : NEnd p xs ys l g h) :
     (residualSetoid p xs ys l g h).r a b ↔
@@ -68,9 +69,13 @@ def orbitMap :
 theorem orbitMap_injective :
     Function.Injective (orbitMap p h2 xs ys hxy l g h) := by
   intro a b
-  refine Quotient.inductionOn₂ a b (fun x y hxy => ?_)
-  exact Quotient.sound (Quotient.exact hxy)
+  refine Quotient.inductionOn₂ a b (fun x y heq => ?_)
+  have hrel : (cosetSetoid p h2 xs ys hxy l g h).r
+      (exactToCos p h2 xs ys hxy l g h x)
+      (exactToCos p h2 xs ys hxy l g h y) := Quotient.exact heq
+  exact Quotient.sound hrel
 
+include hpl in
 theorem orbitMap_surjective :
     Function.Surjective (orbitMap p h2 xs ys hxy l g h) := by
   intro a
@@ -102,3 +107,6 @@ end EdgeUnitOrbits
 #print axioms EdgeUnitOrbits.orbitEquiv
 #check EdgeUnitOrbits.residual_iff
 #check EdgeUnitOrbits.orbitEquiv
+
+#check EdgeUnitOrbits.orbitMap_injective
+#check EdgeUnitOrbits.orbitMap_surjective
