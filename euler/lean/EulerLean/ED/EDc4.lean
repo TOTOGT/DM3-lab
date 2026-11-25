@@ -132,7 +132,8 @@ theorem hprime204_of_rpeigen (hR : RPEigen) : EDcDefs.HPrime204Restricted := by
     · exact ((hmem v).1 v.2).2
     · have h' := congrArg Subtype.val hv
       simpa using h'
-  have key := norm_le_of_eigen_bound ((Tl p h2 xs ys hxy l).restrict hinv) hT' _ hB hev ⟨f, hfW⟩
+  have key := norm_le_of_eigen_bound (E := W) ((Tl p h2 xs ys hxy l).restrict hinv) hT' (2 * Real.sqrt l) hB hev
+    (⟨f, hfW⟩ : W)
   have e1 : ‖(Tl p h2 xs ys hxy l).restrict hinv ⟨f, hfW⟩‖ = ‖Tl p h2 xs ys hxy l f‖ := by
     first
     | (rw [← Submodule.coe_norm]; rfl)
