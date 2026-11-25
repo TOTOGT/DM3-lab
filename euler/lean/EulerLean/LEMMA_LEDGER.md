@@ -203,3 +203,17 @@ Added 2026-11-25. Tested on 1779f19, Actions run 45529719670 (Euler EDc6), 3m 1s
 | EDc6 | `(<1,f> = 0 and <chi,f> = 0)` iff (sum of f over {chi = 1} is 0 and sum of f over {chi = -1} is 0) | `EDc6.orth_iff_fibre_sums` | Compiled; same axioms. UNCONDITIONAL. |
 
 What this does NOT establish. It does not identify the level sets {chi = +-1} with the Weil-invariant fibres of Codogni-Lido (J. Number Theory 286 (2026) 131-184, Remark 2.3.6, p. 150-151), does not identify T_l with their adjacency operator, and does not prove or assume their Theorem 2.3.8 = 4.18 (p. 165). Those three bridges (vertices = Y_p; T_l = A or A^t including orientation and 1/24 weights; Weil fibres = chi level sets) are written out in the specialist package `claude/PACKAGE-euler-rpeigen-specialist-review-2026-11-25.md` and are NOT verified. RPEigen stays OPEN.
+
+## Layer EDc, continued: EDc7 (finite bookkeeping: transport of the Hecke setup along a conjugacy of splittings)
+
+Added 2026-11-25. Tested on 8de758f, Actions run 45532991247 (Euler EDc7 (Lean)), 2m 54s, success. Earlier run 45531890387 on f963c26 failed because a stale copy of the file was compiled; superseded.
+
+Kind of result: finite bookkeeping, CONDITIONAL on the hypothesis `EDc7.Conj` (a matrix c in GL_2(F_p) with red' x = c (red x) c^-1 on the relevant quaternions). `Conj` is not proved in EDc7; it is the Skolem-Noether step.
+
+| Declaration | Kind | Axioms |
+|---|---|---|
+| `EDc7.conjP_conjP_inv`, `EDc7.conjP_injective` | unconditional, conjugation on PGL2 | [propext, Classical.choice, Quot.sound] |
+| `EDc7.rhoT_conj`, `EDc7.rho_conj`, `EDc7.Gam_conj`, `EDc7.chiP_conj` | conditional on `Conj` | same |
+| `EDc7.transport` | conditional on `Conj`: bijection Y_p to Y_p' preserving chi and intertwining U | same |
+
+Does NOT establish: `Conj` itself, any eigenvalue bound, or any link to elliptic curves. RPEigen stays OPEN and is not proved in this development.
