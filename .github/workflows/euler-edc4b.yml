@@ -60,11 +60,4 @@ jobs:
           for m in EDc4b; do
             if grep -nE "(^|[^a-zA-Z_])sorry" $W/$m.out; then echo "::error::sorry in $m"; exit 1; fi
           done
-          for thm in EDc4b.norm_le_of_eigen_bound EDc4b.norm_le_on_invariant EDc4b.hprime204_of_rpeigen; do
-            line=$(grep -A2 "$thm' depends on axioms" $W/EDc4b.out | tr '\n' ' ')
-            echo "$line"
-            [ -n "$line" ] || { echo "::error::axiom report missing for $thm"; exit 1; }
-            rest=$(echo "$line" | sed -E "s/.*depends on axioms: \[//; s/\].*//; s/propext//; s/Classical.choice//; s/Quot.sound//; s/[, ]//g")
-            [ -z "$rest" ] || { echo "::error::unexpected axioms in $thm: $rest"; exit 1; }
-            echo "$line" >> $GITHUB_STEP_SUMMARY
-          done
+          python3 "$GITHUB_WORKSPACE/euler/lean/agents/check_axioms.py" "$W/EDc4b.out" EDc4b.norm_le_of_eigen_bound EDc4b.norm_le_on_invariant EDc4b.hprime204_of_rpeigen | tee -a "$GITHUB_STEP_SUMMARY"

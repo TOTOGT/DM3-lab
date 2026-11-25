@@ -1,0 +1,75 @@
+name: Verify Euler proof lanes
+on:
+  workflow_call:
+    inputs:
+      targets:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: euler/lean
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned packages
+        run: |
+          set -euo pipefail
+          lake exe cache get
+          git diff --exit-code HEAD -- lake-manifest.json lakefile.toml lean-toolchain
+      - name: Compute the dependency key
+        id: plan
+        env:
+          TARGETS: ${{ inputs.targets }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "agents")
+          from build_cached import make_plan
+          rows = [s.split() for s in os.environ["TARGETS"].splitlines() if s.strip()]
+          if not rows or any(len(row) < 2 for row in rows):
+              raise SystemExit("Each target needs a module and gated declarations")
+          keys = sorted(make_plan(Path("."), row[0])["modules"][-1]["key"] for row in rows)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              print("key=" + hashlib.sha256("\n".join(keys).encode()).hexdigest(), file=out)
+          PYTHON
+      - uses: actions/cache@v4
+        with:
+          path: euler/lean/.ci-module-cache
+          key: euler-vf-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-${{ steps.plan.outputs.key }}
+          restore-keys: |
+            euler-vf-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-
+      - name: Verify modules and gate each declaration
+        env:
+          TARGETS: ${{ inputs.targets }}
+        run: |
+          set -euo pipefail
+          verify() {
+            local module=$1
+            shift
+            local report="$RUNNER_TEMP/$module.json"
+            if ! python3 agents/build_cached.py --project . --target "$module" > "$report"; then
+              cat "$report"
+              python3 -c 'import json,pathlib,sys; p=json.load(open(sys.argv[1])).get("log"); print(pathlib.Path(p).read_text() if p else "Setup failure before target")' "$report"
+              return 1
+            fi
+            local log
+            log=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["target_log"])' "$report")
+            if grep -nE '(^|[^a-zA-Z_])sorry' "$log"; then return 1; fi
+            python3 agents/check_axioms.py "$log" "$@" | tee -a "$GITHUB_STEP_SUMMARY"
+          }
+          while read -r -a row; do
+            [[ ${#row[@]} -gt 0 ]] || continue
+            verify "${row[@]}" </dev/null
+          done <<< "$TARGETS"

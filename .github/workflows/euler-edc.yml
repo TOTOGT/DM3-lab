@@ -8,7 +8,12 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'euler/lean/EulerLean/ED/EDc*.lean'
+      - 'euler/lean/EulerLean/ED/EDc0.lean'
+      - 'euler/lean/EulerLean/StageA4o.lean'
+      - 'euler/lean/lean-toolchain'
+      - 'euler/lean/lakefile.toml'
+      - 'euler/lean/lake-manifest.json'
+      - 'euler/lean/agents/check_axioms.py'
       - '.github/workflows/euler-edc.yml'
 
 jobs:
@@ -72,18 +77,4 @@ jobs:
           LEAN
           lean -R $W $W/Ax.lean 2>&1 | tee $W/Ax.out
           [ "${PIPESTATUS[0]}" -eq 0 ] || { echo "::error::axiom check failed"; exit 1; }
-          python3 - <<'PY'
-          import re, os, sys
-          w = os.environ['GITHUB_WORKSPACE'] + '/ci_edc'
-          t = open(w + '/Ax.out').read()
-          ok = {'propext', 'Classical.choice', 'Quot.sound'}
-          req = ['w_ge_succ', 'tau_le_Amaj', 'S_norm_le_cheb', 'S_norm_le_via_cheb', 'S_norm_le_51_50',
-                 'Amaj_pp', 'Amaj_mul', 'Amaj_pos', 'reduction_cheb']
-          reps = dict(re.findall(r"'([^']+)' depends on axioms: \[(.*?)\]", t, re.S))
-          miss = [r for r in req if 'EDc0.' + r not in reps]
-          bad = [n for n, a in reps.items() if not {x.strip() for x in a.replace('\n', ' ').split(',')} <= ok]
-          out = ['### EDc0', f'reports: {len(reps)}; missing: {miss}; non-allowed: {bad}', ''] + [f'- `{n}`: {a.strip()}' for n, a in reps.items()]
-          open(os.environ['GITHUB_STEP_SUMMARY'], 'a').write('\n'.join(out) + '\n')
-          if miss or bad:
-              print('::error::axiom gate failed', miss, bad); sys.exit(1)
-          PY
+          python3 agents/check_axioms.py "$W/Ax.out" EDc0.w_ge_succ EDc0.tau_le_Amaj EDc0.S_norm_le_cheb EDc0.S_norm_le_via_cheb EDc0.S_norm_le_51_50 EDc0.Amaj_pp EDc0.Amaj_mul EDc0.Amaj_pos EDc0.reduction_cheb | tee -a "$GITHUB_STEP_SUMMARY"
