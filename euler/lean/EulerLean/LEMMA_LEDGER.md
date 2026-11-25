@@ -189,3 +189,17 @@ Earlier failures, classified separately (elaboration errors, not mathematical fa
 - Euler EDc5 on 9c17cf0 (run 45515356276): DEPENDENCY failure, the same EDc4.lean:135 error compiled inside its chain. It never reached EDc5's own theorem and does not validate or refute it. EDc5's validating run is 45517469709 on 641250d.
 
 What is still assumed, exactly. RPEigen. Its content: (1) the Jacquet-Langlands identification of the eigenvalues of T_l on {1, chi}^perp with Hecke eigenvalues a_l of weight-2 cusp forms (trivial character, level dividing 2 p^2, Hecke normalisation T_l 1 = (l + 1)); (2) the bound |a_l| <= 2 sqrt(l) (Eichler-Shimura plus Weil/Deligne); (3) the component count excluding exceptional constituents beyond span{1, chi}. Mathlib has none of these. These identifications are claims requiring source verification; the compiled results above do not verify them. The constant 2 lives entirely inside RPEigen: EDc4 proves the passage from eigenvalue bounds to operator bounds, nothing about their size.
+
+
+## Layer EDc, continued: EDc6 (finite bookkeeping toward the Codogni-Lido kernel description)
+
+Added 2026-11-25. Tested on 1779f19, Actions run 45529719670 (Euler EDc6), 3m 1s. This is elementary finite bookkeeping; it does not touch RPEigen.
+
+| Stage | Compiled statement | Declaration | Status |
+|---|---|---|---|
+| EDc6 | chi takes only the values 1 and -1 on Y_p | `EDc6.chiY_eq_one_or_neg_one` | Compiled; axioms [propext, Classical.choice, Quot.sound]. UNCONDITIONAL. |
+| EDc6 | `<1, f> = sum_y f y` | `EDc6.inner_oneY` | Compiled; same axioms. UNCONDITIONAL. |
+| EDc6 | `<chi, f> = sum_y chi(y) f(y)` | `EDc6.inner_chiE` | Compiled; same axioms. UNCONDITIONAL. |
+| EDc6 | `(<1,f> = 0 and <chi,f> = 0)` iff (sum of f over {chi = 1} is 0 and sum of f over {chi = -1} is 0) | `EDc6.orth_iff_fibre_sums` | Compiled; same axioms. UNCONDITIONAL. |
+
+What this does NOT establish. It does not identify the level sets {chi = +-1} with the Weil-invariant fibres of Codogni-Lido (J. Number Theory 286 (2026) 131-184, Remark 2.3.6, p. 150-151), does not identify T_l with their adjacency operator, and does not prove or assume their Theorem 2.3.8 = 4.18 (p. 165). Those three bridges (vertices = Y_p; T_l = A or A^t including orientation and 1/24 weights; Weil fibres = chi level sets) are written out in the specialist package `claude/PACKAGE-euler-rpeigen-specialist-review-2026-11-25.md` and are NOT verified. RPEigen stays OPEN.
