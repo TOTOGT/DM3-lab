@@ -1,0 +1,21 @@
+name: Euler RPEigen to H31gt3 at X=1 (isolated Lean task)
+# Isolated task. Runs only on this branch or by manual dispatch; reuses the pinned shared compile job.
+# Gate: only propext, Classical.choice, Quot.sound; sorry rejected. RPEigen is an explicit hypothesis, never an axiom.
+on:
+  push:
+    branches: [rpeigen-h31-x1-isolated]
+    paths:
+      - euler/lean/EulerLean/ED/RPEigenH31.lean
+      - .github/workflows/euler-rpeigen-h31.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: euler-rpeigen-h31-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    uses: ./.github/workflows/euler-proof-cache.yml
+    with:
+      targets: |
+        RPEigenH31 RPEigenH31.Amaj_one_eq_tau RPEigenH31.hprime_two_of_rpeigen RPEigenH31.H31gt3_of_hprime_two RPEigenH31.H31gt3_of_rpeigen
