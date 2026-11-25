@@ -1,0 +1,105 @@
+name: Euler RPEigen to Euler 1747, kernel-certified endpoint (isolated, sequential build)
+# Second isolated task. Builds the 40-module chain ending in RPEigenEuler strictly sequentially (build_cached.py compiles one
+# module at a time), including the 18 EDcert modules (no native_decide). Does NOT modify any module; does not touch other workflows.
+# Gate: every printed axiom report must be within propext, Classical.choice, Quot.sound; sorry rejected.
+# Resource log: free/df before, 15 s sampler of total used memory and the largest `lean` RSS, printed at the end.
+on:
+  push:
+    branches: [rpeigen-h31-x1-isolated]
+    paths:
+      - euler/lean/EulerLean/ED/RPEigenEuler.lean
+      - .github/workflows/euler-rpeigen-euler.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: euler-rpeigen-euler-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    defaults:
+      run:
+        working-directory: euler/lean
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned packages
+        run: |
+          set -euo pipefail
+          lake exe cache get
+          git diff --exit-code HEAD -- lake-manifest.json lakefile.toml lean-toolchain
+      - name: Resources before build
+        run: |
+          set -x
+          nproc; free -m; df -h .; df -h /tmp
+          # swap as a safety margin against a single ~5 GB lean process on a small runner
+          sudo fallocate -l 8G /mnt/swapfile && sudo chmod 600 /mnt/swapfile && sudo mkswap /mnt/swapfile && sudo swapon /mnt/swapfile || echo "::warning::swap not enabled"
+          free -m
+      - name: Compute the dependency key
+        id: plan
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "agents")
+          from build_cached import make_plan
+          plan = make_plan(Path("."), "RPEigenEuler")
+          print(len(plan["modules"]), "modules:", " ".join(m["module"] for m in plan["modules"]))
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              print("key=" + plan["modules"][-1]["key"], file=out)
+          PYTHON
+      - uses: actions/cache@v4
+        with:
+          path: euler/lean/.ci-module-cache
+          key: euler-vf-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-${{ steps.plan.outputs.key }}
+          restore-keys: |
+            euler-vf-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-
+      - name: Build chain sequentially and gate
+        run: |
+          set -uo pipefail
+          MEM="$RUNNER_TEMP/mem.log"; : > "$MEM"
+          ( while true; do
+              u=$(free -m | awk 'NR==2{print $3}')
+              l=$(ps -C lean -o rss= 2>/dev/null | sort -n | tail -1)
+              echo "$(date +%T) used_mb=$u max_lean_rss_kb=${l:-0}" >> "$MEM"
+              sleep 15
+            done ) &
+          SAMPLER=$!
+          START=$(date +%s)
+          report="$RUNNER_TEMP/RPEigenEuler.json"
+          python3 agents/build_cached.py --project . --target RPEigenEuler > "$report"
+          rc=$?
+          END=$(date +%s)
+          kill $SAMPLER 2>/dev/null || true
+          echo "build_rc=$rc seconds=$((END-START))" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "peak used memory (MB): $(sed -E 's/.*used_mb=([0-9]+).*/\1/' "$MEM" | sort -n | tail -1)" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "peak single lean RSS (MB): $(sed -E 's/.*max_lean_rss_kb=([0-9]+).*/\1/' "$MEM" | sort -n | tail -1 | awk '{printf "%d", $1/1024}')" | tee -a "$GITHUB_STEP_SUMMARY"
+          python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); print(json.dumps({k:v for k,v in r.items() if k!="modules"})); print("cache hits:", sum(1 for m in r.get("modules",[]) if m.get("cache_hit")), "of", len(r.get("modules",[])))' "$report"
+          if [ "$rc" -ne 0 ]; then
+            cat "$report"
+            python3 -c 'import json,pathlib,sys; p=json.load(open(sys.argv[1])).get("log"); print(pathlib.Path(p).read_text() if p else "no log")' "$report"
+            tail -n 20 "$MEM"; exit 1
+          fi
+          log=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["target_log"])' "$report")
+          echo "::group::RAW target log (verbatim)"; cat "$log"; echo "::endgroup::"
+          { echo '### Raw target log'; echo '```'; cat "$log"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if grep -nE '(^|[^a-zA-Z_])sorry' "$log"; then echo "::error::sorry in target log"; exit 1; fi
+          if grep -nE ': error' "$log"; then echo "::error::error in target log"; exit 1; fi
+          python3 agents/check_axioms.py "$log" RPEigenEuler.euler_1747_of_rpeigen RPEigenH31.Amaj_one_eq_tau RPEigenH31.hprime_two_of_rpeigen RPEigenH31.H31gt3_of_hprime_two RPEigenH31.H31gt3_of_rpeigen | tee -a "$GITHUB_STEP_SUMMARY"
+          # every module's own output, to see warnings anywhere in the chain
+          for f in .ci-module-work/RPEigenEuler/*.out; do
+            if [ -s "$f" ]; then echo "::group::$(basename $f)"; head -c 3000 "$f"; echo; echo "::endgroup::"; fi
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rpeigen-euler-logs
+          path: |
+            euler/lean/.ci-module-work/RPEigenEuler/*.out
