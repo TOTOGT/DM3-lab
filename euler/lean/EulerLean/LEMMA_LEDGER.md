@@ -167,3 +167,25 @@ What is proved about HPrime204Restricted. Nothing about its conclusion. HPrime20
 What is still ASSUMED, exactly. The size of the eigenvalues of T_l on the orthogonal complement of span{1, chi}. By Jacquet-Langlands these are Hecke eigenvalues a_l of weight-2 cusp forms with trivial character and level dividing 2 p^2, and the missing input is |a_l| <= 2 sqrt(l) for primes l not dividing 2p (Eichler-Shimura plus Weil/Deligne). Mathlib has neither Jacquet-Langlands nor Ramanujan-Petersson. HPrime204Restricted is OPEN; the remaining gap is the factor from (l + 1) down to (51/25) sqrt(l).
 
 Housekeeping. The CI summary prints the EDc3 and EDc2 last axiom line twice (the gate's `grep -A2` captures the next report); cosmetic. EDc2.lean.bak is untracked in the working copy and has not been compared with the tracked file.
+
+
+## Layer EDc, continued: EDc4, EDc4b, EDc5 (the eigenvalue-level hypothesis RPEigen)
+
+Added 2026-11-25. Same CI gate as above. RPEigen is OPEN and not proved in this development; every theorem below is an implication from it.
+
+| Stage | Compiled statement | Declaration | Tested commit / run | Status |
+|---|---|---|---|---|
+| EDc4 | spectral reduction: for a symmetric T on a finite-dimensional complex inner product space with every real eigenvalue bounded by B (B >= 0), `||T f|| <= B ||f||` | `EDc4.norm_le_of_eigen_bound` | acb5161, Actions run 45516998200 (Euler EDc4), 14m 41s | Compiled; axioms [propext, Classical.choice, Quot.sound]. UNCONDITIONAL linear algebra. |
+| EDc4 | `EDc4.RPEigen -> EDcDefs.HPrime204Restricted` | `EDc4.hprime204_of_rpeigen` | acb5161, run 45516998200 | Compiled; axioms [propext, Classical.choice, Quot.sound]. An IMPLICATION: it assumes RPEigen. |
+| EDc4b | the same spectral lemma, plus `norm_le_on_invariant` (the bound on an invariant submodule) | `EDc4b.norm_le_of_eigen_bound`, `EDc4b.norm_le_on_invariant` | 641250d, run 45517469683 (Euler EDc4b) | Compiled; axioms [propext, Classical.choice, Quot.sound]. UNCONDITIONAL. |
+| EDc4b | `EDc4b.RPEigen -> EDcDefs.HPrime204Restricted`; a second elaboration route with its own copy of RPEigen (same statement as EDc4.RPEigen) | `EDc4b.hprime204_of_rpeigen` | 641250d, run 45517469683 | Compiled; axioms [propext, Classical.choice, Quot.sound]. An IMPLICATION. Cross-check of EDc4, not a stronger result. |
+| EDc5 | `EDc4.RPEigen -> EDcDefs.H31gt3A`, composition of `EDc4.hprime204_of_rpeigen` and `EDc2.H31gt3A_of_hprime204` | `EDc5.H31gt3A_of_rpeigen` | 641250d, run 45517469709 (Euler EDc5), importing EDc4 as of 641250d | Compiled; axioms [propext, Classical.choice, Quot.sound]. An IMPLICATION. No new mathematics. |
+
+RPEigen (EDc4), exactly. For every p (Fact prime) with p = 3 mod 4, p > 3, h2, xs, ys, hxy as in HPrime204Restricted, every prime l = 3 mod 4 with Adm p l, every real mu and every nonzero f in L^2(Y_p) with <1, f> = 0, <chi, f> = 0 and T_l f = mu f: |mu| <= 2 sqrt(l). The binders match HPrime204Restricted line for line.
+
+Earlier failures, classified separately (elaboration errors, not mathematical failures).
+- Euler EDc4 on ff2ff49 (run 45508964617): type mismatch at EDc4.lean:122:66, a hand-written type for the restricted symmetry fact. Fixed in 4e322fc.
+- Euler EDc4 on 4e322fc (run 45513047458): EDc4.lean:135, the subspace type of the spectral lemma call could not be determined. Fixed in acb5161.
+- Euler EDc5 on 9c17cf0 (run 45515356276): DEPENDENCY failure, the same EDc4.lean:135 error compiled inside its chain. It never reached EDc5's own theorem and does not validate or refute it. EDc5's validating run is 45517469709 on 641250d.
+
+What is still assumed, exactly. RPEigen. Its content: (1) the Jacquet-Langlands identification of the eigenvalues of T_l on {1, chi}^perp with Hecke eigenvalues a_l of weight-2 cusp forms (trivial character, level dividing 2 p^2, Hecke normalisation T_l 1 = (l + 1)); (2) the bound |a_l| <= 2 sqrt(l) (Eichler-Shimura plus Weil/Deligne); (3) the component count excluding exceptional constituents beyond span{1, chi}. Mathlib has none of these. These identifications are claims requiring source verification; the compiled results above do not verify them. The constant 2 lives entirely inside RPEigen: EDc4 proves the passage from eigenvalue bounds to operator bounds, nothing about their size.
