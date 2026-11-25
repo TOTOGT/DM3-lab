@@ -218,7 +218,7 @@ Kind of result: finite bookkeeping, CONDITIONAL on the hypothesis `EDc7.Conj` (a
 
 Does NOT establish: `Conj` itself, any eigenvalue bound, or any link to elliptic curves. RPEigen stays OPEN and is not proved in this development.
 
-## Layer EDc, continued: EDc8, EDc9, EDc10 (tested on 59af1de) and EDc11 (failed, repaired locally)
+## Layer EDc, continued: EDc8, EDc9, EDc10 (tested on 59af1de) and EDc11 (earlier failed run)
 
 Added 2026-11-25. Tested on 59af1de; Actions runs: EDc8 45534909558 (27m 25s), EDc9 45534909592 (14m 39s), EDc10 45534909526 (25m 57s), all success; every gated declaration passed the declaration-specific parser `euler/lean/agents/check_axioms.py` with axioms exactly [propext, Classical.choice, Quot.sound]. The "Euler ED layer (lake build)" run 45534909436 failed with a 503 while downloading elan (infrastructure, not a proof error).
 
@@ -233,4 +233,17 @@ Added 2026-11-25. Tested on 59af1de; Actions runs: EDc8 45534909558 (27m 25s), E
 
 What none of this establishes: RPEigen; any eigenvalue bound; identification of Y_p with supersingular curves (Deuring); identification of the Weil fibres with the chi level sets; applicability of Codogni-Lido. RPEigen stays OPEN and is not proved in this development.
 
-EDc11 (edge counting): run 45534909557 on 59af1de FAILED. First compiler error: `EDc11.lean:224:61: error: unsolved goals` in `EdgeCount.Tmat_symm` (goal N_ij/2 = N_ji/2 after `rw [card_end_symm ...]`). The same run's axiom output showed `card_end_symm` and `Tmat_symm` depending on `sorryAx` (a consequence of the failed run; cause of the former not yet understood). `card_cos_eq`, `U_matrix`, `Tn_matrix` were clean. A repair of `Tmat_symm` is committed locally and UNTESTED until it runs on CI; EDc11 is not recorded as established.
+Historical EDc11 status, superseded below. Run 45534909557 on 59af1de FAILED. First compiler error: `EDc11.lean:224:61: error: unsolved goals` in `EdgeCount.Tmat_symm` (goal N_ij/2 = N_ji/2 after `rw [card_end_symm ...]`). The same run's axiom output showed `card_end_symm` and `Tmat_symm` depending on `sorryAx` (a consequence of the failed run; cause of the former not yet understood). `card_cos_eq`, `U_matrix`, `Tn_matrix` were clean. A repair of `Tmat_symm` is committed locally and UNTESTED until it runs on CI; EDc11 is not recorded as established.
+
+
+## EDc11 verified on current main, 2026-11-25
+
+Source and CI-tested commit `01c4210aed1c422eae8530dc8b8c2e8e48bec378`, direct child of `a7b8bdf`. [Run 45564773560, job 139036797473](https://github.com/TOTOGT/DM3-lab/actions/runs/45564773560/job/139036797473) completed successfully, including the pins and compile-and-gate steps. The gate enforced a subset of `[propext, Classical.choice, Quot.sound]` individually for all five declarations. Raw job logs required authentication, so this entry does not claim the exact printed lists were independently retrieved. The successful gate excludes `sorryAx` in `card_end_symm` and the other four declarations on this commit.
+
+With p prime, 2 nonzero in ZMod p, xs²+ys²=−1, l natural and p∤l, `EdgeCount.card_cos_eq` gives `#NCos(g,h) = 12 * #NEnd(g,h)` and `card_end_symm` equates the two counts on reversing exact endpoints. `Tmat_symm` gives symmetry of the rational matrix on the chosen representatives. With the finite quotient instance, `U_matrix` and `Tn_matrix` prove the actions on every complex function at every vertex, with coefficients `12*Nmat` and `Nmat/2` respectively. No spectral hypothesis occurs. The geometric edge multiplicity and `RPEigen` remain open.
+
+## Integrated local vertex and fibre results, 2026-11-25
+
+`VertexDoubleOrbit` (five gated declarations, tested source `7c57574`) and `FibrePushforward` (six, tested source `1ccdfc8`) were locally compiled with Lean 4.32.0 and Mathlib `81a5d257c8`. All eleven archived reports give exactly `[propext, Classical.choice, Quot.sound]`. Integration on base `01c4210` reproduced each complete dependency key and rechecked the axiom reports. See `euler/lean/agents/lanes/` for full statements, commands and compiler exits. The separate Actions workflow awaits publication and its first run.
+
+The vertex equivalence identifies the Hurwitz-unit/scalar double orbit with `Yp` and counts two stabilizing units per projective point. Fibre transport identifies the two orthogonality conditions with a zero fibre pushforward, given a finite vertex bijection and the matching character labels. Swapping the labels preserves the kernel. Geometric vertex and label identification, operator comparison and the spectral input remain outstanding.
