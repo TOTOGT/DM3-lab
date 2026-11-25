@@ -217,3 +217,20 @@ Kind of result: finite bookkeeping, CONDITIONAL on the hypothesis `EDc7.Conj` (a
 | `EDc7.transport` | conditional on `Conj`: bijection Y_p to Y_p' preserving chi and intertwining U | same |
 
 Does NOT establish: `Conj` itself, any eigenvalue bound, or any link to elliptic curves. RPEigen stays OPEN and is not proved in this development.
+
+## Layer EDc, continued: EDc8, EDc9, EDc10 (tested on 59af1de) and EDc11 (failed, repaired locally)
+
+Added 2026-11-25. Tested on 59af1de; Actions runs: EDc8 45534909558 (27m 25s), EDc9 45534909592 (14m 39s), EDc10 45534909526 (25m 57s), all success; every gated declaration passed the declaration-specific parser `euler/lean/agents/check_axioms.py` with axioms exactly [propext, Classical.choice, Quot.sound]. The "Euler ED layer (lake build)" run 45534909436 failed with a 503 while downloading elan (infrastructure, not a proof error).
+
+| Module | Declaration(s) | Kind of result |
+|---|---|---|
+| EDc8 | `EDcSplitTransport.exists_red_conjugator`, `conj_of_splittings` | NEW PROOF (finite algebra): explicit matrix conjugator between any two splittings; this discharges the hypothesis `EDc7.Conj` for every pair of splittings (no Skolem-Noether invoked). |
+| EDc8 | `Lmap_inner`, `Lmap_Tl` | FINITE BOOKKEEPING: composition with the transport bijection preserves the inner product and intertwines Tl. |
+| EDc8 | `rpeigenAt_transport`, `rpeigenAt_all`, `rpeigen_of_one_splitting` | CONDITIONAL REDUCTION: RPEigen at one splitting implies it at every splitting; RPEigen is the hypothesis, not proved. |
+| EDc9 | `WeilFibre.chiY_rhoT_mul`, `Tl_support_shift`, `Tl_preserves_orth`, `Tl_preserves_fibre_sums_zero` | FINITE BOOKKEEPING: Tl shifts chi-support by (n/p); the subspace orthogonal to 1 and chi (= fibre-sum-zero, EDc6) is Tl-invariant. No eigenvalue estimate. |
+| EDc10 | `EulerVertexDraft.mem_ker_rho_iff`, `unitRed_central_iff`, `card_HurU_eq_card_Gam_mul_card_ker`, `card_HurU_twelve_two` | FINITE BOOKKEEPING: ker(Hurwitz units to PGL2) = {1,-1}; 24 = 12*2. |
+| EDc10 | `linearLevelVertexEquiv`, `mem_liftedGamma_iff`, `unit_stabilizer_iff` | FINITE BOOKKEEPING: coset equivalence for the lifted subgroup; uniform stabiliser +-1. |
+
+What none of this establishes: RPEigen; any eigenvalue bound; identification of Y_p with supersingular curves (Deuring); identification of the Weil fibres with the chi level sets; applicability of Codogni-Lido. RPEigen stays OPEN and is not proved in this development.
+
+EDc11 (edge counting): run 45534909557 on 59af1de FAILED. First compiler error: `EDc11.lean:224:61: error: unsolved goals` in `EdgeCount.Tmat_symm` (goal N_ij/2 = N_ji/2 after `rw [card_end_symm ...]`). The same run's axiom output showed `card_end_symm` and `Tmat_symm` depending on `sorryAx` (a consequence of the failed run; cause of the former not yet understood). `card_cos_eq`, `U_matrix`, `Tn_matrix` were clean. A repair of `Tmat_symm` is committed locally and UNTESTED until it runs on CI; EDc11 is not recorded as established.
