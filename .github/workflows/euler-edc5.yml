@@ -8,6 +8,7 @@ on:
   push:
     paths:
       - 'euler/lean/EulerLean/ED/EDc5.lean'
+      - 'euler/lean/EulerLean/ED/EDc4.lean'
       - '.github/workflows/euler-edc5.yml'
 
 jobs:
