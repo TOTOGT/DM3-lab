@@ -223,7 +223,11 @@ noncomputable def Tmat (l : ℕ) (i j : Y p h2 xs ys hxy) : ℚ :=
 theorem Tmat_symm (l : ℕ) (hpl : ¬ p ∣ l) (i j : Y p h2 xs ys hxy) :
     Tmat p h2 xs ys hxy l i j = Tmat p h2 xs ys hxy l j i := by
   unfold Tmat Nmat
-  rw [card_end_symm p h2 xs ys hxy l hpl]
+  have h := card_end_symm p h2 xs ys hxy l hpl (rep p h2 xs ys hxy i) (rep p h2 xs ys hxy j)
+  have h' : ((Nat.card (NEnd p xs ys l (rep p h2 xs ys hxy i) (rep p h2 xs ys hxy j)) : ℕ) : ℚ)
+      = ((Nat.card (NEnd p xs ys l (rep p h2 xs ys hxy j) (rep p h2 xs ys hxy i)) : ℕ) : ℚ) := by
+    exact_mod_cast h
+  rw [h']
 
 theorem natCard_eq_filter (l : ℕ) (P : Quaternion ℚ → Prop) [DecidablePred P] :
     Nat.card {α : Quaternion ℚ // α ∈ Section75a.Hn l ∧ P α}
