@@ -60,7 +60,7 @@ jobs:
           for m in EDc7; do
             if grep -nE "(^|[^a-zA-Z_])sorry" $W/$m.out; then echo "::error::sorry in $m"; exit 1; fi
           done
-          for thm in EDc7.conjP_conjP_inv EDc7.conjP_injective EDc7.rhoT_conj; do
+          for thm in EDc7.conjP_conjP_inv EDc7.conjP_injective EDc7.rhoT_conj EDc7.rho_conj EDc7.Gam_conj EDc7.chiP_conj EDc7.transport; do
             line=$(grep -A2 "$thm' depends on axioms" $W/EDc7.out | tr '\n' ' ')
             echo "$line"
             [ -n "$line" ] || { echo "::error::axiom report missing for $thm"; exit 1; }
