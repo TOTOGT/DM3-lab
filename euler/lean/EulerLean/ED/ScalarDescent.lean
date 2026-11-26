@@ -61,13 +61,13 @@ noncomputable def unitRedHom : SectionA3a2.HurU →* MatrixUnits p where
 theorem unitRedHom_apply (u : SectionA3a2.HurU) :
     unitRedHom p h2 xs ys hxy u = unitRed p h2 xs ys hxy u := rfl
 
-/-- `unitRed (-1) = -1` as a matrix unit.  [SRC: StageA4o.red_negone] -/
+/-- `unitRed (-1) = -1` as a matrix unit.  [SRC: SectionA3a.red_negone in StageA4o.lean] -/
 theorem unitRed_negOne :
     unitRed p h2 xs ys hxy SectionA3a2.negOne = (-1 : MatrixUnits p) := by
   apply Units.ext
   rw [unitRed_val]
   have : ((((SectionA3a2.negOne : SectionA3a2.HurU) : (Quaternion ℚ)ˣ)) : Quaternion ℚ) = -1 := rfl
-  rw [this, SectionA4o.red_negone p h2 xs ys]
+  rw [this, SectionA3a.red_negone p h2 xs ys]
   simp
 
 /-! ### 2. Full-level vertex set, determinant, projection -/
@@ -119,12 +119,11 @@ noncomputable def project : FullLevel p h2 xs ys hxy → SectionA3b.Yp p h2 xs y
     intro a b hab
     obtain ⟨u, rfl⟩ := (fullRel_iff p h2 xs ys hxy a b).mp hab
     apply Quotient.sound
-    rw [QuotientGroup.rightRel_apply]
-    refine ⟨u, ?_⟩
+    refine QuotientGroup.rightRel_apply.mpr ⟨u, ?_⟩
     change SectionA3a2.rho p h2 xs ys hxy u =
       projectivize p (unitRed p h2 xs ys hxy u * a) * (projectivize p a)⁻¹
-    rw [map_mul]; group
-    exact (projectivize_unitRed p h2 xs ys hxy u).symm)  -- UNTESTED: `group` may close/alter the goal
+    rw [map_mul, mul_inv_cancel_right]
+    exact (projectivize_unitRed p h2 xs ys hxy u).symm)
 
 theorem project_mk (g : MatrixUnits p) :
     project p h2 xs ys hxy (Quotient.mk _ g) = Quotient.mk _ (projectivize p g) := rfl
@@ -196,11 +195,10 @@ noncomputable def detFibreEquiv (a : (ZMod p)ˣ) :
 
 /-! ### 4. Pullback and Weil-kernel membership -/
 
-variable [Fintype (SectionA2.PGL2 p)] [Fintype (SectionA2.PGL2 p ⧸ SectionA3b.Gam p h2 xs ys hxy)]
-  [Fintype (SectionA3b.Gam p h2 xs ys hxy)]
+-- (Fintype section variables removed: run #2 showed they were unused and could clash with EDc8's instances.)
 
 /-- Unnormalised pullback `f ↦ f ∘ project` (no √|D| factor needed). -/
-def pullback (f : EY p h2 xs ys hxy) : FullLevel p h2 xs ys hxy → ℂ :=
+noncomputable def pullback (f : EY p h2 xs ys hxy) : FullLevel p h2 xs ys hxy → ℂ :=
   fun s => f.ofLp (project p h2 xs ys hxy s)
 
 theorem pullback_ne_zero (f : EY p h2 xs ys hxy) (hf : f ≠ 0) :
@@ -276,7 +274,7 @@ noncomputable def fullHecke (n : ℕ) (hpn : ¬ p ∣ n) (F : FullLevel p h2 xs 
   Hand proof: π([red x · g]) = [rhoT x · projectivize g] (rhoT_of_unit, projectivize is a hom); then compare
   with `U_mk` (sum over `(Hn_finite n).toFinset`, convert `Finset.attach` sum by `Finset.sum_attach`) and
   `Tl_apply`/`Tn = U/24`.  No symmetry of the full-level operator is used. -/
-theorem fullHecke_pullback (n : ℕ) (h : Adm p n) (f : EY p h2 xs ys hxy) :
+theorem fullHecke_pullback (n : ℕ) (h : SectionA4l.Adm p n) (f : EY p h2 xs ys hxy) :
     fullHecke p h2 xs ys hxy n h.2 (pullback p h2 xs ys hxy f) =
       pullback p h2 xs ys hxy (Tl p h2 xs ys hxy n f) := by
   sorry  -- [GAP]
@@ -286,7 +284,7 @@ theorem fullHecke_pullback (n : ℕ) (h : Adm p n) (f : EY p h2 xs ys hxy) :
 /-- The EXTERNAL obligation, stated on the actual full-level operator and actual Weil kernel.
 It is a hypothesis, never proved here. -/
 def FullLevelBound : Prop :=
-  ∀ (l : ℕ) (hA : Adm p l), l.Prime → l % 4 = 3 →
+  ∀ (l : ℕ) (hA : SectionA4l.Adm p l), l.Prime → l % 4 = 3 →
     ∀ (μ : ℝ) (F : FullLevel p h2 xs ys hxy → ℂ), F ≠ 0 →
       F ∈ LinearMap.ker (EulerWeilFibre.fibrePush (fullDet p h2 xs ys hxy)) →
       fullHecke p h2 xs ys hxy l hA.2 F = (μ : ℂ) • F →
