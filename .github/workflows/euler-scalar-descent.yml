@@ -1,0 +1,53 @@
+# ScalarDescent: UNTESTED draft; this run is its first compilation. Does NOT prove RPEigen.
+# Isolated branch only. Informational: prints the full compiler log and axiom report and does not
+# treat sorry as success (GAP declarations are reported, never counted as closed).
+name: Euler ScalarDescent (Lean, isolated)
+on:
+  push:
+    branches: [scalar-descent-isolated]
+    paths:
+      - 'euler/lean/EulerLean/ED/ScalarDescent.lean'
+      - '.github/workflows/euler-scalar-descent.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    defaults:
+      run:
+        working-directory: euler/lean
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned packages
+        run: |
+          set -euo pipefail
+          lake exe cache get
+          git diff --exit-code HEAD -- lake-manifest.json lakefile.toml lean-toolchain
+          lake env lean --version
+      - name: Build chain and ScalarDescent (full log)
+        run: |
+          set -uo pipefail
+          python3 agents/build_cached.py --project . --target ScalarDescent > "$RUNNER_TEMP/sd.json"; rc=$?
+          cat "$RUNNER_TEMP/sd.json"
+          log=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("target_log") or d.get("log") or "")' "$RUNNER_TEMP/sd.json")
+          echo "build_rc=$rc"
+          touch "$RUNNER_TEMP/ScalarDescent.out"
+          if [ -n "$log" ] && [ -f "$log" ]; then echo "=== compiler output ==="; cat "$log"; cp "$log" "$RUNNER_TEMP/ScalarDescent.out"; fi
+          echo "=== sorry lines ==="; grep -nE "declaration uses 'sorry'|[^a-zA-Z_]sorry" "$RUNNER_TEMP/ScalarDescent.out" || echo "none"
+          echo "=== error lines ==="; grep -nE ": error" "$RUNNER_TEMP/ScalarDescent.out" || echo "none"
+          echo "$rc" > "$RUNNER_TEMP/rc"
+      - name: Axiom report (informational; sorryAx means NOT closed)
+        run: |
+          set -uo pipefail
+          grep -nE "^'EulerScalarDescent\.|depends on axioms|does not depend on any axioms|sorryAx" "$RUNNER_TEMP/ScalarDescent.out" || true
+          python3 agents/check_axioms.py "$RUNNER_TEMP/ScalarDescent.out" EulerScalarDescent.unitRedHom EulerScalarDescent.fullDet EulerScalarDescent.project_surjective EulerScalarDescent.chiY_project | tee -a "$GITHUB_STEP_SUMMARY" || true
+      - name: Final status
+        run: |
+          rc=$(cat "$RUNNER_TEMP/rc"); echo "build exit code: $rc"; exit "$rc"
