@@ -238,7 +238,7 @@ theorem project_surj_fibre (a : (ZMod p)ˣ) (y : SectionA3b.Yp p h2 xs ys hxy)
   have hbne : ((detU p G : (ZMod p)ˣ) : ZMod p) ≠ 0 := (detU p G).ne_zero
   have habne : (a : ZMod p) ≠ 0 := a.ne_zero
   have hone : quadraticChar (ZMod p) ((a : ZMod p) * ((detU p G : (ZMod p)ˣ) : ZMod p)) = 1 := by
-    rw [map_mul, hqq, ← sq]
+    rw [map_mul, hqq, ← sq, ← map_pow]
     exact quadraticChar_sq_one' hbne
   obtain ⟨c, hc⟩ := (quadraticChar_one_iff_isSquare (mul_ne_zero habne hbne)).mp hone
   have hc0 : c ≠ 0 := by
