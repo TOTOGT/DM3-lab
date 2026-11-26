@@ -336,29 +336,108 @@ noncomputable def fullHeckeAt (n : ℕ) (hpn : ¬ p ∣ n) (F : FullLevel p h2 x
       F (Quotient.mk _ (shellUnit p h2 xs ys hxy n hpn x.1
         ((Set.Finite.mem_toFinset _).1 x.2) * g))) / 24
 
-/-- [GAP] Representative independence.  Hand proof: if g' = unitRed u * g then
-  shellUnit x * unitRed u = shellUnit (x*u) (red_mul), and x ↦ x*u permutes the full norm shell
-  (Hn closed under right multiplication by Hurwitz units, inverse u⁻¹), so the sums agree.
-  NOTE the RIGHT multiplication of the shell: the left action by units would be the wrong permutation. -/
+theorem mem_Hn_mul_unit {n : ℕ} {x : Quaternion ℚ} (hx : x ∈ Section75a.Hn n)
+    (v : (Quaternion ℚ)ˣ) (hv : v ∈ SectionA3a2.HurU) :
+    x * (v : Quaternion ℚ) ∈ Section75a.Hn n := by
+  obtain ⟨hvq, hvn⟩ := (SectionA3a2.mem_iff v).mp hv
+  exact ⟨Section71d.QH_mul hx.1 hvq, by rw [map_mul, hx.2, hvn, mul_one]⟩
+
+theorem shellUnit_eq_mul (n : ℕ) (hpn : ¬ p ∣ n) {y z : Quaternion ℚ}
+    (hy : y ∈ Section75a.Hn n) (hz : z ∈ Section75a.Hn n) (u : SectionA3a2.HurU)
+    (h : z = y * (((u : (Quaternion ℚ)ˣ)) : Quaternion ℚ)) :
+    shellUnit p h2 xs ys hxy n hpn z hz =
+      shellUnit p h2 xs ys hxy n hpn y hy * unitRed p h2 xs ys hxy u := by
+  subst h
+  apply Units.ext
+  rw [Units.val_mul]
+  unfold shellUnit
+  rw [SectionA2.redUnit_coe, SectionA2.redUnit_coe, unitRed_val,
+    Section74b.red_mul p h2 xs ys hxy hy.1 ((SectionA3a2.mem_iff _).mp u.2).1]
+
+/-- Representative independence (attempt, UNTESTED until CI).  If g' = unitRed u * g then
+  shellUnit y * unitRed u = shellUnit (y*u) (red_mul), and x ↦ x*u permutes the full norm shell.
+  NOTE the RIGHT multiplication of the shell. -/
 theorem fullHeckeAt_respects (n : ℕ) (hpn : ¬ p ∣ n) (F : FullLevel p h2 xs ys hxy → ℂ)
     (a b : MatrixUnits p)
     (hab : QuotientGroup.rightRel (unitRedHom p h2 xs ys hxy).range a b) :
     fullHeckeAt p h2 xs ys hxy n hpn F a = fullHeckeAt p h2 xs ys hxy n hpn F b := by
-  sorry  -- [GAP]
+  obtain ⟨u, rfl⟩ := (fullRel_iff p h2 xs ys hxy a b).mp hab
+  unfold fullHeckeAt
+  congr 1
+  have hu : ((u : (Quaternion ℚ)ˣ)) ∈ SectionA3a2.HurU := u.2
+  have hui : ((u : (Quaternion ℚ)ˣ))⁻¹ ∈ SectionA3a2.HurU := inv_mem hu
+  refine Finset.sum_bij'
+    (fun x _ => (⟨x.1 * ((((u : (Quaternion ℚ)ˣ))⁻¹ : (Quaternion ℚ)ˣ) : Quaternion ℚ),
+        (Set.Finite.mem_toFinset _).2
+          (mem_Hn_mul_unit ((Set.Finite.mem_toFinset _).1 x.2) _ hui)⟩ :
+        {x // x ∈ (Section77a.Hn_finite n).toFinset}))
+    (fun y _ => (⟨y.1 * (((u : (Quaternion ℚ)ˣ)) : Quaternion ℚ),
+        (Set.Finite.mem_toFinset _).2
+          (mem_Hn_mul_unit ((Set.Finite.mem_toFinset _).1 y.2) _ hu)⟩ :
+        {x // x ∈ (Section77a.Hn_finite n).toFinset}))
+    (fun _ _ => Finset.mem_attach _ _) (fun _ _ => Finset.mem_attach _ _) ?_ ?_ ?_
+  · intro x _
+    apply Subtype.ext
+    show x.1 * ((((u : (Quaternion ℚ)ˣ))⁻¹ : (Quaternion ℚ)ˣ) : Quaternion ℚ) * (((u : (Quaternion ℚ)ˣ)) : Quaternion ℚ) = x.1
+    rw [mul_assoc, Units.inv_mul, mul_one]
+  · intro y _
+    apply Subtype.ext
+    show y.1 * (((u : (Quaternion ℚ)ˣ)) : Quaternion ℚ) * ((((u : (Quaternion ℚ)ˣ))⁻¹ : (Quaternion ℚ)ˣ) : Quaternion ℚ) = y.1
+    rw [mul_assoc, Units.mul_inv, mul_one]
+  · intro x _
+    have hx := (Set.Finite.mem_toFinset _).1 x.2
+    have hxi : x.1 * ((((u : (Quaternion ℚ)ˣ))⁻¹ : (Quaternion ℚ)ˣ) : Quaternion ℚ) ∈ Section75a.Hn n := mem_Hn_mul_unit hx _ hui
+    have hrel : x.1 = (x.1 * ((((u : (Quaternion ℚ)ˣ))⁻¹ : (Quaternion ℚ)ˣ) : Quaternion ℚ)) * (((u : (Quaternion ℚ)ˣ)) : Quaternion ℚ) := by
+      rw [mul_assoc, Units.inv_mul, mul_one]
+    show F (Quotient.mk _ (shellUnit p h2 xs ys hxy n hpn x.1 hx * a)) =
+      F (Quotient.mk _ (shellUnit p h2 xs ys hxy n hpn (x.1 * ((((u : (Quaternion ℚ)ˣ))⁻¹ : (Quaternion ℚ)ˣ) : Quaternion ℚ)) hxi *
+          (unitRed p h2 xs ys hxy u * a)))
+    rw [shellUnit_eq_mul p h2 xs ys hxy n hpn hxi hx u hrel, mul_assoc]
 
 noncomputable def fullHecke (n : ℕ) (hpn : ¬ p ∣ n) (F : FullLevel p h2 xs ys hxy → ℂ) :
     FullLevel p h2 xs ys hxy → ℂ :=
   Quotient.lift (fun g => fullHeckeAt p h2 xs ys hxy n hpn F g)
     (fun a b hab => fullHeckeAt_respects p h2 xs ys hxy n hpn F a b hab)
 
-/-- [GAP] Intertwining with the projective operator: `fullHecke (f ∘ project) = (Tl f) ∘ project`.
-  Hand proof: π([red x · g]) = [rhoT x · projectivize g] (rhoT_of_unit, projectivize is a hom); then compare
-  with `U_mk` (sum over `(Hn_finite n).toFinset`, convert `Finset.attach` sum by `Finset.sum_attach`) and
-  `Tl_apply`/`Tn = U/24`.  No symmetry of the full-level operator is used. -/
+theorem pi_shellUnit (n : ℕ) (hpn : ¬ p ∣ n) (x : Quaternion ℚ) (hx : x ∈ Section75a.Hn n) :
+    projectivize p (shellUnit p h2 xs ys hxy n hpn x hx) = SectionA4e.rhoT p xs ys x := by
+  have hu : IsUnit (Section74b.red p xs ys x) :=
+    SectionA4e.isUnit_red_of_mem p h2 xs ys hxy hpn hx
+  rw [SectionA4e.rhoT_of_unit p xs ys hu]
+  show (QuotientGroup.mk (shellUnit p h2 xs ys hxy n hpn x hx) : SectionA2.PGL2 p) =
+    QuotientGroup.mk hu.unit
+  congr 1
+  apply Units.ext
+  rw [IsUnit.unit_spec]
+  exact SectionA2.redUnit_coe p h2 xs ys hxy hx.1 n hx.2 hpn
+
+/-- Intertwining with the projective operator (attempt, UNTESTED until CI):
+  fullHecke (f ∘ project) = (Tl f) ∘ project.  No symmetry of the full-level operator is used. -/
 theorem fullHecke_pullback (n : ℕ) (h : SectionA4l.Adm p n) (f : EY p h2 xs ys hxy) :
     fullHecke p h2 xs ys hxy n h.2 (pullback p h2 xs ys hxy f) =
       pullback p h2 xs ys hxy (Tl p h2 xs ys hxy n f) := by
-  sorry  -- [GAP]
+  funext s
+  induction s using Quotient.inductionOn with
+  | h g =>
+    have hL : fullHecke p h2 xs ys hxy n h.2 (pullback p h2 xs ys hxy f) (Quotient.mk _ g) =
+        fullHeckeAt p h2 xs ys hxy n h.2 (pullback p h2 xs ys hxy f) g := rfl
+    rw [hL]
+    unfold fullHeckeAt
+    have hR : pullback p h2 xs ys hxy (Tl p h2 xs ys hxy n f) (Quotient.mk _ g) =
+        (SectionA4e.U p h2 xs ys hxy n h.2 f.ofLp
+          (Quotient.mk _ (projectivize p g))) / 24 := by
+      show (Tl p h2 xs ys hxy n f).ofLp (project p h2 xs ys hxy (Quotient.mk _ g)) = _
+      rw [project_mk, Tl_apply p h2 xs ys hxy n h]
+      rfl
+    rw [hR, SectionA4e.U_mk]
+    congr 1
+    rw [← Finset.sum_attach ((Section77a.Hn_finite n).toFinset)
+      (fun x => f.ofLp (Quotient.mk _ (SectionA4e.rhoT p xs ys x * projectivize p g)))]
+    refine Finset.sum_congr rfl (fun x _ => ?_)
+    have hx : x.1 ∈ Section75a.Hn n := (Set.Finite.mem_toFinset _).1 x.2
+    show f.ofLp (project p h2 xs ys hxy
+      (Quotient.mk _ (shellUnit p h2 xs ys hxy n h.2 x.1 hx * g))) = _
+    rw [project_mk, map_mul, pi_shellUnit p h2 xs ys hxy n h.2 x.1 hx]
 
 /-! ### 6. CONDITIONAL transport (not the spectral theorem) -/
 
