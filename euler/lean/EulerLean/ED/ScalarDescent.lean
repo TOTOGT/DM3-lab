@@ -169,7 +169,6 @@ theorem central_det_one (z : MatrixUnits p) (hz : z ∈ Subgroup.center (MatrixU
   obtain ⟨r, hr⟩ := (Matrix.GeneralLinearGroup.mem_center_iff_val_mem_range_scalar).1 hz
   have h1 : r ^ 2 = 1 := by
     have h := congrArg (fun u : (ZMod p)ˣ => (u : ZMod p)) hd
-    simp only at h
     rw [detU_val, ← hr, det_scalar] at h
     simpa using h
   have h3 : r = 1 ∨ r = -1 := by
@@ -185,7 +184,7 @@ theorem central_det_one (z : MatrixUnits p) (hz : z ∈ Subgroup.center (MatrixU
   · right
     rw [unitRed_negOne]
     apply Units.ext
-    rw [← hr]
+    rw [← hr, map_neg, map_one]
     simp
 
 /-- Injectivity on a determinant fibre: two full-level classes with the same determinant and the same
@@ -224,7 +223,7 @@ theorem project_injOn_fibre (s t : FullLevel p h2 xs ys hxy)
       have e : unitRed p h2 xs ys hxy (u * SectionA3a2.negOne) =
           unitRed p h2 xs ys hxy u * unitRed p h2 xs ys hxy SectionA3a2.negOne :=
         (unitRedHom p h2 xs ys hxy).map_mul u SectionA3a2.negOne
-      rw [e, hrec, h]; group
+      rw [e, hrec, h]
 
 theorem project_surj_fibre (a : (ZMod p)ˣ) (y : SectionA3b.Yp p h2 xs ys hxy)
     (hy : chiY p h2 xs ys hxy y = ((quadraticChar (ZMod p) (a : ZMod p) : ℤ) : ℂ)) :
@@ -239,7 +238,7 @@ theorem project_surj_fibre (a : (ZMod p)ˣ) (y : SectionA3b.Yp p h2 xs ys hxy)
   have hbne : ((detU p G : (ZMod p)ˣ) : ZMod p) ≠ 0 := (detU p G).ne_zero
   have habne : (a : ZMod p) ≠ 0 := a.ne_zero
   have hone : quadraticChar (ZMod p) ((a : ZMod p) * ((detU p G : (ZMod p)ˣ) : ZMod p)) = 1 := by
-    rw [quadraticChar_mul, hqq, ← quadraticChar_mul, ← sq, quadraticChar_sq_one' hbne]
+    rw [MulChar.map_mul, hqq, ← MulChar.map_mul, ← sq, quadraticChar_sq_one' hbne]
   obtain ⟨c, hc⟩ := (quadraticChar_one_iff_isSquare (mul_ne_zero habne hbne)).mp hone
   have hc0 : c ≠ 0 := by
     intro h
@@ -407,9 +406,6 @@ theorem pi_shellUnit (n : ℕ) (hpn : ¬ p ∣ n) (x : Quaternion ℚ) (hx : x �
   show (QuotientGroup.mk (shellUnit p h2 xs ys hxy n hpn x hx) : SectionA2.PGL2 p) =
     QuotientGroup.mk hu.unit
   congr 1
-  apply Units.ext
-  rw [IsUnit.unit_spec]
-  exact SectionA2.redUnit_coe p h2 xs ys hxy hx.1 n hx.2 hpn
 
 /-- Intertwining with the projective operator (attempt, UNTESTED until CI):
   fullHecke (f ∘ project) = (Tl f) ∘ project.  No symmetry of the full-level operator is used. -/
