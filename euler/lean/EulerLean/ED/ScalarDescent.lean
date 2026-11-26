@@ -5,7 +5,7 @@ import EDc8
 import EDc9
 
 /-!
-# ScalarDescent.lean   — UNTESTED (never compiled; no Lean/Mathlib toolchain was available when written)
+# ScalarDescent.lean   — CI run 3 compiled the earlier draft (5 sorry GAPs); proofs added after that are UNTESTED until the next CI run
 
 STATUS LABELS used below:  [HAND] hand-checked mathematics, [SRC] matched by reading the pinned source export,
 [UNTESTED] Lean text never elaborated, [GAP] proof not written (marked `sorry`; must NOT be counted as closed).
@@ -150,13 +150,43 @@ theorem chiY_project (s : FullLevel p h2 xs ys hxy) :
 theorem scalarUnit_central (c : (ZMod p)ˣ) :
     ∃ z : MatrixUnits p, z ∈ Subgroup.center (MatrixUnits p) ∧
       (z : Matrix (Fin 2) (Fin 2) (ZMod p)) = Matrix.scalar (Fin 2) (c : ZMod p) := by
-  -- UNTESTED: construct the unit `scalar c` with inverse `scalar c⁻¹`, then use
-  -- `Matrix.GeneralLinearGroup.mem_center_iff_val_mem_range_scalar` (used in StageA4o.chiGL_center).
-  sorry  -- [GAP] elementary; to be filled against Mathlib names (Units.map of Matrix.scalar)
+  refine ⟨Units.map (Matrix.scalar (Fin 2) :
+      ZMod p →+* Matrix (Fin 2) (Fin 2) (ZMod p)).toMonoidHom c, ?_, rfl⟩
+  rw [Subgroup.mem_center_iff]
+  intro g
+  apply Units.ext
+  rw [Units.val_mul, Units.val_mul]
+  exact ((Matrix.scalar_commute (n := Fin 2) (c : ZMod p) (fun r => Commute.all _ _)
+    (g : Matrix (Fin 2) (Fin 2) (ZMod p))).eq).symm
 
 theorem det_scalar (c : ZMod p) :
     Matrix.det (Matrix.scalar (Fin 2) c : Matrix (Fin 2) (Fin 2) (ZMod p)) = c ^ 2 := by
   simp [Matrix.scalar_apply, Matrix.det_diagonal, sq]   -- copied from StageA4o.chiGL_center
+
+/-- A central unit of determinant 1 is 1 or the image of -1.  [UNTESTED until next CI run] -/
+theorem central_det_one (z : MatrixUnits p) (hz : z ∈ Subgroup.center (MatrixUnits p))
+    (hd : detU p z = 1) : z = 1 ∨ z = unitRed p h2 xs ys hxy SectionA3a2.negOne := by
+  obtain ⟨r, hr⟩ := (Matrix.GeneralLinearGroup.mem_center_iff_val_mem_range_scalar).1 hz
+  have h1 : r ^ 2 = 1 := by
+    have h := congrArg (fun u : (ZMod p)ˣ => (u : ZMod p)) hd
+    simp only at h
+    rw [detU_val, ← hr, det_scalar] at h
+    simpa using h
+  have h3 : r = 1 ∨ r = -1 := by
+    have h4 : (r - 1) * (r + 1) = 0 := by linear_combination h1
+    rcases mul_eq_zero.1 h4 with h | h
+    · left; linear_combination h
+    · right; linear_combination h
+  rcases h3 with rfl | rfl
+  · left
+    apply Units.ext
+    rw [← hr]
+    simp
+  · right
+    rw [unitRed_negOne]
+    apply Units.ext
+    rw [← hr]
+    simp
 
 /-- Injectivity on a determinant fibre: two full-level classes with the same determinant and the same
 projective image coincide.  Hand proof: h = g'g⁻¹ = unitRed u · z, z central, det z = 1 ⇒ z = ±1 ∈ U. -/
@@ -167,17 +197,68 @@ theorem project_injOn_fibre (s t : FullLevel p h2 xs ys hxy)
   | h g =>
   induction t using Quotient.inductionOn with
   | h g' =>
-    -- from hp: ∃ u, rho u = proj g' * (proj g)⁻¹, so z := (unitRed u)⁻¹ * (g' * g⁻¹) is central
-    -- from hd: det z = 1, so z = scalar r with r^2 = 1, r = ±1, hence z ∈ {1, unitRed negOne}
-    -- and g' = unitRed (u or u * negOne) * g.
-    sorry  -- [GAP] hand proof complete (see ScalarDescent-notes); Lean text not yet written
+    rw [project_mk, project_mk] at hp
+    rw [fullDet_mk, fullDet_mk] at hd
+    have hmem : projectivize p g' * (projectivize p g)⁻¹ ∈ SectionA3b.Gam p h2 xs ys hxy :=
+      QuotientGroup.rightRel_apply.mp (Quotient.exact hp)
+    obtain ⟨u, hu⟩ := hmem
+    obtain ⟨z, hzdef⟩ : ∃ z : MatrixUnits p,
+        z = (unitRed p h2 xs ys hxy u)⁻¹ * (g' * g⁻¹) := ⟨_, rfl⟩
+    have hπ : projectivize p z = 1 := by
+      rw [hzdef]
+      simp only [map_mul, map_inv, projectivize_unitRed]
+      rw [hu]
+      exact inv_mul_cancel _
+    have hzc : z ∈ Subgroup.center (MatrixUnits p) := (QuotientGroup.eq_one_iff z).mp hπ
+    have hz1 : detU p z = 1 := by
+      rw [hzdef]
+      simp only [map_mul, map_inv, detU_unitRed p h2 xs ys hxy, hd]
+      simp
+    have hrec : g' = unitRed p h2 xs ys hxy u * z * g := by
+      rw [hzdef]; group
+    apply Quotient.sound
+    rcases central_det_one p h2 xs ys hxy z hzc hz1 with h | h
+    · refine (fullRel_iff p h2 xs ys hxy g g').mpr ⟨u, ?_⟩
+      rw [hrec, h]; group
+    · refine (fullRel_iff p h2 xs ys hxy g g').mpr ⟨u * SectionA3a2.negOne, ?_⟩
+      have e : unitRed p h2 xs ys hxy (u * SectionA3a2.negOne) =
+          unitRed p h2 xs ys hxy u * unitRed p h2 xs ys hxy SectionA3a2.negOne :=
+        (unitRedHom p h2 xs ys hxy).map_mul u SectionA3a2.negOne
+      rw [e, hrec, h]; group
 
 theorem project_surj_fibre (a : (ZMod p)ˣ) (y : SectionA3b.Yp p h2 xs ys hxy)
     (hy : chiY p h2 xs ys hxy y = ((quadraticChar (ZMod p) (a : ZMod p) : ℤ) : ℂ)) :
     ∃ s : FullLevel p h2 xs ys hxy, fullDet p h2 xs ys hxy s = a ∧ project p h2 xs ys hxy s = y := by
-  -- pick any lift G (project_surjective), b := det G, χ(b)=χ(a) from hy and chiY_project,
-  -- a/b is a square c^2 (quadraticChar_one_iff_isSquare), take s := class of scalar(c) * G.
-  sorry  -- [GAP] hand proof complete; uses scalarUnit_central, det_scalar
+  obtain ⟨s0, hs0⟩ := project_surjective p h2 xs ys hxy y
+  obtain ⟨G, rfl⟩ := Quotient.exists_rep s0
+  have hchi := chiY_project p h2 xs ys hxy (Quotient.mk _ G)
+  rw [hs0, hy, fullDet_mk] at hchi
+  have hqq : quadraticChar (ZMod p) (a : ZMod p) =
+      quadraticChar (ZMod p) ((detU p G : (ZMod p)ˣ) : ZMod p) := by
+    exact_mod_cast hchi
+  have hbne : ((detU p G : (ZMod p)ˣ) : ZMod p) ≠ 0 := (detU p G).ne_zero
+  have habne : (a : ZMod p) ≠ 0 := a.ne_zero
+  have hone : quadraticChar (ZMod p) ((a : ZMod p) * ((detU p G : (ZMod p)ˣ) : ZMod p)) = 1 := by
+    rw [quadraticChar_mul, hqq, ← quadraticChar_mul, ← sq, quadraticChar_sq_one' hbne]
+  obtain ⟨c, hc⟩ := (quadraticChar_one_iff_isSquare (mul_ne_zero habne hbne)).mp hone
+  have hc0 : c ≠ 0 := by
+    intro h
+    apply mul_ne_zero habne hbne
+    rw [hc, h]; ring
+  have hd0 : c * ((detU p G : (ZMod p)ˣ) : ZMod p)⁻¹ ≠ 0 := mul_ne_zero hc0 (inv_ne_zero hbne)
+  obtain ⟨z, hzc, hzv⟩ := scalarUnit_central p (Units.mk0 _ hd0)
+  rw [Units.val_mk0] at hzv
+  have hπz : projectivize p z = 1 := (QuotientGroup.eq_one_iff z).mpr hzc
+  have key : (a : ZMod p) = c * c * ((detU p G : (ZMod p)ˣ) : ZMod p)⁻¹ := by
+    rw [← hc]; field_simp
+  refine ⟨Quotient.mk _ (z * G), ?_, ?_⟩
+  · rw [fullDet_mk]
+    apply Units.ext
+    rw [detU_val, Units.val_mul, Matrix.det_mul, hzv, det_scalar, ← detU_val, key]
+    first | (field_simp; ring) | field_simp
+  · rw [project_mk, map_mul, hπz, one_mul]
+    rw [project_mk] at hs0
+    exact hs0
 
 /-- Determinant fibre ≃ quadratic-character class. -/
 noncomputable def detFibreEquiv (a : (ZMod p)ˣ) :
