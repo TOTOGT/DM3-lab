@@ -1,5 +1,8 @@
 # ScalarDescent: UNTESTED draft. Isolated branch only. Does NOT prove RPEigen.
 # Run #1 failed with no output because the step ran under bash -e and died before printing; fixed with set +e.
+# Gate (added after run #8): a job is green ONLY if build_rc=0, no error lines, no sorry/sorryAx, and every gated declaration
+# reports exactly the axioms propext/Classical.choice/Quot.sound. The old step ended with `exit 0`, so a failed build looked green.
+# The `direct` matrix leg was removed: run #8 showed it fails with `unknown target EulerLean.ED.ScalarDescent` (a harness error, not a compiler verdict).
 name: Euler ScalarDescent (Lean, isolated)
 on:
   push:
@@ -17,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [cached, direct]
+        mode: [cached]
     defaults:
       run:
         working-directory: euler/lean
@@ -37,18 +40,47 @@ jobs:
         shell: bash {0}
         run: |
           set +e
-          if [ "${{ matrix.mode }}" = "cached" ]; then
-            python3 agents/build_cached.py --project . --target ScalarDescent > "$RUNNER_TEMP/sd.json" 2> "$RUNNER_TEMP/sd.err"; rc=$?
-            echo "build_rc=$rc"; echo "=== sd.json ==="; cat "$RUNNER_TEMP/sd.json"; echo "=== stderr ==="; cat "$RUNNER_TEMP/sd.err"
-            log=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("target_log") or d.get("log") or "")' "$RUNNER_TEMP/sd.json" 2>/dev/null)
-            if [ -n "$log" ] && [ -f "$log" ]; then echo "=== compiler output ==="; cat "$log"; cp "$log" "$RUNNER_TEMP/out.txt"; fi
-          else
-            lake build EulerLean.ED.ScalarDescent > "$RUNNER_TEMP/out.txt" 2>&1; rc=$?
-            echo "build_rc=$rc"; echo "=== compiler output (tail 400) ==="; tail -n 400 "$RUNNER_TEMP/out.txt"
-          fi
+          python3 agents/build_cached.py --project . --target ScalarDescent > "$RUNNER_TEMP/sd.json" 2> "$RUNNER_TEMP/sd.err"; rc=$?
+          echo "$rc" > "$RUNNER_TEMP/rc.txt"
+          echo "build_rc=$rc"; echo "=== sd.json ==="; cat "$RUNNER_TEMP/sd.json"; echo "=== stderr ==="; cat "$RUNNER_TEMP/sd.err"
+          log=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("target_log") or d.get("log") or "")' "$RUNNER_TEMP/sd.json" 2>/dev/null)
+          if [ -n "$log" ] && [ -f "$log" ]; then echo "=== compiler output ==="; cat "$log"; cp "$log" "$RUNNER_TEMP/out.txt"; fi
           touch "$RUNNER_TEMP/out.txt"
-          echo "=== error lines ==="; grep -nE "error" "$RUNNER_TEMP/out.txt" | head -80 || true
-          echo "=== sorry lines ==="; grep -n "sorry" "$RUNNER_TEMP/out.txt" | head -40 || true
-          echo "=== axioms ==="; grep -nE "depends on axioms|does not depend on any axioms|sorryAx" "$RUNNER_TEMP/out.txt" | head -40 || true
+          echo "=== error lines ==="; grep -nE "error" "$RUNNER_TEMP/out.txt" | head -80
+          echo "=== sorry lines ==="; grep -n "sorry" "$RUNNER_TEMP/out.txt" | head -40
+          echo "=== axioms ==="; grep -nE "depends on axioms|does not depend on any axioms|sorryAx" "$RUNNER_TEMP/out.txt" | head -40
           echo "FINAL build_rc=$rc"
           exit 0
+      - name: Summary and strict gate
+        if: always()
+        shell: bash {0}
+        run: |
+          rc=$(cat "$RUNNER_TEMP/rc.txt" 2>/dev/null || echo missing)
+          out="$RUNNER_TEMP/out.txt"; [ -f "$out" ] || touch "$out"
+          fail=0; why=""
+          [ "$rc" = "0" ] || { fail=1; why="$why build_rc=$rc;"; }
+          grep -qE "error" "$out" && { fail=1; why="$why error line(s);"; }
+          grep -q "sorry" "$out" && { fail=1; why="$why sorry/sorryAx in output;"; }
+          for d in unitRedHom fullDet project_surjective chiY_project pullback_fibre_sum pullback_mem_weilKernel rpeigenAt_of_fullLevel; do
+            line=$(grep -F "'EulerScalarDescent.$d' depends on axioms:" "$out")
+            if [ -z "$line" ]; then fail=1; why="$why $d: no axiom report;"; continue; fi
+            extra=$(echo "$line" | sed 's/.*axioms: \[//; s/\]//' | tr ',' '\n' | sed 's/^ *//' | grep -vxE "propext|Classical.choice|Quot.sound")
+            [ -z "$extra" ] || { fail=1; why="$why $d: extra axiom $extra;"; }
+          done
+          {
+            echo "## ScalarDescent gate: $([ $fail = 0 ] && echo PASS || echo FAIL)"
+            echo "- build_rc: $rc"
+            echo "- reasons: ${why:-none}"
+            echo "- error lines: $(grep -cE 'error' "$out")  sorry lines: $(grep -c sorry "$out")"
+            echo '### axiom report'; echo '```'; grep -E "depends on axioms|sorryAx" "$out"; echo '```'
+            echo '### warnings'; echo '```'; grep -E "warning" "$out" | head -20; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          head -40 "$GITHUB_STEP_SUMMARY"
+          exit $fail
+      - name: Upload compiler log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scalardescent-compiler-log
+          path: ${{ runner.temp }}/out.txt
+          if-no-files-found: warn
