@@ -1,0 +1,188 @@
+name: Euler FullLevelEuler conditional composition (isolated, strict gate)
+# Isolated task. Builds the 49-module chain ending in FullLevelEuler strictly sequentially with agents/build_cached.py (unchanged).
+# The final module is ALWAYS compiled in this run (its cache entry is deleted before the build and the report must show cache_hit=false),
+# so its four declaration-specific axiom reports belong to the current source and toolchain.
+# Gate (every item fatal): build rc 0; no error text; no sorry/sorryAx anywhere in any module output; four exact axiom reports within
+# propext/Classical.choice/Quot.sound via agents/check_axioms.py (missing, duplicate, malformed, incomplete or extra-axiom reports fail);
+# the printed theorem type must show FullLevelBound in the hypotheses. FullLevelBound is never postulated.
+on:
+  push:
+    branches: [fulllevel-euler-composition-isolated]
+    paths:
+      - euler/lean/EulerLean/ED/FullLevelEuler.lean
+      - .github/workflows/euler-fulllevel-euler.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: euler-fulllevel-euler-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    defaults:
+      run:
+        working-directory: euler/lean
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- --default-toolchain none -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned packages
+        run: |
+          set -euo pipefail
+          lake exe cache get
+          git diff --exit-code HEAD -- lake-manifest.json lakefile.toml lean-toolchain
+          sha256sum lake-manifest.json lakefile.toml lean-toolchain | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Static preflight on the new module
+        run: |
+          set -euo pipefail
+          f=EulerLean/ED/FullLevelEuler.lean
+          test -s "$f"
+          if grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide|\bunsafe\b|\bopaque\b' "$f"; then echo "::error::forbidden token in $f"; exit 1; fi
+          grep -qE '^theorem euler_1747_of_fullLevelBound$' "$f" || grep -qE 'theorem euler_1747_of_fullLevelBound' "$f"
+          test "$(grep -cE '^import ' "$f")" = "3"
+          grep -qxE 'import ScalarDescent' "$f"; grep -qxE 'import EDc8' "$f"; grep -qxE 'import RPEigenEuler' "$f"
+          sha256sum "$f" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Resources before build
+        run: |
+          set -x
+          nproc; free -m; df -h .; df -h /tmp
+          sudo fallocate -l 8G /mnt/swapfile && sudo chmod 600 /mnt/swapfile && sudo mkswap /mnt/swapfile && sudo swapon /mnt/swapfile || echo "::warning::swap not enabled"
+          free -m
+      - name: Compute the dependency plan
+        id: plan
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "agents")
+          from build_cached import make_plan
+          plan = make_plan(Path("."), "FullLevelEuler")
+          mods = [m["module"] for m in plan["modules"]]
+          print(len(mods), "modules:", " ".join(mods))
+          assert len(mods) == 49, len(mods)
+          assert mods[-1] == "FullLevelEuler", mods[-1]
+          assert set(plan["modules"][-1]["imports"]) == {"ScalarDescent", "EDc8", "RPEigenEuler"}, plan["modules"][-1]["imports"]
+          for must in ("ScalarDescent", "EDc8", "RPEigenEuler", "StageA4o", "Stage83cut", "EDcert", "RPEigenH31"):
+              assert must in mods, must
+          with open(os.environ["RUNNER_TEMP"] + "/plan.json", "w") as f:
+              json.dump(plan, f)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              print("key=" + plan["modules"][-1]["key"], file=out)
+          PYTHON
+      - uses: actions/cache@v4
+        with:
+          path: euler/lean/.ci-module-cache
+          key: euler-ffl-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-${{ steps.plan.outputs.key }}
+          restore-keys: |
+            euler-ffl-v1-${{ runner.os }}-${{ hashFiles('euler/lean/lean-toolchain','euler/lean/lake-manifest.json','euler/lean/lakefile.toml','euler/lean/agents/build_cached.py') }}-
+      - name: Build chain sequentially (final module always recompiled)
+        run: |
+          set -uo pipefail
+          MEM="$RUNNER_TEMP/mem.log"; : > "$MEM"
+          ( while true; do
+              u=$(free -m | awk 'NR==2{print $3}')
+              l=$(ps -C lean -o rss= 2>/dev/null | sort -n | tail -1)
+              echo "$(date +%T) used_mb=$u max_lean_rss_kb=${l:-0}" >> "$MEM"
+              sleep 15
+            done ) &
+          SAMPLER=$!
+          # a restored cache must not supply the final module's evidence: delete its entry and any stale work dir
+          rm -rf .ci-module-cache/FullLevelEuler .ci-module-work/FullLevelEuler
+          START=$(date +%s)
+          report="$RUNNER_TEMP/FullLevelEuler.json"
+          python3 agents/build_cached.py --project . --target FullLevelEuler > "$report"
+          rc=$?
+          END=$(date +%s)
+          kill $SAMPLER 2>/dev/null || true
+          echo "build_rc=$rc seconds=$((END-START))" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "peak used memory (MB): $(sed -E 's/.*used_mb=([0-9]+).*/\1/' "$MEM" | sort -n | tail -1)" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$rc" -ne 0 ]; then
+            cat "$report"
+            python3 -c 'import json,pathlib,sys; p=json.load(open(sys.argv[1])).get("log"); print(pathlib.Path(p).read_text() if p else "no log")' "$report"
+            tail -n 20 "$MEM"
+            echo "::error::build failed rc=$rc"
+            exit 1
+          fi
+      - name: Strict gate
+        run: |
+          set -uo pipefail
+          python3 - <<'PYTHON'
+          import json, os, re, subprocess, sys
+          from pathlib import Path
+          rt = Path(os.environ["RUNNER_TEMP"])
+          rep = json.load(open(rt / "FullLevelEuler.json"))
+          fail = []
+          if rep.get("ok") is not True: fail.append("build report ok is not true")
+          mods = rep.get("modules", [])
+          if len(mods) != 49: fail.append("expected 49 module records, got %d" % len(mods))
+          if not mods or mods[-1].get("module") != "FullLevelEuler": fail.append("last module is not FullLevelEuler")
+          elif mods[-1].get("cache_hit"): fail.append("final module was a cache hit; evidence not from this run")
+          hits = sum(1 for m in mods if m.get("cache_hit"))
+          log = Path(rep.get("target_log", "/nonexistent"))
+          if not log.is_file() or log.stat().st_size == 0: fail.append("target log missing or empty")
+          text = log.read_text(encoding="utf-8") if log.is_file() else ""
+          work = log.parent
+          outs = sorted(work.glob("*.out"))
+          if len(outs) != 49: fail.append("expected 49 module outputs, found %d" % len(outs))
+          for f in outs:
+              s = f.read_text(encoding="utf-8", errors="replace")
+              if re.search(r"(^|[^A-Za-z_])sorry", s): fail.append("sorry text in " + f.name)
+              if re.search(r":\d+:\d+: error", s): fail.append("compiler error in " + f.name)
+          if re.search(r"error", text, re.I): fail.append("error text in target log")
+          if re.search(r"(^|[^A-Za-z_])sorry", text): fail.append("sorry text in target log")
+          # signature: exactly one #check block, FullLevelBound in the hypotheses, conclusion shape
+          lines = text.splitlines()
+          starts = [i for i, l in enumerate(lines) if l.startswith("FullLevelEuler.euler_1747_of_fullLevelBound :")]
+          if len(starts) != 1:
+              fail.append("expected exactly one #check block, found %d" % len(starts))
+          else:
+              j = starts[0] + 1
+              while j < len(lines) and (lines[j].startswith(" ") or lines[j].startswith("\t")): j += 1
+              flat = " ".join(" ".join(lines[starts[0]:j]).split())
+              i_h = flat.find("FullLevelBound"); i_c = flat.find("∃ a b")
+              if i_h < 0 or i_c < 0 or not i_h < i_c: fail.append("FullLevelBound not in hypotheses before the conclusion")
+              if flat.count("Euler1747.EulerGood") != 2: fail.append("conclusion does not mention Euler1747.EulerGood twice")
+              if "n % 4 = 2" not in flat or "a + b = n" not in flat: fail.append("n % 4 = 2 or a + b = n missing")
+              print("CHECK:", flat)
+          names = ["EDcSplitTransport.rpeigen_of_one_splitting", "EulerScalarDescent.rpeigenAt_of_fullLevel",
+                   "RPEigenEuler.euler_1747_of_rpeigen", "FullLevelEuler.euler_1747_of_fullLevelBound"]
+          p = subprocess.run([sys.executable, "agents/check_axioms.py", str(log)] + names, capture_output=True, text=True)
+          print(p.stdout)
+          if p.returncode != 0: fail.append("check_axioms.py failed")
+          reports = re.findall(r"^'(?:%s)' (?:depends on axioms:|does not depend on any axioms).*?(?=^'|\Z)" % "|".join(re.escape(n) for n in names), text, re.S | re.M)
+          summary = ["## FullLevelEuler gate: " + ("PASS" if not fail else "FAIL"),
+                     "- modules: %d (cache hits %d), final module cache_hit=false" % (len(mods), hits),
+                     "- module outputs: %d" % len(outs),
+                     "- reasons: " + ("none" if not fail else "; ".join(fail)),
+                     "### target log (verbatim, small)", "```", text.strip(), "```"]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as o: o.write("\n".join(summary) + "\n")
+          if fail:
+              print("GATE FAIL:", fail); sys.exit(1)
+          print("GATE PASS")
+          PYTHON
+      - name: Evidence hashes
+        if: always()
+        run: |
+          set -uo pipefail
+          d=.ci-module-work/FullLevelEuler
+          if [ -d "$d" ]; then
+            sha256sum "$d"/FullLevelEuler.out | tee -a "$GITHUB_STEP_SUMMARY"
+            ( cd "$d" && sha256sum *.out > "$RUNNER_TEMP/module-out-sha256.txt" ); wc -l "$RUNNER_TEMP/module-out-sha256.txt"
+            sha256sum "$RUNNER_TEMP/module-out-sha256.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fulllevel-euler-logs
+          path: |
+            euler/lean/.ci-module-work/FullLevelEuler/*.out
+            ${{ runner.temp }}/module-out-sha256.txt
+            ${{ runner.temp }}/FullLevelEuler.json
+            ${{ runner.temp }}/plan.json
+          if-no-files-found: warn
